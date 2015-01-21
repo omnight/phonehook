@@ -1,0 +1,88 @@
+diff -ur /usr/share/lipstick-jolla-home-qt5/compositor.qml /usr/share/lipstick-jolla-home-qt5_p/compositor.qml
+--- /usr/share/lipstick-jolla-home-qt5/compositor.qml	2000-01-01 01:00:00.000000000 +0100
++++ /usr/share/lipstick-jolla-home-qt5_p/compositor.qml	2015-01-20 19:41:30.826554643 +0100
+@@ -11,6 +11,7 @@
+ import org.nemomobile.notifications 1.0 as SystemNotifications
+ import org.nemomobile.configuration 1.0
+ import org.nemomobile.dbus 2.0 as NemoDBus
++import org.nemomobile.dbus 1.0 as NemoDBus1
+ import Sailfish.Silica 1.0
+ import Sailfish.Silica.private 1.0
+ import com.jolla.lipstick 0.1
+@@ -1173,6 +1174,55 @@
+         }
+     }
+ 
++    NemoDBus1.DBusAdaptor {
++        service: "com.omnight.lipstick"
++        path: "/"
++        iface: "com.jolla.lipstick.ConnectionSelectorIf"
++        xml: "\t<interface name=\"com.jolla.lipstick.ConnectionSelectorIf\">\n" +
++             "\t\t<method name=\"openConnection\">\n" +
++             "\t\t\t<arg name=\"type\" type=\"s\" direction=\"in\"/>\n" +
++             "\t\t</method>\n" +
++             "\t\t<signal name=\"openConnection2\">\n" +
++             "\t\t\t<arg name=\"type\" type=\"s\" direction=\"out\"/>\n" +
++             "\t\t</signal>\n" +			 			 
++             "\t\t<signal name=\"connectionSelectorClosed\">\n" +
++             "\t\t\t<arg name=\"connectionSelected\" type=\"b\" direction=\"out\"/>\n" +
++             "\t\t</signal>\n" +
++             "\t\t<method name=\"inject\">\n" +
++             "\t\t\t<arg name=\"type\" type=\"s\" direction=\"in\"/>\n" +
++             "\t\t</method>\n" +
++             "\t\t<method name=\"command\">\n" +
++             "\t\t\t<arg name=\"function\" type=\"s\" direction=\"in\"/>\n" +
++			 "\t\t\t<arg name=\"data\" type=\"as\" direction=\"in\"/>\n" +
++             "\t\t</method>\n" +			 
++             "\t</interface>\n"
++	
++        signal inject(string qml)
++		signal command(string fn, variant data)
++		signal openConnection(string preferredType)
++		
++		property variant lastObj
++        
++        onOpenConnection:  emitSignalWithArguments('openConnection2', [preferredType])
++
++        onInject: {
++			if(qml == "") return;
++			var component = Qt.createComponent(Qt.resolvedUrl(qml));
++
++			if (component.status === Component.Ready) {
++				if(lastObj) { lastObj.destroy(); }
++				lastObj = component.createObject();
++			}
++		}
++
++		onCommand: {
++			if(lastObj !== null && typeof lastObj[fn] !== 'undefined') {
++				lastObj[fn](data);
++			}
++		}  		
++		
++    }
++	
+     Rectangle {
+         id: dimmingRectangle
+         anchors.fill: parent
+diff -ur /usr/share/lipstick-jolla-home-qt5/connectivity/ConnectionSelector.qml /usr/share/lipstick-jolla-home-qt5_p/connectivity/ConnectionSelector.qml
+--- /usr/share/lipstick-jolla-home-qt5/connectivity/ConnectionSelector.qml	2015-01-20 19:45:09.800215535 +0100
++++ /usr/share/lipstick-jolla-home-qt5_p/connectivity/ConnectionSelector.qml	2015-01-20 19:41:31.116864423 +0100
+@@ -911,6 +911,17 @@
+         }
+     }
+ 
++	DBusInterface {
++        service: 'com.jolla.lipstick.ConnectionSelector'
++        path: '/'
++        iface: 'com.jolla.lipstick.ConnectionSelectorIf'
++        signalsEnabled: true
++
++        function openConnection2(preferredType) {
++            connectionDialog.connectionRequested(preferredType)
++        }		
++	}
++	
+     DBusAdaptor {
+         id: dbusNotifier
+ 

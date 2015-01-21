@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>db_script/001.sql</file>
+        <file>db_script/002.sql</file>
+        <file>db_script/003.sql</file>
+        <file>db_script/004.sql</file>
+    </qresource>
+</RCC>

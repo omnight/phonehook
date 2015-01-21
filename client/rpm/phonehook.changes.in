@@ -1,0 +1,33 @@
+# Rename this file as callerId.changes to include changelog
+# entries in your RPM file.
+#
+# Add new changelog entries following the format below.
+# Add newest entries to the top of the list.
+# Separate entries from eachother with a blank line.
+
+# * date Author's Name <author's email> version-release
+# - Summary of changes
+
+
+* 2015-01-20 <omnight@gmail.com> 0.2.1-1
+- Connection selection dialog should be working again
+
+* 2015-01-18 <omnight@gmail.com> 0.2.0-1
+- Added TrueCaller (experimental)
+- Added cookie caching
+- Better handling of password fields
+- Added link field for sources
+- Source metadata stored in local db
+- Fixed gzip decompression bug
+
+* 2015-01-09 <omnight@gmail.com> 0.1.2-1
+- Fixed an issue with excessive CPU usage
+- Fix for encoding issues for sites not using UTF-8
+- Larger text size in popup
+- Added a test mode for sources that are under development
+
+* 2015-01-05 <omnight@gmail.com> 0.1.1-1
+- A few fixes for cookie handling and http redirects
+
+* 2015-01-01 <omnight@gmail.com> 0.1.0-1
+- First version

@@ -1,0 +1,11 @@
+[Unit]
+Description=PhoneHook
+Requires=lipstick.service
+After=lipstick.service
+
+[Service]
+Type=Simple
+ExecStart=/usr/bin/phonehook-daemon
+
+[Install]
+WantedBy=post-user-session.target
