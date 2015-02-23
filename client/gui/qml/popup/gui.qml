@@ -1,11 +1,13 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import QtGraphicalEffects 1.0
+import org.nemomobile.dbus 2.0 as NemoDBus
+
 // debug
 //import "screen.js" as Screen
 
 Rectangle {
-    visible: false
+    visible: wantVisible && !phoneLocked
     width: Screen.width - 60
     height: Math.max(150, results.height + 40 + btnRow.height + statusField.height)
     id: rewt
@@ -13,6 +15,8 @@ Rectangle {
     x: (Screen.width - width) / 2
 
     property bool active: false
+    property bool phoneLocked: false
+    property bool wantVisible: false
 
     onActiveChanged: {
         if(active) fadeIn.start();
@@ -23,11 +27,25 @@ Rectangle {
         parent = notificationLayer;
     }
 
+
+    NemoDBus.DBusInterface {
+        iface: "com.nokia.mce.signal"
+        path: "/com/nokia/mce/signal"
+        service: "com.nokia.mce"
+        bus: NemoDBus.DBus.SystemBus
+        signalsEnabled: true
+
+        function tklock_mode_ind(status) {
+            phoneLocked = (status == 'locked');
+        }
+
+    }
+
     SequentialAnimation {
         id: fadeIn
         PropertyAction {
             target: rewt
-            property: "visible"
+            property: "wantVisible"
             value: true
         }
         ParallelAnimation {
@@ -76,7 +94,7 @@ Rectangle {
         }
         PropertyAction {
             target: rewt
-            property: "visible"
+            property: "wantVisible"
             value: false
         }
     }
@@ -87,10 +105,11 @@ Rectangle {
     }
 
     function stateChange(state) {
-        active = true;
+
         console.log('GOT LOOKUP STATE!!!', state);
 
-        if(state == "activate") {
+        if(state == "activate:lookup") {
+            active = true;
             statusRow.state = "idle";
             infoModel.clear();
         } else if(state == "finished") {
@@ -128,12 +147,12 @@ Rectangle {
         id: inner
 
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#eeeeee" }
-            GradientStop { position: 1.0; color: "#b9d7d7" }
+            GradientStop { position: 0.0; color: Qt.darker(Theme.highlightColor, 1.5) }
+            GradientStop { position: 1.0; color: Qt.darker(Theme.highlightColor, 3) }
         }
 
         border.width: 2
-        border.color: "#6179b0"
+        border.color: Theme.highlightDimmerColor
 
         Image {
             id: img
@@ -193,7 +212,7 @@ Rectangle {
                         font.pixelSize: 20
                         font.weight: Font.Bold
                         text: model.title
-                        color: '#222244'
+                        color: Theme.primaryColor
                         wrapMode: Text.NoWrap
                     }
                     Text {
@@ -202,7 +221,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         text: '- ' + model.source
                         opacity: 0.6
-                        color: "#444444"
+                        color: Theme.highlightColor
                         wrapMode: Text.NoWrap
                     }
                 }
@@ -212,7 +231,7 @@ Rectangle {
                     id: text_content
                     text: model.value
                     width: parent.width
-                    color: model.color || '#000000'
+                    color: model.color || Theme.secondaryColor
                     wrapMode: Text.WordWrap
                     fontSizeMode: Text.Fit
                     maximumLineCount: 5
@@ -298,7 +317,7 @@ Rectangle {
             Text {
                 anchors.right: parent.right
                 id: sourceName
-                color: "#000022"
+                color: Theme.primaryColor
                 font.pixelSize: 20
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
@@ -309,7 +328,7 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 height: 25
                 id: statusField
-                color: "#000044"
+                color: Theme.secondaryColor
                 font.pixelSize: 20
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
@@ -339,12 +358,12 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#eeeeee" }
-                    GradientStop { position: 1.0; color: "#bfbfbf" }
+                    GradientStop { position: 0.0; color: Qt.darker(Theme.highlightColor, 1.5) }
+                    GradientStop { position: 1.0; color: Qt.darker(Theme.highlightColor, 2.0) }
                 }
 
                 border.width: 1
-                border.color: "#333333"
+                border.color: Theme.highlightDimmerColor
                 radius: 3
 
                 MouseArea {
@@ -358,6 +377,9 @@ Rectangle {
                     text: "Close"
                     font.pixelSize: parent.height/2
                     anchors.centerIn: parent
+                    color: Theme.primaryColor
+                    //font.pixelSize: Theme.fontSizeMedium
+                    //font.weight: Font.Bold
                 }
 
             }

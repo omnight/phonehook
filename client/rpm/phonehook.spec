@@ -13,7 +13,7 @@ Name:       phonehook
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    PhoneHook
-Version:    0.2.1
+Version:    0.3.0
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -33,8 +33,6 @@ BuildRequires:  systemd
 %description
 See who's calling!
 
-                                                                \
-
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -46,40 +44,34 @@ See who's calling!
 # >> pre
 # clean up patch that breaks connect-to-internet dialog
 if more /usr/share/lipstick-jolla-home-qt5/compositor.qml | grep com.omnight.lipstickIf; then
-    patch -R -N /usr/share/lipstick-jolla-home-qt5/compositor.qml < /usr/share/phonehook/phonehook-lipstick-v2.patch;
+    patch -r - -R -N /usr/share/lipstick-jolla-home-qt5/compositor.qml < /usr/share/phonehook/phonehook-lipstick-v2.patch || :;
 fi
 # << pre
 
-%post
-# >> post
-killall phonehook-daemon
-cd /usr/share/lipstick-jolla-home-qt5/
-patch -N -p4  < /usr/share/phonehook/phonehook-lipstick-v3.patch;
-ln -s -f /usr/lib/systemd/user/phonehook-daemon.service /usr/lib/systemd/user/post-user-session.target.wants
-systemctl-user enable phonehook-daemon.service || true
-systemctl-user daemon-reload || true
-# << post
+%preun
+# >> preun
+patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -R -N -p4 < /usr/share/phonehook/phonehook-lipstick-v3.patch || :;
+# << preun
 
 %postun
 # >> postun
 if [ "$1" -eq 0 ]; then
-killall phonehook-daemon || true
+killall phonehook-daemon || :
 killall phonehook || true
-systemctl-user disable phonehook-daemon.service || true
+systemctl-user disable phonehook-daemon.service || :
 rm /usr/lib/systemd/user/post-user-session.target.wants/phonehook-daemon.service
 fi
-systemctl-user daemon-reload || true
+systemctl-user daemon-reload || :
 # << postun
 
-%preun
-# >> preun
-cd /usr/share/lipstick-jolla-home-qt5/
-patch -R -N -p4 < /usr/share/phonehook/phonehook-lipstick-v3.patch;
-# << preun
-
-%build
-# >> build pre
-# << build pre
+%posttrans
+# >> posttrans
+killall phonehook-daemon
+patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -N -p4  < /usr/share/phonehook/phonehook-lipstick-v3.patch || :;
+ln -s -f /usr/lib/systemd/user/phonehook-daemon.service /usr/lib/systemd/user/post-user-session.target.wants
+systemctl-user enable phonehook-daemon.service || :
+systemctl-user daemon-reload || :
+# << posttrans
 
 %qtc_qmake5 
 

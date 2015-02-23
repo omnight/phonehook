@@ -15,7 +15,10 @@ public:
     static dbus *Instance() { return m_instance; }
 
     int mobileCountryCode() { return m_mobileCountryCode; }
+    int mobileNetworkCode() { return m_mobileNetworkCode; }
     bool isRoaming() { return m_isRoaming; }
+
+    bool compabilityMode() { return m_bCompabilityMode || !m_bHomescreenPatched; }
 
 private:
     QDBusInterface *interface;
@@ -27,6 +30,8 @@ private:
 
     QDBusObjectPath m_modemPath;
     bool m_isRoaming;
+    bool m_bCompabilityMode;
+    bool m_bHomescreenPatched;
     int m_mobileCountryCode;
     int m_mobileNetworkCode;
 

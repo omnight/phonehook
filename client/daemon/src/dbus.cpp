@@ -2,7 +2,8 @@
 #include <QDebug>
 #include <QSqlError>
 #include "lookup_thread.h"
-#include "normalize_phonenumber.h"
+#include "phonenumber.h"
+#include <QFile>
 
 dbus* dbus::m_instance;
 
@@ -27,6 +28,27 @@ dbus::dbus(QObject *parent) :
     m_mobileNetworkCode = 0;
 
     updateNetwork();
+
+    QFile lipstick;
+    lipstick.setFileName("/usr/share/lipstick-jolla-home-qt5/compositor.qml");
+
+    if(lipstick.exists()) {
+        lipstick.open(QFile::ReadOnly);
+        QString lipstickText = lipstick.readAll();
+        lipstick.close();
+
+        m_bHomescreenPatched = lipstickText.contains("inject");
+    } else {
+        m_bHomescreenPatched = false;
+    }
+
+    QSqlQuery qs;
+    qs.exec("SELECT key, value FROM setting WHERE key='compability_mode'");
+    m_bCompabilityMode = false;
+
+    while(qs.next()) {
+        m_bCompabilityMode = (qs.value("value").toString() == "true");
+    }
 
 }
 
@@ -113,7 +135,7 @@ void dbus::gotNetworkStatus(QDBusMessage reply) {
 
             QSqlQuery qs("INSERT OR REPLACE INTO setting (key,value) VALUES(?,?);");
             qs.addBindValue("location");
-            qs.addBindValue( normalize_phonenumber::mobilecc_to_iso32662(m_mobileCountryCode) );
+            qs.addBindValue( phonenumber::mobilecc_to_iso32662(m_mobileCountryCode) );
             qs.exec();
 
             a.endMapEntry();
@@ -196,9 +218,12 @@ void dbus::onIncomingCall(const QDBusMessage &a) {
 
             if(qs.value("key").toString() == "enable_roaming")
                 enableRoaming = (qs.value("value").toString() == "true");
+
+            if(qs.value("key").toString() == "compability_mode")
+                m_bCompabilityMode = (qs.value("value").toString() == "true");
         }
 
-        qDebug() << "got settings " << activateOnlyUnknown << activateOnSms;
+        qDebug() << "got settings " << activateOnlyUnknown << activateOnSms << m_bCompabilityMode;
 
 
         if(callingType == "org.freedesktop.Telepathy.Channel.Type.StreamedMedia") {
@@ -225,7 +250,7 @@ void dbus::onIncomingCall(const QDBusMessage &a) {
             QSqlQuery cq(db_contacts);
 
             cq.prepare("SELECT contactId FROM PhoneNumbers WHERE normalizedNumber = ?");
-            cq.addBindValue(normalize_phonenumber::process(callingNr));
+            cq.addBindValue(phonenumber::process(callingNr));
             if(!cq.exec()) {
                 qDebug() << "error " << cq.lastError().text();
             }
@@ -242,19 +267,21 @@ void dbus::onIncomingCall(const QDBusMessage &a) {
 
         qDebug() << "calling number = " << callingNr;
 
-        callingNr = normalize_phonenumber::international_to_local(callingNr);
+        phonenumber ph = phonenumber(callingNr,
+                                     phonenumber::mobilecc_to_iso32662( dbus::Instance()->mobileCountryCode() ),
+                                     QString::number( dbus::Instance()->mobileNetworkCode() ));
 
-        qDebug() << "after localizing " << callingNr;
+        qDebug() << "after localizing " << ph.number_local;
 
         //QDBusInterface showMsg("")
 
         qDebug() << "request raise/activate";
 
-        dbus_adapter::Instance()->set_lookupState("activate");
+        dbus_adapter::Instance()->set_lookupState("activate:lookup");
 
         lookup_thread *lt = new lookup_thread();
 
-        lt->start(callingNr, 0);
+        lt->start(ph, QList<int>());
 
     }
 

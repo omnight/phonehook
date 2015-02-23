@@ -71,6 +71,20 @@ public:
 
     }
 
+    Q_INVOKABLE QString getValue(int row, QString column) {
+
+        if(row >= rowCount())
+            return "";
+
+        for(QHash<int, QByteArray>::iterator r = roleNamesHash.begin(); r != roleNamesHash.end(); r++) {
+            if(r.value().toLower() == column.toLower()) {
+                return record(row).value(r.key() - Qt::UserRole - 1).toString();
+            }
+        }
+
+        return "";
+    }
+
     QHash<int, QByteArray> roleNames() const { return roleNamesHash; }
 
 public:
@@ -91,6 +105,7 @@ class bots : public QObject
     Q_OBJECT
 
     Q_PROPERTY(BotSqlModel* botList READ botList NOTIFY botList_changed)
+    Q_PROPERTY(BotSqlModel* botSearchList READ botSearchList NOTIFY botSearchList_changed)
     Q_PROPERTY(BotSqlModel* paramList READ paramList NOTIFY paramList_changed)
     Q_PROPERTY(bool injectorActive READ injectorActive NOTIFY injectorActive_changed)
     Q_PROPERTY(bool daemonActive READ daemonActive NOTIFY daemonActive_changed)
@@ -104,6 +119,7 @@ public:
     ~bots();
 
     BotSqlModel *botList() { return &m_botList; }
+    BotSqlModel *botSearchList() { return &m_botSearchList; }
     BotSqlModel *paramList() { return &m_paramList; }
     bool injectorActive() { return m_injectorActive; }
     bool daemonActive() { return m_daemonActive; }
@@ -132,10 +148,11 @@ public:
     Q_INVOKABLE QString getCountryName(QString code);
     Q_INVOKABLE int version();
     Q_INVOKABLE void clearCache(int botId);
+    Q_INVOKABLE void setBotSearchListTag(QString tag);
 
 signals:
-
     void botList_changed(BotSqlModel*);
+    void botSearchList_changed(BotSqlModel*);
     void paramList_changed(BotSqlModel*);
     void injectorActive_changed(bool active);
     void daemonActive_changed(bool active);
@@ -154,6 +171,7 @@ public slots:
 private:
     QSqlDatabase m_db;
     BotSqlModel m_botList;
+    BotSqlModel m_botSearchList;
     BotSqlModel m_paramList;
     int m_version;
     bool m_injectorActive;

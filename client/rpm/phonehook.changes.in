@@ -9,6 +9,18 @@
 # - Summary of changes
 
 
+* 2015-02-18 <omnight@gmail.com> 0.3.0-1
+- Added phonebook functionality (search for people & businesses)
+- Added cover action (Search)
+- Popup colorscheme uses theme colors
+- Popup not displayed above lockscreen
+- Added a compability mode to be used when the normal popup is not available
+- Added support for international numbers (will attempt to use "foreign" lookup sites if incoming call is from abroad)
+- Fixed uninstall issue when patch had been reverted before uninstall
+- Daemon now auto-starts when GUI is started.
+- Added capability listing for sources
+- Lots of other small changes
+
 * 2015-01-20 <omnight@gmail.com> 0.2.1-1
 - Connection selection dialog should be working again
 

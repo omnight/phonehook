@@ -38,17 +38,28 @@ CoverBackground {
         text: qsTr("Phonehook")
     }
 
-//    CoverActionList {
-//        id: coverAction
+    Image {
+        anchors.fill: parent
+        source: "../images/cover-bg.png"
+        fillMode: Image.PreserveAspectCrop
+    }
 
-//        CoverAction {
-//            iconSource: "image://theme/icon-cover-next"
-//        }
+    CoverActionList {
+        id: coverAction
+
+        CoverAction {
+            iconSource: "image://theme/icon-cover-search"
+            onTriggered: {
+                rootWindow.activate();
+                while(pageStack.depth > 1) pageStack.pop(null, true);
+                pageStack.push(Qt.resolvedUrl("../pages/PageSearchStart.qml"))
+            }
+        }
 
 //        CoverAction {
 //            iconSource: "image://theme/icon-cover-pause"
 //        }
-//    }
+    }
 }
 
 

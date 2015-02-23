@@ -35,25 +35,11 @@ import "pages"
 
 ApplicationWindow
 {
-
-//    category: "notification"
+    id: rootWindow
     initialPage: Component { FirstPage { } }
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 
-
     Component.onCompleted: {
-
-        console.log('parent is .. ', parent);
-
-        //console.log('window is', _window)
-
-        console.log('SAI is', __silica_applicationwindow_instance)
-        console.log('quickwindow is ', __quickWindow)
-
-
-
-
-
     }
 
 }

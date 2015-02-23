@@ -6,7 +6,7 @@
 #include <QtSql/QSql>
 #include <QtSql/QSqlQuery>
 #include <QDebug>
-
+#include "phonenumber.h"
 
 class lookup_worker : public QObject {
     Q_OBJECT
@@ -16,7 +16,7 @@ public:
     }
 
 public slots:
-    void threadStarted(QString number, int botId);
+    void threadStarted(QMap<QString,QString> parameters, QList<int> botIds);
 
 signals:
     void finished();
@@ -32,7 +32,7 @@ public:
 
     ~lookup_thread();
 
-    void start(QString number, int botId);
+    void start(QMap<QString,QString> parameters, QList<int> botIds);
 
 private:
     lookup_worker w;
@@ -42,7 +42,7 @@ public slots:
     void worker_finish();
 
 signals:
-    void start_worker(QString number, int botId);
+    void start_worker(QMap<QString,QString> parameters, QList<int> botIds);
 
 };
 

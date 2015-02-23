@@ -21,6 +21,13 @@ Page {
         PullDownMenu {
 
             MenuItem {
+                text: "Report a Problem"
+                onClicked: {
+                    Qt.openUrlExternally("https://github.com/omnight/phonehook/issues")
+                }
+            }
+
+            MenuItem {
                 text: qsTr("Clear Cache")
                 onClicked: {
                     onClicked: _bots.clearCache(botId)
@@ -28,7 +35,7 @@ Page {
             }
 
             MenuItem {
-                text: "Test"
+                text: "Test Number"
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: botModel.name, botId: botModel.id })
                 }
@@ -37,7 +44,11 @@ Page {
             MenuItem {
                 text: "Remove"
                 onClicked: {
-                    _bots.removeBot(botModel.id)
+                    pageStack.find(function(p) {
+                        if(p.remorseDelete) {
+                            p.remorseDelete();
+                        }
+                    })
                     pageStack.pop();
                 }
             }
@@ -174,7 +185,6 @@ Page {
                     }
                 }
             }
-
 
         }
     }

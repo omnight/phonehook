@@ -10,11 +10,23 @@ handler_regexp::handler_regexp(QObject *parent) :
 /// regexStr expected format = /asdasd/
 QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, QString regexStr, process_data *inputData) {
 
-    regexStr = QRegularExpression("^\\/(.*)\\/$", QRegularExpression::MultilineOption).match(regexStr).captured(1);
-    robot_base::expand(regexStr);
-    QRegularExpression regex(regexStr, QRegularExpression::DotMatchesEverythingOption | QRegularExpression::CaseInsensitiveOption);
+    QQueue< QPair<QString,QVariant> > replaceActions;
 
-    qDebug() << "processing regex" << regexStr;
+    regexStr = QRegularExpression("^\\/(.*)\\/$", QRegularExpression::DotMatchesEverythingOption).match(regexStr).captured(1);
+
+    // regex replace depending on decode attribute
+    if(robotXml.attribute("decode", "").toLower() == "regexreplace") {
+        replaceActions.enqueue( QPair<QString,QVariant>(regexStr ,robotXml.attribute("formatstring", "")));
+    } else if(robotXml.attribute("decode", "").toLower() == "regexmultireplace") {
+        QStringList regexes = regexStr.split(QRegularExpression("[\r\n]+"));
+        QStringList replaces = robotXml.attribute("formatstring", "").split(QRegularExpression("[\r\n]+"));
+
+        for(int i=0; i < regexes.count(); i++) {
+            replaceActions.enqueue( QPair<QString,QVariant>(regexes[i], replaces[qMin(replaces.count()-1,i)]) );
+        }
+    } else {
+        replaceActions.enqueue( QPair<QString,QVariant>(regexStr, QVariant()) );
+    }
 
     QList<process_data*> results;
 
@@ -23,53 +35,73 @@ QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, Q
         return results;
     }
 
-    int lastCaptureIndex = 0;
-    int range=0;
+    qDebug() << "regex mapping" << replaceActions;
 
-    /// actually execute the regex
+    QString inputString = inputData->value;
 
-    QRegularExpressionMatchIterator i = regex.globalMatch(inputData->value);
+    foreach(auto r, replaceActions) {
 
-    /// if replace -- create empty result
-    if(robotXml.attribute("decode", "").toLower() == "regexreplace") {
-        results.append(new process_data);
-        results.at(0)->node_id = robotXml.attribute("id");
-    }
 
-    while(i.hasNext()) {
-        QRegularExpressionMatch m = i.next();
+        robot_base::expand(r.first);
+        QRegularExpression regex(r.first, QRegularExpression::DotMatchesEverythingOption | QRegularExpression::CaseInsensitiveOption);
 
-        /// regex replace (1 result)
-        if(robotXml.attribute("decode", "").toLower() == "regexreplace") {
-            results.at(0)->value.append( inputData->value.mid( lastCaptureIndex, m.capturedStart() - lastCaptureIndex ) );
-            results.at(0)->value.append( robotXml.attribute("formatstring", "") );
-            lastCaptureIndex = m.capturedEnd();
-        /// regex match (multi results)
-        } else {
+        qDebug() << "processing regex" << r.first;
 
-            if(robotXml.hasAttribute("resultrange") && robotXml.attribute("resultrange") != QString::number(range)) {
-                range ++;
-                continue;
-            }
+        int lastCaptureIndex = 0;
+        int range=0;
 
-            QStringList texts = m.capturedTexts();
-            texts.removeFirst();
+        /// actually execute the regex
 
-            process_data *pd = new process_data;
-            pd->node_id = robotXml.attribute("id");
-            pd->value_parts = texts;
-            pd->value = texts.join("");
+        QRegularExpressionMatchIterator i = regex.globalMatch(inputString);
 
-            results.append(pd);
+        /// if replace -- create empty result (on first replace)
+        if(!r.second.isNull()) {
+            if(results.count() == 0) {
+                results.append(new process_data);
+                results.at(0)->node_id = robotXml.attribute("id");
+            } else
+                results.at(0)->value = "";
         }
 
-        range ++;
-    }
+        while(i.hasNext()) {
+            QRegularExpressionMatch m = i.next();
 
-    /// finish up replace operation
-    if(robotXml.attribute("decode", "").toLower() == "regexreplace") {
-        results.at(0)->value.append( inputData->value.mid( lastCaptureIndex, inputData->value.length() - lastCaptureIndex ) );
-    }
+            /// regex replace (1 result)
+            if(!r.second.isNull()) {
+                results.at(0)->value.append( inputString.mid( lastCaptureIndex, m.capturedStart() - lastCaptureIndex ) );
+                results.at(0)->value.append( r.second.toString() );
+                lastCaptureIndex = m.capturedEnd();
+            /// regex match (multi results)
+            } else {
+
+                if(robotXml.hasAttribute("resultrange") && robotXml.attribute("resultrange") != QString::number(range)) {
+                    range ++;
+                    continue;
+                }
+
+                QStringList texts = m.capturedTexts();
+                texts.removeFirst();
+
+                process_data *pd = new process_data;
+                pd->node_id = robotXml.attribute("id");
+                pd->value_parts = texts;
+                pd->value = texts.join("");
+
+                results.append(pd);
+            }
+
+            range ++;
+        }
+
+        /// finish up replace operation
+        if(!r.second.isNull()) {
+            results.at(0)->value.append( inputString.mid( lastCaptureIndex, inputString.length() - lastCaptureIndex ) );
+            inputString = results.at(0)->value;
+        }
+
+    };
+
+
 
     return results;
 }

@@ -8,6 +8,7 @@
 #include <QUuid>
 #include <QDBusConnection>
 #include <QThread>
+#include "dbus_adapter.h"
 
 class delayedInject: public QObject {
     Q_OBJECT
@@ -20,7 +21,19 @@ public:
 private:
     bool first;
 
+    QQueue<QString> removeQueue;
+    QThread removeThread; // can take a few secs, so do it in another thread
+
+
     public slots:
+
+    void threadStart() {
+        while(removeQueue.count() > 0) {
+            QFile df(removeQueue.dequeue() );
+            df.remove();
+        }
+    }
+
     void ready() {
 
         if(first) {
@@ -34,19 +47,25 @@ private:
             QStringList filter;
             filter.append("{*}.qml");
             foreach(QString fn, QDir(dataDir).entryList( filter )) {
-                qDebug() << "remove" << fn;
-                QFile df(dataDir + "/" + fn);
-                df.remove();
+                qDebug() << "remove" << fn;               
+                removeQueue.enqueue(dataDir + "/" + fn);
             }
 
+            connect(&removeThread, SIGNAL(started()), this, SLOT(threadStart()));
+            removeThread.start();
+
             QFile::link(appDir + "/gui.qml", dataDir + "/" + rnf);
+
+            qDebug() << "injecting";
 
             QDBusMessage qm = QDBusMessage::createMethodCall("com.omnight.lipstick", "/", "com.jolla.lipstick.ConnectionSelectorIf", "inject" );
             QVariantList injectArgs;
             injectArgs.append(dataDir + "/" + rnf);
             qm.setArguments(injectArgs);
-            QDBusConnection::sessionBus().call(qm);
+            QDBusConnection::sessionBus().send(qm);
 
+            // option 2 (non working) - interface signal
+            //emit dbus_adapter::Instance()->inject(dataDir + "/" + rnf);
 
             qDebug() << "ready";
         } else {

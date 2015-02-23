@@ -10,6 +10,8 @@
 #include <QDBusMessage>
 #include <QList>
 #include "inject.h"
+#include "phonenumber.h"
+#include <QMetaType>
 
 
 int main(int argc, char *argv[])
@@ -46,6 +48,10 @@ int main(int argc, char *argv[])
 //    t.start();
 
     d.ready();
+
+
+    qRegisterMetaType<QMap<QString,QString> >("QMap<QString,QString>");
+    rule::initialize();
 
     return app.exec();
 

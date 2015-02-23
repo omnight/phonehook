@@ -78,6 +78,12 @@ bots::bots(QObject *parent) :
 //    QDBusConnection::sessionBus().callWithCallback(m, this, SLOT(cs_introspect(QDBusMessage)));
 
     m_testSources = (querySetting("source_test", "false") == "true");
+
+    // auto-start daemon if not running
+    if(!m_daemonActive) {
+        startDaemon();
+    }
+
 }
 
 bots::~bots() {
@@ -184,7 +190,7 @@ void bots::network_response(QNetworkReply *reply) {
 
     xq.setFocus(strXml);
 
-    QString name, revision, description, icon, link;
+    QString name, revision, description, icon, link, country;
     xq.setQuery("robot/meta/name/string()");
     xq.evaluateTo(&name);
     name = name.trimmed();
@@ -195,6 +201,10 @@ void bots::network_response(QNetworkReply *reply) {
     xq.setQuery("robot/meta/description/string()");
     xq.evaluateTo(&description);
     description = description.trimmed();
+
+    xq.setQuery("robot/meta/country/string()");
+    xq.evaluateTo(&country);
+    country = country.trimmed();
 
     xq.setQuery("robot/meta/icon/string()");
     xq.evaluateTo(&icon);
@@ -245,6 +255,24 @@ void bots::network_response(QNetworkReply *reply) {
         x = paramList.next();
     }
 
+
+    // evaluate and update tags
+
+    QXmlResultItems sets;
+    xq.setFocus(strXml);
+    xq.setQuery("robot/set");
+    xq.evaluateTo(&sets);
+
+    QStringList tagList;
+
+    while(!sets.next().isNull()) {
+        xq.setFocus( sets.current() );
+        QString tag;
+        xq.setQuery("./@tags/data(.)");
+        xq.evaluateTo(&tag);
+        tagList.append( tag.split(",") );
+    }
+
     sq.prepare("SELECT id FROM bot WHERE name = ?");
     sq.addBindValue( name );
     sq.exec();
@@ -286,6 +314,16 @@ void bots::network_response(QNetworkReply *reply) {
         qDebug() << "deleting old params" <<
                     sq.exec();
 
+
+        sq.finish();
+
+        sq.prepare("DELETE FROM bot_tag WHERE bot_id = ?");
+        sq.addBindValue(existing_id);
+
+        qDebug() << "deleting old tags" <<
+                    sq.exec();
+
+
         sq.finish();
 
     }
@@ -293,12 +331,13 @@ void bots::network_response(QNetworkReply *reply) {
     if(existing_id) {
         qDebug() << "update";
 
-        sq.prepare("UPDATE BOT SET revision = ?, xml = ?, link = ?, icon = ?, description = ? WHERE id = ?");
+        sq.prepare("UPDATE BOT SET revision = ?, xml = ?, link = ?, icon = ?, description = ?, country = ? WHERE id = ?");
         sq.addBindValue( revision );
         sq.addBindValue( strXml );
         sq.addBindValue( link );
         sq.addBindValue( icon );
         sq.addBindValue( description );
+        sq.addBindValue( country );
         sq.addBindValue( existing_id );
 
 
@@ -307,13 +346,15 @@ void bots::network_response(QNetworkReply *reply) {
     } else {
         qDebug() << "insert";
 
-        sq.prepare("INSERT INTO BOT (id, name, revision, enabled, xml, link, icon, description) VALUES(NULL, ?, ?, 1, ?, ?, ?, ?);");
+        sq.prepare("INSERT INTO BOT (id, name, revision, enabled, xml, link, icon, description, country) VALUES(NULL, ?, ?, 1, ?, ?, ?, ?, ?);");
         sq.addBindValue( name );
         sq.addBindValue( revision );
         sq.addBindValue( strXml );
         sq.addBindValue( link );
         sq.addBindValue( icon );
         sq.addBindValue( description );
+        sq.addBindValue( country );
+
 
         qDebug() << "bot insert " << sq.exec();
 
@@ -326,6 +367,17 @@ void bots::network_response(QNetworkReply *reply) {
     }
 
 
+    // insert tags
+    foreach(QString t, tagList) {
+        t = t.trimmed();
+        qDebug() << "inserting tag" << t;
+        sq.prepare("INSERT INTO bot_tag (bot_id, tag) VALUES(?,?);");
+        sq.addBindValue(existing_id);
+        sq.addBindValue(t);
+        sq.exec();
+    }
+
+    // insert parameters
     foreach(QVariantMap ip, insertBotParams) {
 
         qDebug() << "inserting param" << ip;
@@ -378,6 +430,12 @@ QVariantMap bots::getBotDetails(int botId) {
         return recordToVariantMap(sq.record());
     }
 
+}
+
+void bots::setBotSearchListTag(QString tag) {
+    QSqlQuery q("SELECT bot.id, bot.name FROM bot JOIN bot_tag ON bot.id = bot_tag.bot_id WHERE bot_tag.tag='" + tag + "';");
+    m_botSearchList.setQuery(q);
+    emit botSearchList_changed(&m_botSearchList);
 }
 
 void bots::setActiveBot(int botId) {
@@ -531,6 +589,11 @@ bool bots::removeBot(int botId) {
 
     // delete cache
     clearCache(botId);
+
+    // delete tags
+    qs.prepare("DELETE FROM bot_tag WHERE bot_id = ?");
+    qs.addBindValue(botId);
+    qs.exec();
 
     m_botList.refresh();
     emit botList_changed(&m_botList);

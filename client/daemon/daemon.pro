@@ -2,7 +2,7 @@
 TARGET = phonehook-daemon
 
 QT += dbus xml sql
-CONFIG += sailfishapp
+CONFIG += sailfishapp c++11
 SOURCES += src/ph-daemon.cpp \
     src/robot_base.cpp \
     src/process_data.cpp \
@@ -14,7 +14,7 @@ SOURCES += src/ph-daemon.cpp \
     src/dbus_adapter.cpp \
     src/dbus.cpp \
     src/db.cpp \
-    src/normalize_phonenumber.cpp \
+    src/phonenumber.cpp \
     src/quicksand.cpp \
     src/compression.cpp
 
@@ -41,7 +41,7 @@ HEADERS += \
     src/dbus.h \
     src/db.h \
     src/inject.h \
-    src/normalize_phonenumber.h \
+    src/phonenumber.h \
     src/quicksand.h \
     src/compression.h
 

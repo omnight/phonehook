@@ -31,7 +31,6 @@ bool robot_base::load(QString filename) {
     return parseResult;
 }
 
-
 void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElement &robotNode, QDomElement outputNode) {
 
     qDebug() << "processing node" << robotNode.attribute("name") << "output to" << outputNode.tagName();
@@ -40,9 +39,9 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
     /// DETERMINE WHAT NODE TO PULL INPUT FROM
 
     process_data *inputData = NULL;
-    if(robotNode.attribute("source", "") != "") {
+    if(robotNode.attribute("input", "") != "") {
 
-        QString sourceNodeId = robotNode.attribute("source", "");
+        QString sourceNodeId = robotNode.attribute("input", "");
         qDebug() << "lookup data for node " << sourceNodeId;
 
         foreach(process_data *p, inputDataTree) {
@@ -68,7 +67,7 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
         if(robotNode.hasAttribute("url")) eval = robotNode.attribute("url");
 
         if(eval.startsWith("/") && eval.endsWith("/")) {
-            // process as regex
+            // process as regex                      
             output.append(handleRegex.processRegex(robotNode, eval, inputData));
         } else {
             // process as literal
@@ -139,16 +138,46 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
     }
 }
 
-QDomDocument robot_base::run(QMap<QString, QString> parameters) {
+QDomDocument robot_base::run(QMap<QString, QString> parameters, QString tagWanted) {
     robot_base::parameters = parameters;
     QStack<process_data*> inputData;
 
-    QDomElement robot_root =
-    robotXml.documentElement().elementsByTagName("set").at(0).toElement();
+    QDomNodeList sets =
+    robotXml.documentElement().childNodes();
+
+    QDomElement robot_root;
+
+    qDebug() << "found" << sets.count() << "sets in robot. looking for" << tagWanted;
+
+    for(int i=0; i < sets.count(); i++) {
+
+        if(!sets.at(i).isElement() ||
+            sets.at(i).toElement().tagName() != "set") continue;
+
+        QStringList tags;
+        tags.append(
+            sets.at(i).toElement().attribute("tags").split(",", QString::SkipEmptyParts)
+        );
+
+        qDebug() << "has tags" << tags;
+
+        if(tags.count() == 0) tags.append("lookup");
+
+        if(tags.contains(tagWanted)) {
+           robot_root = sets.at(i).toElement();
+           break;
+        }
+    }
+
+
 
     QDomDocument output;
+
     QDomElement root = output.createElement("root");
     output.appendChild(root);
+
+    if(robot_root.childNodes().count() == 0)
+        return output;
 
     processNode(inputData, robot_root, root);
 

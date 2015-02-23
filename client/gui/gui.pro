@@ -26,7 +26,6 @@ SOURCES += \
 OTHER_FILES += qml/phonehook.qml \
     qml/cover/CoverPage.qml \
     qml/pages/FirstPage.qml \
-    qml/pages/SecondPage.qml \
     rpm/phonehook.changes.in \
     rpm/phonehook.spec \
     rpm/phonehook.yaml \
@@ -45,7 +44,9 @@ OTHER_FILES += qml/phonehook.qml \
     qml/images/new-48.png \
     qml/images/approval-48.png \
     qml/setting/SettingPassword.qml \
-    qml/popup/gui2.qml
+    qml/popup/gui2.qml \
+    qml/pages/PageSearchStart.qml \
+    qml/pages/PageSearchResults.qml
 
 # to disable building translations every time, comment out the
 # following CONFIG line

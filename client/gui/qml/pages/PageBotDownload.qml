@@ -16,13 +16,25 @@ Dialog {
         acceptText: "Install"
     }
 
+    function niceNameCapability(s) {
+        switch(s) {
+            case 'lookup': return 'Reverse caller lookup';
+            case 'person_search': return 'Search for people';
+            case 'business_search': return 'Search for businesses';
+        }
+        return s;   // non-nice name
+    }
+
     SilicaFlickable {
        anchors.fill: parent
        anchors.topMargin: header.height
        anchors.margins: Theme.paddingLarge
 
+       contentHeight: concol.height
+
        Column {
-            anchors.fill: parent
+           id: concol
+           width: parent.width
 
             Image {
                 width: Screen.width / 2
@@ -98,6 +110,29 @@ Dialog {
             }
 
             Label {
+                text: "Capabilities"
+                visible: botData.link != ""
+            }
+
+            ListView {
+                height: contentHeight
+                interactive: false
+                width: parent.width
+                model: botData.capabilities.split('|')
+                delegate: Text {
+                    font.pixelSize: Theme.fontSizeSmall
+                    color: Theme.secondaryColor
+                    text: '  • ' + niceNameCapability(modelData)
+                    width: parent.width
+                }
+            }
+
+            Item {
+                height: 20
+                width: parent.width
+            }
+
+            Label {
                 text: "Description"
             }
 
@@ -111,9 +146,6 @@ Dialog {
 
 
         }
-
-
-
 
     }
 

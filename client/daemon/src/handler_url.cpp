@@ -54,7 +54,14 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
     QString nextUrl = pd->value;
     robot_base::expand(nextUrl);
 
+    // find earlier URL to use as relative URL
     QUrl urlBase;
+    process_data *pp = inputData;
+    while(pp != NULL && pp->url.isEmpty())
+        pp = (process_data*)pp->parent();
+
+    if(pp) urlBase = pp->url;
+
     QFile cacheFile;
 
     QString method = robotXml.attribute("postrequest", "false") == "true" ? "post" : "get";

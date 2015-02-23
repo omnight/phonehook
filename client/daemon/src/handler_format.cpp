@@ -19,6 +19,25 @@ bool ishexnstring(const QString& string) {
 }
 
 //// http://qjson.sourceforge.net/docs/json__scanner_8cpp_source.html
+/* This file is part of QJson
+    2  *
+    3  * Copyright (C) 2008 Flavio Castelli <flavio.castelli@gmail.com>
+    4  *
+    5  * This library is free software; you can redistribute it and/or
+    6  * modify it under the terms of the GNU Lesser General Public
+    7  * License version 2.1, as published by the Free Software Foundation.
+    8  *
+    9  *
+   10  * This library is distributed in the hope that it will be useful,
+   11  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   12  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   13  * Lesser General Public License for more details.
+   14  *
+   15  * You should have received a copy of the GNU Lesser General Public License
+   16  * along with this library; see the file COPYING.LIB.  If not, write to
+   17  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   18  * Boston, MA 02110-1301, USA.
+   19  */
 static QString unescape_json( const QByteArray& ba, bool* ok ) {
 
   *ok = false;
@@ -141,7 +160,7 @@ void handler_format::format(QString method, QString params, process_data *p) {
 
     if(method.toLower() == "xml") {
         char buf[p->value.size() + 10];
-        decode_html_entities_utf8(buf, p->value.toLocal8Bit().data());
+        decode_html_entities_utf8(buf, p->value.toUtf8().data());
         p->value = buf;
     } else if(method.toLower() == "urlencode") {
         p->value = QUrl::toPercentEncoding( p->value );
@@ -151,18 +170,20 @@ void handler_format::format(QString method, QString params, process_data *p) {
         bool ok = false;
         QString unJson = unescape_json(p->value.toUtf8(), &ok);
         if(ok) p->value = unJson;
-    } else if(method.toLower() == "exe" && params.toLower() == "facebook-quicksand.exe") {
+    } else if(method.toLower() == "exe" && params.toLower().endsWith("quicksand.exe")) {
         p->value = qss_solve(p->value);
-    } else if(method.toLower() == "formatstring") {
-
-        // formatted layout (.NET FormatString)
+    } else if(method.toLower() == "formatstring") {     // .NET FormatString syntax
         QString formattedValue = params;
         QMap<QString,QString> map;
         for(int i=0; i < p->value_parts.length(); i++)
             map.insert( QString::number(i) , p->value_parts[i]);
         robot_base::expand_advanced(formattedValue, "\\{(\\d+)\\}", map);
         p->value = formattedValue;
-
+    } else if(method.toLower() == "relativeurl") {
+        if(!p->url.isEmpty())
+            p->value = QUrl(p->url).resolved(p->value).toString();
+    } else if(method.toLower() == "regexmultireplace" || method.toLower() == "regexreplace") {
+        // ignore here, handled by handler_regexp.cpp
     } else {
         qDebug() << "UNIMPLEMENTED FORMATTER: " << method << "(" << params << ")";
     }

@@ -35,6 +35,7 @@ Page {
         XmlRole { name: "description"; query: "meta/description/string()" }
         XmlRole { name: "icon"; query: "meta/icon/string()" }
         XmlRole { name: "link"; query: "meta/link/string()" }
+        XmlRole { name: "capabilities"; query: "string-join(meta/capabilities/capability/string(),'|')" }
         XmlRole { name: "file"; query: "file/string()" }
         XmlRole { name: "minversion"; query: "meta/minversion/string()" }
         XmlRole { name: "sort_key"; query: "meta/sort_key/string()" }
@@ -221,8 +222,8 @@ Page {
                     }
 
                     Connections {
-                        target: _bots
-                        onBotList_changed: {
+                        target: _bots.botList
+                        onCount_changed: {
                             var bstatus = _bots.botStatusCompare(model.name, model.revision)
                             checkedUpdated.visible = (bstatus == 2)
                             checkedInstalled.visible = (bstatus >= 1)

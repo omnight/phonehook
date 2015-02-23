@@ -42,6 +42,26 @@ Page {
             }
         }
 
+        Item {
+            height: Theme.paddingLarge
+            width: parent.width
+        }
+
+        Label {
+            text: "Advanced"
+            font.pixelSize: Theme.fontSizeLarge
+            width: parent.width
+        }
+
+        TextSwitch {
+            width: parent.width
+            text: "Force Compability Mode"
+            checked: _bots.querySetting("compability_mode", "false") == "true"
+            onCheckedChanged: {
+                _bots.setSetting("compability_mode", checked)
+            }
+        }
+
         TextSwitch {
             width: parent.width
             text: "Source Test Mode"
@@ -50,6 +70,7 @@ Page {
                 _bots.setSetting("source_test", checked)
             }
         }
+
 
 
     }

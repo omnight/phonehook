@@ -33,7 +33,18 @@ import Sailfish.Silica 1.0
 import org.nemomobile.dbus 1.0
 
 Page {
-    id: page
+    id: topPage
+
+    property variant remorseItem
+
+    function remorseDelete() {
+        remorseDeleteBot.execute(remorseItem,
+                                 "Deleting " + remorseItem.name,
+                                 function() {
+                                     console.log('do delete', remorseItem.id);
+                                     _bots.removeBot(remorseItem.id);
+                                 }, 5000);
+    }
 
     // To enable PullDownMenu, place our content in a SilicaFlickable
     SilicaFlickable {
@@ -50,6 +61,7 @@ Page {
 
         // PullDownMenu and PushUpMenu must be declared in SilicaFlickable, SilicaListView or SilicaGridView
         PullDownMenu {
+            enabled: _bots.daemonActive
 
             MenuItem {
                 text: qsTr("Settings")
@@ -64,6 +76,11 @@ Page {
                 onClicked: pageStack.push(Qt.resolvedUrl("PageServerBotList.qml"))
             }
 
+            MenuItem {
+                text: "Search"
+                onClicked: pageStack.push(Qt.resolvedUrl("PageSearchStart.qml"))
+            }
+
         }
 
         // Tell SilicaFlickable the height of its content.
@@ -73,7 +90,7 @@ Page {
         // of the page, followed by our content.
         Column {
             id: column
-            width: page.width
+            width: topPage.width
             spacing: Theme.paddingLarge
             anchors.margins: Theme.paddingLarge
             anchors.left: parent.left
@@ -106,10 +123,11 @@ Page {
 
             Text {
                 width: parent.width
-                color: "#FFFFFF"
+                color: "#FFFF88"
                 wrapMode: Text.Wrap
+                font.pixelSize: Theme.fontSizeSmall
                 visible: !_bots.lipstickPatchInstalled
-                text: "Warning: Homescreen patch is not applied. Please re-install the application."
+                text: "Homescreen patch not installed. Using compability mode."
             }
 
             Text {
@@ -160,44 +178,54 @@ Page {
                 visible: botView.model.count == 0
             }
 
-            ListView {
+            RemorseItem {
+                anchors.leftMargin: -Theme.paddingLarge
+                anchors.rightMargin: -Theme.paddingLarge
+                id: remorseDeleteBot
+            }
+
+            SilicaListView {
                 id: botView
                 model: _bots.botList
                 width: parent.width
                 height: contentHeight || 0
                 //anchors.fill: parent
                 interactive: false
+                enabled: _bots.daemonActive
+
+                //property variant currentItem
 
                 delegate:
                     BackgroundItem {
                         id: delegate
+                        property int id
+                        property string name
 
                         Label {
+                            anchors.verticalCenter: parent.verticalCenter
                             text: model.name
                             color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
                         }
 
                         Label {
+                            anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
-                            anchors.top: parent.top
                             text: 'Rev. ' + model.revision
                             font.pixelSize: Theme.fontSizeSmall
                             color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
                         }
 
                         onClicked: {
+                            remorseItem = delegate;
+                            delegate.id = model.id
+                            delegate.name = model.name
                             pageStack.push(Qt.resolvedUrl("PageBotDetails.qml"), { botId: model.id })
                             console.log("clicked on bot")
                         }
                     }
-
+                }
             }
-
         }
-    }
-
-
-
 }
 
 

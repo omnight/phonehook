@@ -22,7 +22,7 @@ public:
     bool load(QString filename);
     bool parse(QString xml);
 
-    QDomDocument run(QMap<QString, QString> parameters);
+    QDomDocument run(QMap<QString, QString> parameters, QString tagWanted);
 
     static void expand(QString &expr);
     static void expand_advanced(QString &expr, QString regex, QMap<QString,QString> replacement);
