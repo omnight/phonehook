@@ -327,7 +327,7 @@ Page {
                             height: 86
                             width: 86
                             id: mapContainer
-                            visible: model.number != ''
+                            visible: model.address != ''
                             color: "#00000000"
 
                             Image {

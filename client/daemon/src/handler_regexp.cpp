@@ -69,7 +69,15 @@ QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, Q
             /// regex replace (1 result)
             if(!r.second.isNull()) {
                 results.at(0)->value.append( inputString.mid( lastCaptureIndex, m.capturedStart() - lastCaptureIndex ) );
-                results.at(0)->value.append( r.second.toString() );
+
+                QMap<QString,QString> replaceMap;
+                for(int j=0; j < m.capturedTexts().length(); j++) {
+                    replaceMap.insert(QString::number(j+1), m.capturedTexts().at(j));
+                }
+
+                QString res = r.second.toString();
+                robot_base::expand_advanced(res, "\\$(\\d+)", replaceMap );
+                results.at(0)->value.append( res );
                 lastCaptureIndex = m.capturedEnd();
             /// regex match (multi results)
             } else {
@@ -81,6 +89,9 @@ QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, Q
 
                 QStringList texts = m.capturedTexts();
                 texts.removeFirst();
+
+                if(texts.length() > 1)
+                    qDebug() << "merge texts" << texts;
 
                 process_data *pd = new process_data;
                 pd->node_id = robotXml.attribute("id");

@@ -13,7 +13,7 @@ Name:       phonehook
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    PhoneHook
-Version:    0.3.0
+Version:    0.3.1
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -50,7 +50,7 @@ fi
 
 %preun
 # >> preun
-patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -R -N -p4 < /usr/share/phonehook/phonehook-lipstick-v3.patch || :;
+patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -R -N -p4 < /usr/share/phonehook/phonehook-lipstick-v4.patch || :;
 # << preun
 
 %postun
@@ -67,7 +67,7 @@ systemctl-user daemon-reload || :
 %posttrans
 # >> posttrans
 killall phonehook-daemon
-patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -N -p4  < /usr/share/phonehook/phonehook-lipstick-v3.patch || :;
+patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -N -p4  < /usr/share/phonehook/phonehook-lipstick-v4.patch || :;
 ln -s -f /usr/lib/systemd/user/phonehook-daemon.service /usr/lib/systemd/user/post-user-session.target.wants
 systemctl-user enable phonehook-daemon.service || :
 systemctl-user daemon-reload || :

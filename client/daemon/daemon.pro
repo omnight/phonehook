@@ -48,3 +48,5 @@ HEADERS += \
 RESOURCES += \
     ph.qrc
 
+OTHER_FILES +=
+

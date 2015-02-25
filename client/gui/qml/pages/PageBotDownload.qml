@@ -80,6 +80,7 @@ Dialog {
             Item {
                 height: 20
                 width: parent.width
+                visible: botData.link != ""
             }
 
             Label {
@@ -104,14 +105,14 @@ Dialog {
             }
 
             Item {
-                visible: botData.link != ""
+                visible: botData.capabilities != ""
                 height: 20
                 width: parent.width
             }
 
             Label {
                 text: "Capabilities"
-                visible: botData.link != ""
+                visible: botData.capabilities != ""
             }
 
             ListView {

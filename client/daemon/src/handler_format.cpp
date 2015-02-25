@@ -155,6 +155,53 @@ QString qss_solve(QString parameters) {
     return "";
 }
 
+QString handler_format::percentUrl(QString url, QString encoding, PercentAction action) {
+
+    QTextEncoder *enc = QTextCodec::codecForName(encoding.toLocal8Bit())->makeEncoder(QTextCodec::IgnoreHeader);
+    QTextDecoder *dec = QTextCodec::codecForName(encoding.toLocal8Bit())->makeDecoder(QTextCodec::IgnoreHeader);
+
+    QString resultStr;
+
+    QRegularExpression encodeMatch("[^a-zA-Z0-9-._~]");
+    QRegularExpression decodeMatch("(?:%[a-fA-F0-9]{2})+");
+
+    QRegularExpressionMatchIterator i;
+
+    if(action == PercentEncode)  i = encodeMatch.globalMatch(url);
+    if(action == PercentDecode)  i = decodeMatch.globalMatch(url);
+
+    int pos = 0;
+    while(i.hasNext()) {
+        QRegularExpressionMatch m = i.next();
+
+        resultStr += url.mid(pos, m.capturedStart()-pos);
+
+        if(action == PercentEncode) {
+            QByteArray bytes = enc->fromUnicode( m.captured(0));
+            foreach(uchar c, bytes) {
+                resultStr += "%" + QString::number(c ,16);
+            }
+        }
+
+        if(action == PercentDecode) {
+            QByteArray bytes;
+            for(int i=0; i < m.captured(0).length(); i += 3) {
+                bytes.append(  m.captured().mid(i+1, 2).toInt(0, 16) );
+            }
+            resultStr += dec->toUnicode(bytes);
+        }
+
+        pos = m.capturedEnd();
+    }
+
+    resultStr += url.mid(pos, url.length()-pos);
+
+    delete enc;
+    delete dec;
+
+    return resultStr;
+}
+
 
 void handler_format::format(QString method, QString params, process_data *p) {
 
@@ -163,9 +210,12 @@ void handler_format::format(QString method, QString params, process_data *p) {
         decode_html_entities_utf8(buf, p->value.toUtf8().data());
         p->value = buf;
     } else if(method.toLower() == "urlencode") {
-        p->value = QUrl::toPercentEncoding( p->value );
+        // QUrl::toPercentEncoding only does UTF-8
+        if(params == "") params = "utf-8";
+        p->value = percentUrl(p->value, params, PercentEncode );
     } else if(method.toLower() == "urldecode") {
-        p->value = QUrl::fromPercentEncoding( p->value.toUtf8() );
+        if(params == "") params = "utf-8";
+        p->value = percentUrl(p->value, params, PercentDecode );
     } else if(method.toLower() == "json") {
         bool ok = false;
         QString unJson = unescape_json(p->value.toUtf8(), &ok);
@@ -180,8 +230,15 @@ void handler_format::format(QString method, QString params, process_data *p) {
         robot_base::expand_advanced(formattedValue, "\\{(\\d+)\\}", map);
         p->value = formattedValue;
     } else if(method.toLower() == "relativeurl") {
-        if(!p->url.isEmpty())
-            p->value = QUrl(p->url).resolved(p->value).toString();
+
+        process_data *up = p;
+        while(up->url.isEmpty() && up->parent() != NULL) {
+            up = (process_data*)up->parent();
+        }
+
+        //find base url...~~
+        if(!up->url.isEmpty())
+            p->value = QUrl(up->url).resolved(p->value).toString();
     } else if(method.toLower() == "regexmultireplace" || method.toLower() == "regexreplace") {
         // ignore here, handled by handler_regexp.cpp
     } else {

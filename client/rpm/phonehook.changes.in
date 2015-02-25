@@ -9,6 +9,10 @@
 # - Summary of changes
 
 
+* 2015-02-25  <omnight@gmail.com> 0.3.1-1
+- Updated for changes in Sailfish OS 1.1.2
+- Added url encoding/decoding for non utf-8
+
 * 2015-02-18 <omnight@gmail.com> 0.3.0-1
 - Added phonebook functionality (search for people & businesses)
 - Added cover action (Search)

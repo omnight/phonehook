@@ -12,6 +12,13 @@ public:
 
     void format(QString method, QString params, process_data *p);
 
+    enum PercentAction {
+        PercentEncode,
+        PercentDecode
+    };
+
+    QString percentUrl(QString url, QString encoding, PercentAction action);
+
 signals:
 
 public slots:

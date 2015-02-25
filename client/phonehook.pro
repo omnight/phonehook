@@ -5,8 +5,7 @@ SUBDIRS = \
     $${NULL}
 
 OTHER_FILES = \
-    patch/phonehook-lipstick.patch \
-    patch/phonehook-lipstick-v3.patch \
+    patch/phonehook-lipstick-v4.patch \
     rpm/phonehook.spec \
     rpm/phonehook.changes.in \
     $${NULL}
