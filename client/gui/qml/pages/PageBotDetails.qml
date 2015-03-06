@@ -10,7 +10,7 @@ Page {
     SilicaFlickable {
         anchors.fill: parent
 
-        contentHeight: contentColumn.height
+        contentHeight: contentColumn.height + header.height + 40
 
         PageHeader {
             title: botModel.name

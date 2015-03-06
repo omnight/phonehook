@@ -97,6 +97,10 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
         if(robotNode.hasAttribute("decode"))
             handleFormat.format(robotNode.attribute("decode"), robotNode.attribute("formatstring"), p);
 
+        /// expand expressions
+        if(p)
+            expand(p->value);
+
         /// download stuff from net
         if(robotNode.hasAttribute("url")) {
             handleUrl.loadUrl(robotNode, inputData, p);
@@ -221,7 +225,7 @@ void robot_base::expand_advanced(QString &expr, QString regex, QMap<QString, QSt
         QString r;
         if(replacements.contains(m.captured(1))) {
             r = replacements[m.captured(1)];
-            qDebug() << "replace value " << replacements[m.captured(1)];
+            qDebug() << "replace value " << replacements[m.captured(1)].left(200);
         }
 
         newExpr.append( expr.mid( lastCaptureIndex, m.capturedStart() - lastCaptureIndex ) );

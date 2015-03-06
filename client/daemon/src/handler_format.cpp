@@ -3,6 +3,7 @@
 #include "entities.h"
 #include "quicksand.h"
 #include "robot_base.h"
+#include <QJSEngine>
 
 handler_format::handler_format(QObject *parent) :
     QObject(parent)
@@ -209,6 +210,10 @@ void handler_format::format(QString method, QString params, process_data *p) {
         char buf[p->value.size() + 10];
         decode_html_entities_utf8(buf, p->value.toUtf8().data());
         p->value = buf;
+    } else if(method.toLower() == "lowercase") {
+            p->value = p->value.toLower();
+    } else if(method.toLower() == "uppercase") {
+            p->value = p->value.toUpper();
     } else if(method.toLower() == "urlencode") {
         // QUrl::toPercentEncoding only does UTF-8
         if(params == "") params = "utf-8";
@@ -220,8 +225,10 @@ void handler_format::format(QString method, QString params, process_data *p) {
         bool ok = false;
         QString unJson = unescape_json(p->value.toUtf8(), &ok);
         if(ok) p->value = unJson;
-    } else if(method.toLower() == "exe" && params.toLower().endsWith("quicksand.exe")) {
-        p->value = qss_solve(p->value);
+    } else if(method.toLower() == "base64") {       // assume utf-8 encoding?
+        p->value = QString::fromUtf8( QByteArray::fromBase64(p->value.toLocal8Bit()) );
+    } else if(method.toLower() == "exe") {
+        p->value = special_format(method.toLower(), p->value);
     } else if(method.toLower() == "formatstring") {     // .NET FormatString syntax
         QString formattedValue = params;
         QMap<QString,QString> map;
@@ -241,11 +248,45 @@ void handler_format::format(QString method, QString params, process_data *p) {
             p->value = QUrl(up->url).resolved(p->value).toString();
     } else if(method.toLower() == "regexmultireplace" || method.toLower() == "regexreplace") {
         // ignore here, handled by handler_regexp.cpp
+    } else if(method.toLower() == "script") {
+        p->value = script_handler(params, p);
     } else {
         qDebug() << "UNIMPLEMENTED FORMATTER: " << method << "(" << params << ")";
     }
 
 }
 
+QString handler_format::script_handler(QString script, process_data *p) {
 
+    QJSEngine se;
+    QJSValue f = se.evaluate("(" + script + ")");
+
+    if(f.isCallable()) {
+        QJSValueList args;
+        args << p->value;
+        QJSValue r = f.call(args);
+        return r.toString();
+    }
+
+    return p->value;
+
+}
+
+QString handler_format::special_format(QString function, QString param) {
+
+    if(function.endsWith("quicksand.exe"))
+      return qss_solve(param);
+
+    if(function.endsWith("lgnjs.exe")) {        // timestamp (seconds since 1970 UTC)
+        return QString::number( QDateTime::currentMSecsSinceEpoch()/1000 );
+    }
+
+    if(function.endsWith("timezone.exe")) {     // negative utc offset (minutes)
+        QTimeZone z(QTimeZone::systemTimeZoneId());
+        return QString::number( -z.offsetFromUtc(QDateTime::currentDateTime()) / 60 );
+    }
+
+    qDebug() << "unimplemented special formatter:" << function;
+    return param;
+}
 

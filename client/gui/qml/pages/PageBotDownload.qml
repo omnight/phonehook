@@ -26,9 +26,10 @@ Dialog {
     }
 
     SilicaFlickable {
-       anchors.fill: parent
-       anchors.topMargin: header.height
-       anchors.margins: Theme.paddingLarge
+        anchors.fill: parent
+        anchors.topMargin: header.height
+        anchors.margins: Theme.paddingLarge
+        clip: true
 
        contentHeight: concol.height
 

@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* 2015-03-03 <omnight@gmail.com> 0.3.2-1
+- Detect & fix broken installation
+- Fixed scrollability on some pages
+- Scraper upgrades
 
 * 2015-02-25  <omnight@gmail.com> 0.3.1-1
 - Updated for changes in Sailfish OS 1.1.2

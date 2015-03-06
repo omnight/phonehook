@@ -17,6 +17,9 @@ public:
         PercentDecode
     };
 
+    QString special_format(QString function, QString param);
+    QString script_handler(QString script, process_data *p);
+
     QString percentUrl(QString url, QString encoding, PercentAction action);
 
 signals:

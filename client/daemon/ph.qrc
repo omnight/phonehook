@@ -6,5 +6,6 @@
         <file>db_script/004.sql</file>
         <file>db_script/005.sql</file>
         <file>db_script/006.sql</file>
+        <file>db_script/007.sql</file>
     </qresource>
 </RCC>
