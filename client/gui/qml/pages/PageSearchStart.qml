@@ -28,7 +28,9 @@ Dialog {
         Column {
             id: contentColumn
             anchors.margins: Theme.paddingLarge
-            width: parent.width
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
 
 
             TextField {

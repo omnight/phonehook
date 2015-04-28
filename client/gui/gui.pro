@@ -15,9 +15,6 @@ TARGET = phonehook
 CONFIG += sailfishapp
 QT += dbus xml sql xmlpatterns
 
-
-LIBS += -L$${PWD}/lib -lnemonotifications-qt5
-
 SOURCES += \
     src/phonehook.cpp \
     src/bots.cpp \
@@ -54,8 +51,6 @@ CONFIG += sailfishapp_i18n
 TRANSLATIONS += translations/phonehook-de.ts
 
 HEADERS += \
-    src/notification.h \
-    src/notification.h \
     src/bots.h \
     src/countries.h
 

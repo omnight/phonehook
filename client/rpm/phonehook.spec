@@ -12,8 +12,8 @@ Name:       phonehook
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
-Summary:    PhoneHook
-Version:    0.3.2
+Summary:    Phonehook
+Version:    0.3.3
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -39,16 +39,9 @@ See who's calling!
 # >> setup
 # << setup
 
-%pretrans
-# >> pretrans
-# detect broken installation and force removal
-if rpm -qa | grep phonehook-0\.[12]\. && ! grep inject /usr/share/lipstick-jolla-home-qt5/compositor.qml; then
-    mv -f /var/lib/rpm/.rpm.lock /var/lib/rpm/.rpm1.lock;
-    rpm --nopreun -e phonehook;
-    mv -f /var/lib/rpm/.rpm1.lock /var/lib/rpm/.rpm.lock;
-fi
-# << pretrans
-
+%build
+%qtc_qmake5
+%qtc_make %{?_smp_mflags}
 
 %pre
 # >> pre
@@ -82,13 +75,6 @@ ln -s -f /usr/lib/systemd/user/phonehook-daemon.service /usr/lib/systemd/user/po
 systemctl-user enable phonehook-daemon.service || :
 systemctl-user daemon-reload || :
 # << posttrans
-
-%qtc_qmake5 
-
-%qtc_make %{?_smp_mflags}
-
-# >> build post
-# << build post
 
 %install
 rm -rf %{buildroot}

@@ -34,7 +34,6 @@
 
 #include <QtDBus>
 #include <sailfishapp.h>
-#include "notification.h"
 #include "dbus.h"
 #include "bots.h"
 

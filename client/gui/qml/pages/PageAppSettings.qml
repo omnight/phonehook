@@ -15,6 +15,10 @@ Page {
         anchors.margins: Theme.paddingLarge
         anchors.topMargin: header.height
 
+        Label {
+            text: "Basic"
+        }
+
         TextSwitch {
             width: parent.width
             text: "Show only for unknown contacts"
@@ -39,6 +43,21 @@ Page {
             checked: _bots.querySetting("enable_roaming", "false") == "true"
             onCheckedChanged: {
                 _bots.setSetting("enable_roaming", checked)
+            }
+        }
+
+        Label {
+            text: "Popup Timeout"
+        }
+
+        Slider {
+            width: parent.width
+            value: _bots.querySetting("popup_timeout", "0")
+            valueText: value == 0 ? "Disabled" : value + " s"
+            stepSize: 10
+            maximumValue: 120
+            onValueChanged: {
+                _bots.setSetting("popup_timeout", value)
             }
         }
 

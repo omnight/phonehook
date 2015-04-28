@@ -185,6 +185,22 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
     sq.finish();
 //    db.close();
 
+
+    // check if popup should timeout
+    QSqlQuery ptq("SELECT value FROM setting WHERE key = 'popup_timeout'");
+    ptq.exec();
+
+    int popupTimeout = 0;
+    while(ptq.next()) {
+        popupTimeout = ptq.value("value").toInt() * 1000;
+    }
+
+    ptq.finish();
+
+    if(popupTimeout != 0)
+        dbus_adapter::Instance()->messageToPopup("hideIn", QString::number(popupTimeout));
+
+
     if(tagWanted == "lookup")
         dbus_adapter::Instance()->set_lookupState("finished");
 

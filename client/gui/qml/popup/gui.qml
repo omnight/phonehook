@@ -126,7 +126,23 @@ Rectangle {
 
     }
 
+
+    Timer {
+        running: false
+        id: hidePopupTimer
+        onTriggered: {
+            active = false;
+        }
+    }
+
+    function hideIn(s) {
+        hidePopupTimer.interval = s;
+        hidePopupTimer.restart();
+    }
+
     function result(data) {
+        if(hidePopupTimer.running) hidePopupTimer.restart();
+
         active = true;
         var arr = JSON.parse(data);
         for(var i=0; i < arr.length; i++)
@@ -369,6 +385,7 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
+                        hidePopupTimer.stop();
                         active = false;
                     }
                 }
