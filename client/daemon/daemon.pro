@@ -1,7 +1,7 @@
 # The name of your application
 TARGET = phonehook-daemon
 
-QT += dbus xml sql
+QT += dbus xml sql gui-private
 CONFIG += sailfishapp c++11
 SOURCES += src/ph-daemon.cpp \
     src/robot_base.cpp \
@@ -16,7 +16,10 @@ SOURCES += src/ph-daemon.cpp \
     src/db.cpp \
     src/phonenumber.cpp \
     src/quicksand.cpp \
-    src/compression.cpp
+    src/compression.cpp \
+    src/overlay.cpp \
+    src/blocking.cpp \
+    src/setting.cpp
 
 service.files = phonehook-daemon.service
 service.path = /usr/lib/systemd/user
@@ -40,13 +43,15 @@ HEADERS += \
     src/dbus_adapter.h \
     src/dbus.h \
     src/db.h \
-    src/inject.h \
     src/phonenumber.h \
     src/quicksand.h \
-    src/compression.h
+    src/compression.h \
+    src/overlay.h \
+    src/blocking.h \
+    src/setting.h
 
 RESOURCES += \
     ph.qrc
 
-OTHER_FILES +=
-
+OTHER_FILES += \
+    qml/popup/gui.qml

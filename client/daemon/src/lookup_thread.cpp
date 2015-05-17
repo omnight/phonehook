@@ -4,6 +4,7 @@
 #include <QProcess>
 #include "robot_base.h"
 #include "dbus.h"
+#include "setting.h"
 
 lookup_thread::lookup_thread(QObject *parent) :
     QObject(parent) {
@@ -187,15 +188,7 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
 
 
     // check if popup should timeout
-    QSqlQuery ptq("SELECT value FROM setting WHERE key = 'popup_timeout'");
-    ptq.exec();
-
-    int popupTimeout = 0;
-    while(ptq.next()) {
-        popupTimeout = ptq.value("value").toInt() * 1000;
-    }
-
-    ptq.finish();
+    int popupTimeout = setting::get("popup_timeout","0").toInt() * 1000;
 
     if(popupTimeout != 0)
         dbus_adapter::Instance()->messageToPopup("hideIn", QString::number(popupTimeout));

@@ -99,7 +99,6 @@ Page {
         id: botListView
         model: serverBots
         anchors.fill: parent
-        anchors.margins: Theme.paddingLarge
         anchors.topMargin: header.height
         clip: true
         section.property: "sort_key"
@@ -114,8 +113,10 @@ Page {
             }
 
             Text {
-                width: parent.width
-                font.pixelSize: Theme.fontSizeSmall
+                anchors.margins: Theme.paddingLarge
+                anchors.left: parent.left
+                anchors.right: parent.right
+                font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryColor
                 wrapMode: Text.Wrap
                 text: "All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services. "
@@ -133,12 +134,37 @@ Page {
             Row {
                 id: countryNameLine
                 anchors.top: parent.top
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.paddingLarge
+                anchors.verticalCenter: parent.verticalCenter
                 Image {
                     id: flag
                     anchors.verticalCenter: parent.verticalCenter
                     source: "http://phonehook.omnight.com/flags/" + sectionCountry + ".png"
+
+                    Rectangle {
+                        anchors.left: parent.right
+                        anchors.top: parent.bottom
+                        anchors.leftMargin: -10
+                        anchors.topMargin: -20
+                        radius: 5
+                        color: "#222255"
+                        height: cLabel.height
+                        width: cLabel.width+10
+                        opacity: .8
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            id: cLabel
+                            font.pixelSize: Theme.fontSizeExtraSmall
+                            font.weight: Font.Bold
+                            text: sectionCount[section]
+                            color: Theme.primaryColor
+                        }
+                    }
+
                 }
+
                 Item {
                     height: parent.height
                     width: 20
@@ -147,28 +173,29 @@ Page {
                 Text {
                     color: Theme.primaryColor
                     font.pixelSize: Theme.fontSizeMedium
-                    text: _bots.getCountryName(sectionCountry) + "  (" + sectionCount[section] + ")"
+                    text: _bots.getCountryName(sectionCountry)
                     anchors.verticalCenter: parent.verticalCenter
                 }
+
             }
 
             Image {
                 source: "../images/expand.png"
                 height: 31
                 width: 30
-                anchors.top: parent.top
+                anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
+                anchors.rightMargin: Theme.paddingLarge
                 rotation: isExpanded(section) ? 180 : 0
                 Behavior on rotation { NumberAnimation { duration: 200 } }
             }
 
             Rectangle {
                 anchors.top: countryNameLine.bottom
-                anchors.topMargin: 5
                 anchors.left: parent.left
+                anchors.topMargin: -5
                 height: 5
-                radius: 2
-                color: "#66FFFFFF"
+                color: "#44FFFFFF"
                 width: parent.width
             }
 
@@ -182,16 +209,22 @@ Page {
         }
 
         delegate:
-            Item {
+            BackgroundItem {
                 id: delegate
                 //height: 80
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
+
                 height: isExpanded(sort_key) ? 80 : 0
                 visible: isExpanded(sort_key) ? true : false
 
                 Item {
                     height: 70
-                    width: parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.paddingLarge
+                    anchors.leftMargin: Theme.paddingLarge
+                    anchors.verticalCenter: parent.verticalCenter
 
                     Image {
                         id: icon
@@ -201,7 +234,6 @@ Page {
 
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
-                        anchors.leftMargin: 10
 
                         //visible: typeof model.icon !== 'undefined'
                         source: model.icon || ''
@@ -252,10 +284,10 @@ Page {
 
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: pageStack.push(Qt.resolvedUrl("PageBotDownload.qml"), { botData: model } )
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("PageBotDownload.qml"), { botData: model } )
                 }
+
             }
     }
 

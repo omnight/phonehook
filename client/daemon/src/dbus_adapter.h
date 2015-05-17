@@ -53,12 +53,6 @@ private:
 
     QString lookupState;
 
-    QStringList compabilityNotificationFields;
-    QQueue< QPair<QString, QString> > compabilityNotificationQueue;
-    QTimer compabilityNotificationTimer;
-
-    uint m_compabilityNotificationId;
-
 public:
     static dbus_adapter *Instance(QObject *parent = NULL);
 
@@ -73,12 +67,6 @@ public Q_SLOTS:
     void testLookup(QString number, int botid);
 
     void search(QMap<QString,QVariant> parameters, QList<QVariant> bots);
-
-    void compabilityNotificationTimerTick();
-
-    void notificationCallback(uint);
-    void notificationAction();
-    void notificationClosed(uint id, uint uh);
 
 signals:
     void searchResult(QString xml);

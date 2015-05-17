@@ -18,27 +18,14 @@ bots::bots(QObject *parent) :
     QString dataDir = QDir::home().absolutePath() + "/.phonehook";
     QDir::home().mkpath(dataDir);
     m_version = 0;
-    m_lipstickPatched = false;
-
-    QFile lipstick;
-    lipstick.setFileName("/usr/share/lipstick-jolla-home-qt5/compositor.qml");
-
-    if(lipstick.exists()) {
-        lipstick.open(QFile::ReadOnly);
-        QString lipstickText = lipstick.readAll();
-        lipstick.close();
-
-        m_lipstickPatched = lipstickText.contains("inject");
-    } else {
-        m_lipstickPatched = false;
-    }
-
-    emit lipstickPatchInstalled_changed(m_lipstickPatched);
 
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(dataDir + "/phonehook.db");
 
     m_db.open();
+
+    // enable foreign key support
+    m_db.exec("PRAGMA foreign_keys = ON;");
 
     if(m_db.tables().count() > 0) {
         QSqlQuery getVersionQuery("SELECT * FROM DB_VERSION");
@@ -47,14 +34,7 @@ bots::bots(QObject *parent) :
         }
     }
 
-    m_botList.setQuery(QSqlQuery("SELECT id, name, revision FROM bot;"));
-
-    emit botList_changed(&m_botList);
-
     connect(&netman, SIGNAL(finished(QNetworkReply*)), this, SLOT(network_response(QNetworkReply*)));
-
-    m_injectorActive = false;
-
 
     // check to see if injector DBus Adaptor in active
     connect(&serviceWatcher, SIGNAL(serviceRegistered(QString)), this, SLOT(service_registered(QString)));
@@ -67,15 +47,6 @@ bots::bots(QObject *parent) :
     m_daemonActive = QDBusConnection::sessionBus().interface()->isServiceRegistered("com.omnight.phonehook");
     emit daemonActive_changed(m_daemonActive);
 
-    m_injectorActive = QDBusConnection::sessionBus().interface()->isServiceRegistered("com.omnight.lipstick");;
-    emit injectorActive_changed(m_injectorActive);
-
-//    QDBusMessage m = QDBusMessage::createMethodCall("com.jolla.lipstick.ConnectionSelector",
-//                                                    "/",
-//                                                    "org.freedesktop.DBus.Introspectable",
-//                                                    "Introspect");
-
-//    QDBusConnection::sessionBus().callWithCallback(m, this, SLOT(cs_introspect(QDBusMessage)));
 
     m_testSources = (querySetting("source_test", "false") == "true");
 
@@ -92,13 +63,6 @@ bots::~bots() {
 
 int bots::version() {
     return m_version;
-}
-
-void bots::cs_introspect(QDBusMessage m) {
-    QString signature = m.arguments().at(0).value<QString>();
-    m_injectorActive = (signature.contains("\"inject\""));
-    emit injectorActive_changed(m_injectorActive);
-    qDebug() << "injector " << (m_injectorActive ? "running" : "not running");
 }
 
 void bots::downloadBot(QString file) {
@@ -433,8 +397,7 @@ QVariantMap bots::getBotDetails(int botId) {
 }
 
 void bots::setBotSearchListTag(QString tag) {
-    QSqlQuery q("SELECT bot.id, bot.name FROM bot JOIN bot_tag ON bot.id = bot_tag.bot_id WHERE bot_tag.tag='" + tag + "';");
-    m_botSearchList.setQuery(q);
+    m_botSearchList.setQuery("SELECT bot.id, bot.name FROM bot JOIN bot_tag ON bot.id = bot_tag.bot_id WHERE bot_tag.tag='" + tag + "';");
     emit botSearchList_changed(&m_botSearchList);
 }
 
@@ -442,7 +405,7 @@ void bots::setActiveBot(int botId) {
 
     qDebug() << "setting active bot" << botId;
 
-    m_paramList.setQuery(QSqlQuery("SELECT * FROM bot_param WHERE bot_id = " + QString::number(botId)));
+    m_paramList.setQuery("SELECT * FROM bot_param WHERE bot_id = " + QString::number(botId));
 
     qDebug() << "SELECT * FROM bot_param WHERE bot_id = " + QString::number(botId);
 
@@ -481,20 +444,8 @@ void bots::testBot(int botId, QString testNumber) {
 }
 
 
-void bots::restartSystem() {
-    // restart lipstick to enable overlay.
-    QProcess p;
-    QStringList args;
-    args << "--user" << "restart" <<  "lipstick.service";
-    p.startDetached("systemctl", args);
-}
-
 void bots::service_registered(QString serviceName) {
     qDebug() << "registered" << serviceName;
-    if(serviceName == "com.omnight.lipstick") {
-        m_injectorActive = true;
-        emit injectorActive_changed(m_injectorActive);
-    }
 
     if(serviceName == "com.omnight.phonehook") {
         m_daemonActive = true;
@@ -508,19 +459,22 @@ void bots::service_registered(QString serviceName) {
             m_version = qs.value("version").toInt();
         }
 
-        m_botList.refresh();
-        emit botList_changed(&m_botList);
+        initBotList();
     }
+}
+
+void bots::initBotList() {
+    if(!m_botList.query().isValid())
+        m_botList.setQuery("SELECT id, name, revision FROM bot;");
+    else
+        m_botList.refresh();
+
+    emit botList_changed(&m_botList);
 }
 
 
 void bots::service_unregistered(QString serviceName) {
     qDebug() << "unregistered" << serviceName;
-    if(serviceName == "com.omnight.lipstick") {
-        m_injectorActive = false;
-        emit injectorActive_changed(m_injectorActive);
-    }
-
     if(serviceName == "com.omnight.phonehook") {
         m_daemonActive = false;
         emit daemonActive_changed(m_daemonActive);
@@ -570,7 +524,6 @@ int bots::getBotId(QString name) {
 bool bots::removeBot(int botId) {
     QSqlQuery qs;
 
-
     // delete actual bot
 
     qs.prepare("DELETE FROM bot WHERE id = ?");       
@@ -580,20 +533,6 @@ bool bots::removeBot(int botId) {
     qDebug() << "delete result = " << qs.numRowsAffected();
 
     bool status = qs.numRowsAffected() > 0;
-
-    // delete params
-
-    qs.prepare("DELETE FROM bot_param WHERE bot_id = ?");
-    qs.addBindValue(botId);
-    qs.exec();
-
-    // delete cache
-    clearCache(botId);
-
-    // delete tags
-    qs.prepare("DELETE FROM bot_tag WHERE bot_id = ?");
-    qs.addBindValue(botId);
-    qs.exec();
 
     m_botList.refresh();
     emit botList_changed(&m_botList);

@@ -18,7 +18,9 @@ QT += dbus xml sql xmlpatterns
 SOURCES += \
     src/phonehook.cpp \
     src/bots.cpp \
-    src/countries.cpp
+    src/countries.cpp \
+    src/blocks.cpp \
+    src/calls.cpp
 
 OTHER_FILES += qml/phonehook.qml \
     qml/cover/CoverPage.qml \
@@ -43,7 +45,13 @@ OTHER_FILES += qml/phonehook.qml \
     qml/setting/SettingPassword.qml \
     qml/popup/gui2.qml \
     qml/pages/PageSearchStart.qml \
-    qml/pages/PageSearchResults.qml
+    qml/pages/PageSearchResults.qml \
+    qml/pages/PageBlockStart.qml \
+    qml/pages/PageBlockContact.qml \
+    qml/pages/PageBlockHistory.qml \
+    qml/pages/ControlBigButton.qml \
+    qml/pages/PageCallLogStart.qml \
+    qml/pages/PageBlockAddManual.qml
 
 # to disable building translations every time, comment out the
 # following CONFIG line
@@ -52,7 +60,10 @@ TRANSLATIONS += translations/phonehook-de.ts
 
 HEADERS += \
     src/bots.h \
-    src/countries.h
+    src/countries.h \
+    src/blocks.h \
+    src/db_model.h \
+    src/calls.h
 
 RESOURCES +=
 

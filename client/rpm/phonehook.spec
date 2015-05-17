@@ -13,7 +13,7 @@ Name:       phonehook
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Phonehook
-Version:    0.3.3
+Version:    0.4.0
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -21,7 +21,6 @@ URL:        https://github.com/omnight/phonehook
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  phonehook.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
-Requires:   patch
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
@@ -43,19 +42,6 @@ See who's calling!
 %qtc_qmake5
 %qtc_make %{?_smp_mflags}
 
-%pre
-# >> pre
-# clean up patch that breaks connect-to-internet dialog
-if more /usr/share/lipstick-jolla-home-qt5/compositor.qml | grep com.omnight.lipstickIf; then
-    patch -r - -R -N /usr/share/lipstick-jolla-home-qt5/compositor.qml < /usr/share/phonehook/phonehook-lipstick-v2.patch || :;
-fi
-# << pre
-
-%preun
-# >> preun
-patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -R -N -p4 < /usr/share/phonehook/phonehook-lipstick-v4.patch || :;
-# << preun
-
 %postun
 # >> postun
 if [ "$1" -eq 0 ]; then
@@ -70,7 +56,6 @@ systemctl-user daemon-reload || :
 %posttrans
 # >> posttrans
 killall phonehook-daemon || :
-patch -r - -d /usr/share/lipstick-jolla-home-qt5/ -N -p4  < /usr/share/phonehook/phonehook-lipstick-v4.patch || :;
 ln -s -f /usr/lib/systemd/user/phonehook-daemon.service /usr/lib/systemd/user/post-user-session.target.wants
 systemctl-user enable phonehook-daemon.service || :
 systemctl-user daemon-reload || :
@@ -93,6 +78,7 @@ desktop-file-install --delete-original       \
 %defattr(-,root,root,-)
 %{_bindir}
 %{_datadir}/%{name}
+%{_datadir}/%{name}-daemon
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/86x86/apps/%{name}.png
 /usr/lib/systemd/user/phonehook-daemon.service

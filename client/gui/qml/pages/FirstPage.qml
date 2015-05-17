@@ -30,7 +30,6 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import org.nemomobile.dbus 1.0
 
 Page {
     id: topPage
@@ -44,6 +43,10 @@ Page {
                                      console.log('do delete', remorseItem.id);
                                      _bots.removeBot(remorseItem.id);
                                  }, 5000);
+    }
+
+    function colorAlpha(c, alpha) {
+        return Qt.rgba(c.r, c.g, c.b, alpha);
     }
 
     // To enable PullDownMenu, place our content in a SilicaFlickable
@@ -72,16 +75,6 @@ Page {
                 }
             }
 
-            MenuItem {
-                text: "Add Source"
-                onClicked: pageStack.push(Qt.resolvedUrl("PageServerBotList.qml"))
-            }
-
-            MenuItem {
-                text: "Search"
-                onClicked: pageStack.push(Qt.resolvedUrl("PageSearchStart.qml"))
-            }
-
         }
 
         // Place our content in a Column.  The PageHeader is always placed at the top
@@ -95,20 +88,47 @@ Page {
             anchors.right: parent.right
             anchors.top: header.bottom
 
-            Label {
-                width: parent.width
-                text: "Status"
-                font.weight: Font.Bold
-                font.pixelSize: Theme.fontSizeMedium
-                color: Theme.primaryColor
+            Row {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                spacing: Theme.paddingLarge
+
+                ControlBigButton {
+                    link: "PageServerBotList.qml"
+                    icon: "../images/website-optimization-48.png"
+                    text: "Data Sources"
+                }
+
+                ControlBigButton {
+                    link: "PageSearchStart.qml"
+                    icon: "../images/search-2-48.png"
+                    text: "Search"
+                }
+
             }
 
-            Text {
-                color: "#FFFFFF"
-                wrapMode: Text.Wrap
-                textFormat: Text.RichText
-                text: "Injector Service: <b>" + (_bots.injectorActive ? "Running" : "Not Running") + "</b>"
+            Row {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                spacing: Theme.paddingLarge
+
+
+
+                ControlBigButton {
+                    link: "PageBlockStart.qml"
+                    icon: "../images/restriction-shield-48.png"
+                    text: "Blocks"
+                }
+
+                ControlBigButton {
+                    link: "PageCallLogStart.qml"
+                    icon: "../images/view-details-48.png"
+                    text: "Call Log"
+                }
+
             }
+
+
 
             Text {
                 id: hi
@@ -118,37 +138,8 @@ Page {
                 text: "Daemon: <b>" + (_bots.daemonActive ? "Running" : "Not Running") + "</b>"
             }
 
-
-            Text {
-                width: parent.width
-                color: "#FFFF88"
-                wrapMode: Text.Wrap
-                font.pixelSize: Theme.fontSizeSmall
-                visible: !_bots.lipstickPatchInstalled
-                text: "Homescreen patch not installed. Using compability mode."
-            }
-
-            Text {
-                width: parent.width
-                color: "#FFFFFF"
-                wrapMode: Text.Wrap
-                visible: !_bots.injectorActive && _bots.lipstickPatchInstalled
-                text: "An UI restart is required to complete the installation."
-            }
-
             Button {
-                visible: !_bots.injectorActive && _bots.lipstickPatchInstalled
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "Restart"
-
-                onClicked: {
-                    enabled=false;
-                    _bots.restartSystem();
-                }
-            }
-
-            Button {
-                visible: !_bots.daemonActive && _bots.injectorActive
+                visible: !_bots.daemonActive
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 text: "Start Daemon"
@@ -177,53 +168,90 @@ Page {
             }
 
             RemorseItem {
-                anchors.leftMargin: -Theme.paddingLarge
-                anchors.rightMargin: -Theme.paddingLarge
                 id: remorseDeleteBot
+            }
+
+            Connections {
+                target: _bots
+                onDaemonActiveChanged: {
+                    console.log('daemon active!');
+                }
             }
 
             SilicaListView {
                 id: botView
-                model: _bots.botList
-                width: parent.width
+                model: _bots.daemonActive ? _bots.botList : []
+
                 height: contentHeight || 0
-                //anchors.fill: parent
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                anchors.leftMargin: -Theme.paddingLarge
+                anchors.rightMargin: -Theme.paddingLarge
+
                 interactive: false
                 enabled: _bots.daemonActive
 
-                //property variant currentItem
+                property Item contextMenu
 
-                delegate:
+                delegate: Item {
+                    id: myListItem
+                    property bool menuOpen: botView.contextMenu != null && botView.contextMenu.parent === myListItem
+                    property int id: model.id
+                    property string name: model.name
+
+                    width: ListView.view.width
+                    height: menuOpen ? botView.contextMenu.height + contentItem.height : contentItem.height
+
+
                     BackgroundItem {
-                        id: delegate
-                        property int id
-                        property string name
+                        id: contentItem
 
                         Label {
+                            anchors.left: parent.left
+                            anchors.leftMargin: Theme.paddingLarge
                             anchors.verticalCenter: parent.verticalCenter
                             text: model.name
-                            color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
+                            color: contentItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                         }
 
                         Label {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
+                            anchors.rightMargin: Theme.paddingLarge
                             text: 'Rev. ' + model.revision
                             font.pixelSize: Theme.fontSizeSmall
-                            color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
+                            color: contentItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                        }
+
+                        onPressAndHold: {
+                            remorseItem = myListItem;
+                            if (!botView.contextMenu)
+                                botView.contextMenu = contextMenuComponent.createObject(botView)
+                            botView.contextMenu.show(myListItem)
                         }
 
                         onClicked: {
-                            remorseItem = delegate;
-                            delegate.id = model.id
-                            delegate.name = model.name
+                            remorseItem = myListItem;
                             pageStack.push(Qt.resolvedUrl("PageBotDetails.qml"), { botId: model.id })
                             console.log("clicked on bot")
                         }
                     }
                 }
+                Component {
+                    id: contextMenuComponent
+                    ContextMenu {
+                           MenuItem {
+                            text: qsTr("Delete");
+                            onClicked: {
+                                remorseDelete();
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
 }
 
 

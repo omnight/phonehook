@@ -8,6 +8,16 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* 2015-05-16 <omnight@gmail.com> 0.4.0-1
+- Added call blocking function (beta).
+    Number (with wildcard) and contact blocking.
+- Added recent call list lookups
+- No longer modifies homescreen
+- GUI navigation changes
+- Removed dependency to patch binary
+- Removed SMS lookups (for now)
+- Removed compability mode
+
 * 2015-04-17 <omnight@gmail.com> 0.3.3-1
 - Removed fix from last version
 - Removed dependency to nemonotifications

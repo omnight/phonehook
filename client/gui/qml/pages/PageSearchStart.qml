@@ -73,7 +73,7 @@ Dialog {
 
                 TextSwitch {
                     id: searchBusinessCheck
-                    width: parent.width/2
+                    //width: parent.width/2
                     checked: false
                     onCheckedChanged: {
                         if(checked) {

@@ -36,6 +36,9 @@
 #include <sailfishapp.h>
 #include "dbus.h"
 #include "bots.h"
+#include "db_model.h"
+#include "blocks.h"
+#include "calls.h"
 
 int main(int argc, char *argv[])
 {
@@ -51,14 +54,18 @@ int main(int argc, char *argv[])
 
     QGuiApplication* app = SailfishApp::application(argc, argv);
     bots botDb;
+    blocks blocks;
+    calls calls;
 
     QQuickView* view = SailfishApp::createView();
     view->setSource(SailfishApp::pathTo("qml/phonehook.qml") );
 
-    qmlRegisterType<BotSqlModel>("com.omnight.querymodel", 1, 0, "botmodel");
+    qmlRegisterType<PhSqlModel>("com.omnight.querymodel", 1, 0, "botmodel");
 
     view->rootContext()->setContextProperty("cppproperty", view);
     view->rootContext()->setContextProperty("_bots", &botDb);
+    view->rootContext()->setContextProperty("_blocks", &blocks);
+    view->rootContext()->setContextProperty("_calls", &calls);
 
     view->showFullScreen();
 

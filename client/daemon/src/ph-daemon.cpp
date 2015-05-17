@@ -1,5 +1,5 @@
 #include <sailfishapp.h>
-#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QDebug>
 
 #include <sys/types.h>
@@ -9,49 +9,38 @@
 #include "db.h"
 #include <QDBusMessage>
 #include <QList>
-#include "inject.h"
+
 #include "phonenumber.h"
 #include <QMetaType>
 
+#include "overlay.h"
 
 int main(int argc, char *argv[])
 {
 
     setuid(0);
-
     qDebug() << "daemon starting?";
-
-    QCoreApplication app(argc, argv);
-
+    QGuiApplication app(argc, argv);
     qDebug() << "open db";
 
-    db database(&app);
+    db::Instance(&app);
+
+    QString dataDir = QDir::home().absolutePath() + "/.phonehook";
+    QDir::home().mkpath(dataDir);
 
     qDebug() << "create listener";
-
-
     dbus listener(&app);
 
     QDBusConnection::sessionBus().registerObject("/", &app);
     QDBusConnection::sessionBus().registerService("com.omnight.phonehook");
 
-    QString dataDir = QDir::home().absolutePath() + "/.phonehook";
-    QDir::home().mkpath(dataDir);
-
-    delayedInject d;
-//    QTimer t;
-
-//    t.setInterval(1000);
-//    t.setSingleShot(true);
-//    d.connect(&t, SIGNAL(timeout()), &d, SLOT(ready()));
-
-//    t.start();
-
-    d.ready();
-
-
     qRegisterMetaType<QMap<QString,QString> >("QMap<QString,QString>");
     rule::initialize();
+
+
+    // init overlay
+    overlay o;
+    o.show();
 
     return app.exec();
 

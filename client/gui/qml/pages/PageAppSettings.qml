@@ -17,6 +17,7 @@ Page {
 
         Label {
             text: "Basic"
+            font.pixelSize: Theme.fontSizeLarge
         }
 
         TextSwitch {
@@ -27,7 +28,7 @@ Page {
                 _bots.setSetting("activate_only_unknown", checked)
             }
         }
-
+/*
         TextSwitch {
             width: parent.width
             text: "Show for incoming SMS"
@@ -36,7 +37,7 @@ Page {
                 _bots.setSetting("activate_on_sms", checked)
             }
         }
-
+*/
         TextSwitch {
             width: parent.width
             text: "Enable while roaming"
@@ -46,8 +47,15 @@ Page {
             }
         }
 
+        Item {
+            height: Theme.paddingLarge
+            width: parent.width
+        }
+
         Label {
             text: "Popup Timeout"
+            font.pixelSize: Theme.fontSizeLarge
+            anchors.left: parent.left
         }
 
         Slider {
@@ -74,21 +82,23 @@ Page {
 
         TextSwitch {
             width: parent.width
-            text: "Force Compability Mode"
-            checked: _bots.querySetting("compability_mode", "false") == "true"
-            onCheckedChanged: {
-                _bots.setSetting("compability_mode", checked)
-            }
-        }
-
-        TextSwitch {
-            width: parent.width
             text: "Source Test Mode"
             checked: _bots.querySetting("source_test", "false") == "true"
             onCheckedChanged: {
                 _bots.setSetting("source_test", checked)
             }
         }
+
+        TextSwitch {
+            width: parent.width
+            text: "Kill dialer when blocking call"
+            checked: _bots.querySetting("kill_voicecall_ui", "false") == "true"
+            onCheckedChanged: {
+                _bots.setSetting("kill_voicecall_ui", checked)
+            }
+        }
+
+
 
 
 

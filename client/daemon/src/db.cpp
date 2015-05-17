@@ -4,22 +4,42 @@
 #include <QSqlQuery>
 #include <QDebug>
 
+db *db::m_Instance = NULL;
+
 db::db(QObject *parent) :
     QObject(parent)
 {
 
+    m_Instance = this;
     QString dataDir = QDir::home().absolutePath() + "/.phonehook";
     QDir::home().mkpath(dataDir);
 
+    // local db
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(dataDir + "/phonehook.db");
-
     m_db.open();
 
+    // nemo contacts db
+    m_db_contacts = QSqlDatabase::addDatabase("QSQLITE", "db_contacts");
+    m_db_contacts.setDatabaseName("/home/nemo/.local/share/system/Contacts/qtcontacts-sqlite/contacts.db");
+    m_db_contacts.open();
 
     initDbTables();
 }
 
+
+db::~db() {
+    m_db.close();
+    m_db_contacts.close();
+}
+
+
+db* db::Instance(QObject *parent) {
+    if(m_Instance == NULL)
+        m_Instance = new db(parent);
+
+    return m_Instance;
+}
 
 void db::initDbTables() {
 
@@ -65,4 +85,8 @@ void db::initDbTables() {
 
     }
 
+}
+
+QSqlDatabase db::getContactsDb() {
+    return m_db_contacts;
 }

@@ -4,6 +4,8 @@
 #include "lookup_thread.h"
 #include "phonenumber.h"
 #include <QFile>
+#include "blocking.h"
+#include "db.h"
 
 dbus* dbus::m_instance;
 
@@ -14,12 +16,23 @@ dbus::dbus(QObject *parent) :
     m_instance = this;
 
     qDebug() << "registering telepathy";
-    qDebug() << "connect status = " <<
-                QDBusConnection::sessionBus().connect("",
-                                                      "/org/freedesktop/Telepathy/Connection/ring/tel/ring", ///ring/tel/ring
-                                    "org.freedesktop.Telepathy.Connection.Interface.Requests",
-                                    "NewChannels",
-                                    this, SLOT(onIncomingCall(const QDBusMessage&)));
+
+    // connect OFONO
+
+//    qDebug() << "connect status = " <<
+//                QDBusConnection::systemBus().connect("org.ofono",
+//                                                      "/ril_0",
+//                                    "org.ofono.VoiceCallManager",
+//                                    "CallAdded",
+//                                    this, SLOT(onIncomingCall(const QDBusMessage&)));
+
+
+    // connect nemo.voicecall
+    QDBusConnection::sessionBus().connect("",
+                                          "/calls/active",
+                        "org.nemomobile.voicecall.VoiceCall",
+                        "lineIdChanged",
+                        this, SLOT(onIncomingCall(const QDBusMessage&)));
 
     adapter = dbus_adapter::Instance(parent);
 
@@ -29,26 +42,6 @@ dbus::dbus(QObject *parent) :
 
     updateNetwork();
 
-    QFile lipstick;
-    lipstick.setFileName("/usr/share/lipstick-jolla-home-qt5/compositor.qml");
-
-    if(lipstick.exists()) {
-        lipstick.open(QFile::ReadOnly);
-        QString lipstickText = lipstick.readAll();
-        lipstick.close();
-
-        m_bHomescreenPatched = lipstickText.contains("inject");
-    } else {
-        m_bHomescreenPatched = false;
-    }
-
-    QSqlQuery qs;
-    qs.exec("SELECT key, value FROM setting WHERE key='compability_mode'");
-    m_bCompabilityMode = false;
-
-    while(qs.next()) {
-        m_bCompabilityMode = (qs.value("value").toString() == "true");
-    }
 
 }
 
@@ -61,6 +54,8 @@ void dbus::updateNetwork() {
 
     QDBusConnection::systemBus().callWithCallback(m, this, SLOT(gotModems(QDBusMessage)));
 }
+
+
 
 
 void dbus::gotModems(QDBusMessage reply) {
@@ -152,140 +147,79 @@ void dbus::gotNetworkStatus(QDBusMessage reply) {
 
 void dbus::onIncomingCall(const QDBusMessage &a) {
 
-    QMap<QString, QVariant> params;
+    qDebug() << a;
 
-    QVariant v1 = a.arguments().at(0);
-    const QDBusArgument &a1 = v1.value<QDBusArgument>();
+    QString callingNr = a.arguments().at(0).toString();
+    QDBusInterface voiceCallIf("org.nemomobile.voicecall",
+                               "/calls/active",
+                               "org.nemomobile.voicecall.VoiceCall",
+                               QDBusConnection::sessionBus());
 
-    if(a1.currentType() == QDBusArgument::ArrayType) {
-        a1.beginArray();
+    if(!voiceCallIf.property("isIncoming").toBool()) {
+        qDebug() << "ignore outgoing call";
+        return;
+    }
 
-        while(!a1.atEnd()) {
-            qDebug() << "s2 " << a1.currentSignature();
-            qDebug() << "s2 " << a1.currentType();
-            const QDBusArgument &a2 = a1.asVariant().value<QDBusArgument>();
+    qDebug() << "calling number = " << callingNr;
 
-            if(a2.currentType() == QDBusArgument::StructureType) {
+    phonenumber ph = phonenumber(callingNr,
+                                 phonenumber::mobilecc_to_iso32662( dbus::Instance()->mobileCountryCode() ),
+                                 QString::number( dbus::Instance()->mobileNetworkCode() ));
 
-                a2.beginStructure();
+    // check type of channel that has opened
+    if(blocking::Instance()->preCheckBlock(ph) ) {
+        return;
+    }
 
-                QDBusObjectPath objPath;
-                a2 >> objPath;
+    qDebug() << "check settings";
 
-                a2.beginMap();
+    QSqlQuery qs;
+    qs.exec("SELECT key, value FROM setting");
 
-                while(!a2.atEnd()) {
+    bool activateOnSms = false, activateOnlyUnknown = true, enableRoaming = false;
 
-                    a2.beginMapEntry();
+    while(qs.next()) {
+        if(qs.value("key").toString() == "activate_only_unknown")
+            activateOnlyUnknown = (qs.value("value").toString() == "true");
 
-                    QString t;
-                    QVariant v;
-                    a2 >> t >> v;
-                    qDebug() << t << " = " << v;
-                    params.insert(t, v);
-                    a2.endMapEntry();
-                }
+        if(qs.value("key").toString() == "activate_on_sms")
+            activateOnSms = (qs.value("value").toString() == "true");
 
-                a2.endMap();
-                a2.endStructure();
-            }
+        if(qs.value("key").toString() == "enable_roaming")
+            enableRoaming = (qs.value("value").toString() == "true");
+    }
+
+    qDebug() << "got settings " << activateOnlyUnknown << activateOnSms;
+
+    if(!enableRoaming && dbus::Instance()->isRoaming()) {
+        qDebug() << "disabled when roaming!";
+        return ;
+    }
+
+    if(activateOnlyUnknown) {
+
+        QSqlQuery cq(db::Instance()->getContactsDb() );
+
+        cq.prepare("SELECT contactId FROM PhoneNumbers WHERE normalizedNumber = ?");
+        cq.addBindValue(phonenumber::process(callingNr));
+        if(!cq.exec()) {
+            qDebug() << "error " << cq.lastError().text();
         }
-        a1.endArray();
 
-        QString callingType = params.value("org.freedesktop.Telepathy.Channel.ChannelType").value<QString>();
-        QString callingNr = params.value("org.freedesktop.Telepathy.Channel.InitiatorID").value<QString>();
-
-        if(callingNr == "<SelfHandle>") {
-            qDebug() << "outgoing call ignored.";
+        while(cq.next()) {
+            qDebug() << "found existing contact with id " << cq.value("contactId").toInt();
             return ;
         }
-
-        // check type of channel that has opened
-
-        qDebug() << "check settings";
-
-        QSqlQuery qs;
-        qs.exec("SELECT key, value FROM setting");
-
-        bool activateOnSms = false, activateOnlyUnknown = true, enableRoaming = false;
-
-        while(qs.next()) {
-            if(qs.value("key").toString() == "activate_only_unknown")
-                activateOnlyUnknown = (qs.value("value").toString() == "true");
-
-            if(qs.value("key").toString() == "activate_on_sms")
-                activateOnSms = (qs.value("value").toString() == "true");
-
-            if(qs.value("key").toString() == "enable_roaming")
-                enableRoaming = (qs.value("value").toString() == "true");
-
-            if(qs.value("key").toString() == "compability_mode")
-                m_bCompabilityMode = (qs.value("value").toString() == "true");
-        }
-
-        qDebug() << "got settings " << activateOnlyUnknown << activateOnSms << m_bCompabilityMode;
-
-
-        if(callingType == "org.freedesktop.Telepathy.Channel.Type.StreamedMedia") {
-            qDebug() << "incoming call";
-        }
-
-        if(callingType == "org.freedesktop.Telepathy.Channel.Type.Text") {
-            qDebug() << "incoming SMS (ignore!)";
-            if(!activateOnSms)
-                return ;
-        }
-
-        if(!enableRoaming && dbus::Instance()->isRoaming()) {
-            qDebug() << "disabled when roaming!";
-            return ;
-        }
-
-        if(activateOnlyUnknown) {
-            QSqlDatabase db_contacts = QSqlDatabase::addDatabase("QSQLITE", "db_contacts");
-            db_contacts.setDatabaseName("/home/nemo/.local/share/system/Contacts/qtcontacts-sqlite/contacts.db");
-            db_contacts.open();
-
-
-            QSqlQuery cq(db_contacts);
-
-            cq.prepare("SELECT contactId FROM PhoneNumbers WHERE normalizedNumber = ?");
-            cq.addBindValue(phonenumber::process(callingNr));
-            if(!cq.exec()) {
-                qDebug() << "error " << cq.lastError().text();
-            }
-
-            while(cq.next()) {
-                qDebug() << "found existing contact with id " << cq.value("contactId").toInt();
-                db_contacts.close();
-                return ;
-            }
-
-            db_contacts.close();
-        }
-
-
-        qDebug() << "calling number = " << callingNr;
-
-        phonenumber ph = phonenumber(callingNr,
-                                     phonenumber::mobilecc_to_iso32662( dbus::Instance()->mobileCountryCode() ),
-                                     QString::number( dbus::Instance()->mobileNetworkCode() ));
-
-        qDebug() << "after localizing " << ph.number_local;
-
-        //QDBusInterface showMsg("")
-
-        qDebug() << "request raise/activate";
-
-        dbus_adapter::Instance()->set_lookupState("activate:lookup");
-
-        lookup_thread *lt = new lookup_thread();
-
-        lt->start(ph, QList<int>());
 
     }
 
+    qDebug() << "after localizing " << ph.number_local;
+    qDebug() << "request raise/activate";
 
+    dbus_adapter::Instance()->set_lookupState("activate:lookup");
 
+    lookup_thread *lt = new lookup_thread();
+
+    lt->start(ph, QList<int>());
 
 }

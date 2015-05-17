@@ -8,16 +8,23 @@ class db : public QObject
 {
     Q_OBJECT
 public:
-    explicit db(QObject *parent = 0);
-
+    static db *Instance(QObject* parent=0);
     void initDbTables();
+
+    ~db();
+
+    QSqlDatabase getContactsDb();
 
 signals:
 
 public slots:
 
-private:
+private:   
+    static db* m_Instance;
+    explicit db(QObject *parent = 0);
+
     QSqlDatabase m_db;
+    QSqlDatabase m_db_contacts;
 
 };
 
