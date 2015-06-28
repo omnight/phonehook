@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* 2015-06-28 <omnight@gmail.com> 0.4.1-1
+- Fixes issue with lookups not working after phone restart 
+
 * 2015-05-16 <omnight@gmail.com> 0.4.0-1
 - Added call blocking function (beta).
     Number (with wildcard) and contact blocking.

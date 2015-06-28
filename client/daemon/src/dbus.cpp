@@ -100,7 +100,16 @@ void dbus::gotModems(QDBusMessage reply) {
                                                                 "GetProperties");
 
                 QDBusConnection::systemBus().callWithCallback(m, this, SLOT(gotNetworkStatus(QDBusMessage)));
-                break;
+                
+				// listen for network status changes
+                QDBusConnection::systemBus().connect("org.ofono",
+                                                     m_modemPath.path(),
+                                                     "org.ofono.NetworkRegistration",
+                                                     "PropertyChanged",
+                                                     this, SLOT(gotNetworkStatusChange(QDBusMessage)));
+
+				
+				break;
             }
 
         }
@@ -109,6 +118,19 @@ void dbus::gotModems(QDBusMessage reply) {
 
 }
 
+void dbus::gotNetworkStatusChange(QDBusMessage event) {
+
+    QString key = event.arguments().at(0).value<QString>();
+
+    if(key == "MobileNetworkCode") {
+        this->m_mobileNetworkCode = event.arguments().at(1).value<QDBusVariant>().variant().value<int>();
+        qDebug() << "network changed" << this->m_mobileNetworkCode;
+    }
+    if(key == "MobileCountryCode")  {
+        this->m_mobileCountryCode = event.arguments().at(1).value<QDBusVariant>().variant().value<int>();
+        qDebug() << "country changed" << this->m_mobileCountryCode;
+    }
+}
 
 void dbus::gotNetworkStatus(QDBusMessage reply) {
 

@@ -43,6 +43,7 @@ public slots:
 
     void gotModems(QDBusMessage reply);
     void gotNetworkStatus(QDBusMessage reply);
+	void gotNetworkStatusChange(QDBusMessage event);
 
 };
 
