@@ -2,10 +2,11 @@
 #include "handler_url.h"
 #include <QTextStream>
 
-QMap<QString,QString> robot_base::parameters;
-
 robot_base::robot_base(int botId, QObject *parent) :
-    QObject(parent), handleUrl(botId) {
+    QObject(parent),
+    handleUrl(botId, this),
+    handleFormat(this),
+    handleRegex(this) {
     this->botId = botId;
 }
 
@@ -143,7 +144,7 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
 }
 
 QDomDocument robot_base::run(QMap<QString, QString> parameters, QString tagWanted) {
-    robot_base::parameters = parameters;
+    this->parameters = parameters;
     QStack<process_data*> inputData;
 
     QDomNodeList sets =
@@ -204,7 +205,7 @@ QDomDocument robot_base::run(QMap<QString, QString> parameters, QString tagWante
 
 
 void robot_base::expand(QString &expr) {
-    expand_advanced(expr, "\\$\\{([a-z0-9-_]+)\\}", parameters);
+    expand_advanced(expr, "\\$\\{([a-z0-9-_:]+)\\}", parameters);
 }
 
 void robot_base::expand_advanced(QString &expr, QString regex, QMap<QString, QString> replacements) {
@@ -223,6 +224,13 @@ void robot_base::expand_advanced(QString &expr, QString regex, QMap<QString, QSt
         qDebug() << "attempt replace param " <<  m.captured(1);
 
         QString r;
+
+        QRegularExpression cookieMatcher("cookie:(.*)");
+        QRegularExpressionMatch cookieMatch = cookieMatcher.match(m.captured(1));
+        if(cookieMatch.hasMatch()) {
+            r = handleUrl.getCookie(cookieMatch.captured(1));
+        }
+
         if(replacements.contains(m.captured(1))) {
             r = replacements[m.captured(1)];
             qDebug() << "replace value " << replacements[m.captured(1)].left(200);
@@ -240,4 +248,3 @@ void robot_base::expand_advanced(QString &expr, QString regex, QMap<QString, QSt
     expr = newExpr;
 
 }
-

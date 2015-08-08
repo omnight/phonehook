@@ -5,6 +5,7 @@
 #include <QQuickView>
 #include <QQmlContext>
 #include <QGuiApplication>
+#include "setting.h"
 
 overlay::overlay(QObject *parent):QObject(parent)
 {
@@ -28,7 +29,11 @@ void overlay::show() {
     m_overlayView->rootContext()->setContextProperty("_control", dbus_adapter::Instance());
     m_overlayView->rootContext()->setContextProperty("_view", this);
 
-    m_overlayView->setSource(SailfishApp::pathTo("qml/popup/gui.qml"));
+    if(setting::get("old_popup_design", "false") == "true") {
+        m_overlayView->setSource(SailfishApp::pathTo("qml/popup/gui-old.qml"));
+    } else {
+        m_overlayView->setSource(SailfishApp::pathTo("qml/popup/gui.qml"));
+    }
 
     m_overlayView->create();
 

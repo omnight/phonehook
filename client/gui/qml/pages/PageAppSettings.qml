@@ -28,6 +28,15 @@ Page {
                 _bots.setSetting("activate_only_unknown", checked)
             }
         }
+
+        TextSwitch {
+            width: parent.width
+            text: "Old popup design"
+            checked: _bots.querySetting("old_popup_design", "false") == "true"
+            onCheckedChanged: {
+                _bots.setSetting("old_popup_design", checked)
+            }
+        }
 /*
         TextSwitch {
             width: parent.width
@@ -100,6 +109,12 @@ Page {
 
 
 
+        Button {
+            height: 70
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Restart Daemon"
+            onClicked: _bots.startDaemon()
+        }
 
 
     }

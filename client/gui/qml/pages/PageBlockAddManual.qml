@@ -10,10 +10,10 @@ Dialog {
     acceptDestinationAction: PageStackAction.Pop
 
     onAccepted: {
-        _blocks.addManualBlock(blockName.text,blockNumber.text);
+        _blocks.addManualBlock(blockName.text,blockNumber.text,blockHidden.checked);
     }
 
-    canAccept: blockName.text != '' && blockNumber.text != ''
+    canAccept: blockHidden.checked || (blockName.text != '' && blockNumber.text != '')
 
     SilicaFlickable {
         anchors.fill: parent
@@ -45,16 +45,28 @@ Dialog {
                 width: parent.width
             }
 
+            TextSwitch {
+                width: parent.width
+                id: blockHidden
+                text: "Hidden number"
+                checked: false
+                onCheckedChanged: {
+
+                }
+            }
+
             TextField {
                 id: blockName
                 width: parent.width
                 placeholderText: "Name"
+                visible: !blockHidden.checked
                 text: name
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
             TextField {
                 id: blockNumber
+                visible: !blockHidden.checked
                 width: parent.width
                 placeholderText: "Phone Number"
                 text: number

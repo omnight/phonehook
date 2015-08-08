@@ -62,10 +62,14 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<PhSqlModel>("com.omnight.querymodel", 1, 0, "botmodel");
 
+
     view->rootContext()->setContextProperty("cppproperty", view);
     view->rootContext()->setContextProperty("_bots", &botDb);
     view->rootContext()->setContextProperty("_blocks", &blocks);
     view->rootContext()->setContextProperty("_calls", &calls);
+
+
+
 
     view->showFullScreen();
 

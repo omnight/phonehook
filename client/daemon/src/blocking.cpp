@@ -2,6 +2,7 @@
 #include <QtDBus>
 #include "db.h"
 #include <QSqlQuery>
+#include <QSqlError>
 #include "setting.h"
 
 blocking* blocking::m_Instance = NULL;
@@ -10,16 +11,13 @@ blocking::blocking(QObject *parent) :
     QObject(parent)
 {
     m_Instance = this;
-
-
-
-
 }
 
 
 blocking* blocking::Instance() {
     if(m_Instance == NULL)
-        return new blocking();
+        m_Instance = new blocking();
+    return m_Instance;
 }
 
 
@@ -27,16 +25,24 @@ bool blocking::checkManualBlock(phonenumber number) {
 
     QSqlQuery checkManualBlock;
 
-    checkManualBlock.prepare("SELECT * FROM block WHERE (? like REPLACE(number, '*','%')) OR (? like REPLACE(number, '*','%'));");
+    checkManualBlock.prepare(R"(
+        SELECT * FROM block
+        WHERE (? like REPLACE(number, '*','%'))
+           OR (? like REPLACE(number, '*','%'));
+    )");
+
     checkManualBlock.addBindValue(number.number_local);
     checkManualBlock.addBindValue(number.number_international);
 
     checkManualBlock.exec();
 
     if(checkManualBlock.next()) {
-        QSqlQuery addBlockHistory("INSERT INTO block_history(block_id) \
-                                  VALUES(?)");
+        QSqlQuery addBlockHistory(R"(
+          INSERT INTO block_history(block_id,number)
+          VALUES(?,?)
+        )");
         addBlockHistory.addBindValue(checkManualBlock.value("id").toInt());
+        addBlockHistory.addBindValue(number.number_international);
         addBlockHistory.exec();
         return true;
     }
@@ -45,6 +51,36 @@ bool blocking::checkManualBlock(phonenumber number) {
 
 }
 
+
+bool blocking::checkAutoBlock(phonenumber number) {
+    QSqlQuery autoBlockQuery(R"(
+        SELECT block.id FROM block JOIN bot_result_cache ON block.bot_id = bot_result_cache.bot_id
+        WHERE bot_result_cache.telnr IN (?,?) AND bot_result_cache.block = 1
+    )");
+
+    autoBlockQuery.addBindValue(number.number_local);
+    autoBlockQuery.addBindValue(number.number_international);
+
+    if(!autoBlockQuery.exec())
+        qDebug() << "check block error" << autoBlockQuery.lastError();
+
+    if(autoBlockQuery.next()) {
+
+        hangup();
+
+        QSqlQuery addBlockHistory(R"(
+            INSERT INTO block_history(block_id,number)
+            VALUES(?,?)
+        )");
+        addBlockHistory.addBindValue(autoBlockQuery.value("id").toInt());
+        addBlockHistory.addBindValue(""+number.number_international);
+        addBlockHistory.exec();
+
+        return true;
+    }
+
+    return false;
+}
 
 bool blocking::checkContactBlock(phonenumber number) {
 
@@ -79,8 +115,11 @@ bool blocking::checkContactBlock(phonenumber number) {
     cq.exec();
 
     if(cq.next()) {
-        QSqlQuery addBlockHistory("INSERT INTO block_history(block_id) \
-                                  SELECT id FROM block WHERE contact_id=?");
+        QSqlQuery addBlockHistory(R"(
+            INSERT INTO block_history(block_id,number)
+            SELECT id,? FROM block WHERE contact_id=?
+        )");
+        addBlockHistory.addBindValue(number.number_international);
         addBlockHistory.addBindValue(cq.value("ContactId").toInt());
         addBlockHistory.exec();
 
@@ -98,7 +137,12 @@ bool blocking::preCheckBlock(phonenumber number) {
         return true;
     }
 
-    return false;
+    // don't auto-check hidden
+    if(number.number_local == "")
+        return false;
+
+    return checkAutoBlock(number);
+
 }
 
 void blocking::hangup() {

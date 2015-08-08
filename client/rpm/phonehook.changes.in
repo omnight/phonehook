@@ -8,8 +8,15 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* 2015-08-08 <omnight@gmail.com> 0.5.0-1
+- Added automatic call blocking
+- New popup design (with quick call blocking)
+- Added offline caching of results and html-responses
+- Added new oauth-like login functionality
+- Various GUI improvements
+
 * 2015-06-28 <omnight@gmail.com> 0.4.1-1
-- Fixes issue with lookups not working after phone restart 
+- Fix problems with lookups after phone restart
 
 * 2015-05-16 <omnight@gmail.com> 0.4.0-1
 - Added call blocking function (beta).

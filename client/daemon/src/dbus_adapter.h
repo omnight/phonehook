@@ -22,6 +22,9 @@ class dbus_adapter : public QDBusAbstractAdaptor
                 "<arg direction=\"in\" name=\"number\" type=\"s\"/>\n"
                 "<arg direction=\"in\" name=\"botid\" type=\"i\"/>\n"
                 "</method>\n"
+                "<method name=\"testLookup2\">\n"
+                "<arg direction=\"in\" name=\"number\" type=\"s\"/>\n"
+                "</method>\n"
                 "<method name=\"search\">\n"
                 "<arg direction=\"in\" name=\"parameters\" type=\"a{sv}\"/>\n"
                 "<arg direction=\"in\" name=\"bots\" type=\"av\"/>\n"
@@ -33,6 +36,10 @@ class dbus_adapter : public QDBusAbstractAdaptor
                 "<arg name=\"state\" type=\"s\" direction=\"out\">\n"
                 "</signal>\n"
                 "<method name=\"notificationAction\">\n"
+                "</method>\n"
+                "<method name=\"loginSuccess\">\n"
+                "<arg direction=\"in\" name=\"bot_id\" type=\"i\"/>\n"
+                "<arg direction=\"in\" name=\"parameters\" type=\"a{sv}\"/>\n"
                 "</method>\n"
                 "</interface>\n"
                 "")
@@ -65,9 +72,11 @@ public Q_SLOTS:
     void Hello();
     void getLookupState();
     void testLookup(QString number, int botid);
+    void testLookup2(QString number);
+    void blockLastCall(QString alias);
 
-    void search(QMap<QString,QVariant> parameters, QList<QVariant> bots);
-
+    void search(QVariantMap parameters, QList<QVariant> bots);
+    void loginSuccess(int bot_id, QVariantMap parameters);
 signals:
     void searchResult(QString xml);
     void command(QString fn, QString data);

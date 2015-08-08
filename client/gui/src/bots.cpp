@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <QDBusConnectionInterface>
 #include "countries.h"
+#include <QSqlError>
 
 bots::bots(QObject *parent) :
     QObject(parent)
@@ -145,6 +146,7 @@ void bots::network_response(QNetworkReply *reply) {
     QSqlQuery sq;
 
 
+
     if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) != 200) {
         emit botDownloadFailure();
         return;
@@ -157,14 +159,14 @@ void bots::network_response(QNetworkReply *reply) {
     QString name, revision, description, icon, link, country;
     xq.setQuery("robot/meta/name/string()");
     xq.evaluateTo(&name);
-    name = name.trimmed();
+    name = name.trimmed().replace("&amp;","&");
 
     xq.setQuery("robot/meta/revision/number()");
     xq.evaluateTo(&revision);
 
     xq.setQuery("robot/meta/description/string()");
     xq.evaluateTo(&description);
-    description = description.trimmed();
+    description = description.trimmed().replace("&amp;","&");;
 
     xq.setQuery("robot/meta/country/string()");
     xq.evaluateTo(&country);
@@ -176,7 +178,7 @@ void bots::network_response(QNetworkReply *reply) {
 
     xq.setQuery("robot/meta/link/string()");
     xq.evaluateTo(&link);
-    link = link.trimmed();
+    link = link.trimmed().replace("&amp;","&");;
 
     QXmlResultItems paramList;
     xq.setQuery("robot/meta/param");
@@ -248,6 +250,8 @@ void bots::network_response(QNetworkReply *reply) {
     }
 
     sq.finish();
+
+
 
     if(existing_id) {
 
@@ -341,6 +345,49 @@ void bots::network_response(QNetworkReply *reply) {
         sq.exec();
     }
 
+    // insert login methods
+
+    QXmlResultItems logins;
+    xq.setFocus(strXml);
+    xq.setQuery("robot/meta/login");
+    xq.evaluateTo(&logins);
+
+    sq.prepare("DELETE FROM bot_login WHERE bot_id=?;");
+    sq.addBindValue(existing_id);
+    sq.exec();
+
+    while(!logins.next().isNull()) {
+        sq.prepare(R"(
+            INSERT INTO bot_login (bot_id,name,url,login_success_url,login_success_tag)
+            VALUES(?,?,?,?,?);
+        )");
+        sq.addBindValue(existing_id);
+
+        QString v;
+        xq.setFocus( logins.current() );
+        xq.setQuery("./name/string()");
+        xq.evaluateTo(&v);
+        sq.addBindValue(v.trimmed().replace("&amp;","&"));
+
+        xq.setFocus( logins.current() );
+        xq.setQuery("./url/string()");
+        xq.evaluateTo(&v);
+        sq.addBindValue(v.trimmed().replace("&amp;","&"));
+
+        xq.setFocus( logins.current() );
+        xq.setQuery("./login_success_url/string()");
+        xq.evaluateTo(&v);
+        sq.addBindValue(v.trimmed().replace("&amp;","&"));
+
+        xq.setFocus( logins.current() );
+        xq.setQuery("./login_success_tag/string()");
+        xq.evaluateTo(&v);
+        sq.addBindValue(v.trimmed());
+
+        sq.exec();
+
+    }
+
     // insert parameters
     foreach(QVariantMap ip, insertBotParams) {
 
@@ -363,6 +410,14 @@ void bots::network_response(QNetworkReply *reply) {
         qDebug() << "param insert" << sq.exec();
 
     }
+
+    sq.prepare("DELETE FROM bot_response_cache WHERE bot_id=?");
+    sq.addBindValue(existing_id);
+    qDebug() << "cleared response cache" << sq.exec();
+
+    sq.prepare("DELETE FROM bot_result_cache WHERE bot_id=?");
+    sq.addBindValue(existing_id);
+    qDebug() << "cleared result cache" << sq.exec();
 
 
     emit botDownloadSuccess(existing_id);
@@ -406,10 +461,10 @@ void bots::setActiveBot(int botId) {
     qDebug() << "setting active bot" << botId;
 
     m_paramList.setQuery("SELECT * FROM bot_param WHERE bot_id = " + QString::number(botId));
-
-    qDebug() << "SELECT * FROM bot_param WHERE bot_id = " + QString::number(botId);
+    m_loginList.setQuery("SELECT * FROM bot_login WHERE bot_id = " + QString::number(botId));
 
     emit paramList_changed(&m_paramList);
+    emit loginList_changed(&m_loginList);
 }
 
 void bots::setBotParam(int botId, QString key, QString value) {
@@ -424,23 +479,29 @@ void bots::setBotParam(int botId, QString key, QString value) {
 
 void bots::testBot(int botId, QString testNumber) {
 
-    QDBusMessage testcall =
-    QDBusMessage::createMethodCall("com.omnight.phonehook",
-                                   "/",
-                                   "com.omnight.phonehook",
-                                   "testLookup");
 
     QVariantList args;
+    QDBusMessage testcall;
     args.append(testNumber);
-    args.append(botId);
-    testcall.setArguments(args);
 
+    if(botId == 0) {
+        testcall =
+        QDBusMessage::createMethodCall("com.omnight.phonehook",
+                                       "/",
+                                       "com.omnight.phonehook",
+                                       "testLookup2");
+    } else {
+        testcall =
+        QDBusMessage::createMethodCall("com.omnight.phonehook",
+                                       "/",
+                                       "com.omnight.phonehook",
+                                       "testLookup");
+        args.append(botId);
+    }
+
+    testcall.setArguments(args);
     QDBusConnection::sessionBus().send(testcall);
 
-//    dbus_adapter::Instance()->clearReady();
-//    dbus_adapter::Instance()->set_lookupState("");
-//    lookup_thread *lt = new lookup_thread(testNumber, botId);
-//    lt->start();
 }
 
 
@@ -546,12 +607,138 @@ QString bots::getCountryName(QString code) {
 }
 
 void bots::clearCache(int botId) {
-    QSqlQuery qs("DELETE FROM BOT_COOKIE_CACHE WHERE bot_id = ?;");
-    qs.addBindValue(botId);
-    qs.exec();
+    QSqlQuery qs;
+
+    qs.exec("DELETE FROM bot_cookie_cache WHERE bot_id = " + QString::number(botId));
+    qs.exec("DELETE FROM bot_response_cache WHERE bot_id = " + QString::number(botId));
+    qs.exec("DELETE FROM bot_result_cache WHERE bot_id = " + QString::number(botId));
+
 }
 
 
 QString bots::country() {
      return querySetting("location", "");
+}
+
+bool bots::hasBlockTag(int botId) {
+    QSqlQuery qs("SELECT * FROM bot_tag WHERE bot_id = ? AND tag='block';");
+    qs.addBindValue(botId);
+    qs.exec();
+
+    return qs.next();
+}
+
+bool bots::isBlockSource(int botId) {
+    QSqlQuery qs("SELECT * FROM block WHERE bot_id = ? AND type=2;");
+    qs.addBindValue(botId);
+    qs.exec();
+
+    return qs.next();
+}
+
+void bots::setBlockSource(int botId, bool enabled) {
+
+    if(!enabled) {
+        QSqlQuery qs("DELETE FROM block WHERE bot_id = ? AND type=2;");
+        qs.addBindValue(botId);
+        qs.exec();
+    } else {
+        QSqlQuery qs("INSERT INTO block(type,bot_id) VALUES(2, ?);");
+        qs.addBindValue(botId);
+        qs.exec();
+    }
+
+}
+
+void bots::copyCookies(int bot_id) {
+
+    // open cookiez db
+    // /home/nemo/.local/share/phonehook/phonehook/.QtWebKit/cookies.db
+
+
+    // table|cookies|cookies|2|CREATE TABLE cookies (cookieId VARCHAR PRIMARY KEY, cookie BLOB)
+    // index|sqlite_autoindex_cookies_1|cookies|3|
+
+    QString cookies_db_path = QDir::home().absolutePath() + "/.local/share/phonehook/phonehook/.QtWebKit/cookies.db";
+
+    QSqlDatabase cookieDb = QSqlDatabase::addDatabase("QSQLITE", "cookies");
+
+    cookieDb.setDatabaseName(cookies_db_path);
+    cookieDb.open();
+
+    QSqlQuery getCookiesQuery("SELECT cookie FROM cookies;", cookieDb);
+
+    getCookiesQuery.exec();
+
+
+
+    while(getCookiesQuery.next()) {
+        // get cookie text from BLOB
+        QString cookieText = QString::fromUtf8( getCookiesQuery.value("cookie").value<QByteArray>() );
+
+        // split
+        // SSID=A...9; secure; HttpOnly; expires=Wed, 05-Jul-2017 16:56:19 GMT; domain=.google.com; path=/
+        QStringList parts = cookieText.split(";");
+/*
+        bot_id INTEGER REFERENCES BOT(id) ON DELETE CASCADE,
+        key TEXT,
+        domain TEXT,
+        path TEXT,
+        expire TEXT,
+        value TEXT*/
+
+        QString key = parts[0].split("=")[0];
+        QString value = parts[0].split("=")[1];
+        QString domain;
+        QString path;
+        QString expires;
+
+        for(int i=1; i < parts.length(); i++) {
+            QStringList kvp = parts[i].split("=");
+
+            if(kvp[0].toLower().trimmed() == "domain") domain = kvp[1];
+            if(kvp[0].toLower().trimmed() == "path") path = kvp[1];
+            if(kvp[0].toLower().trimmed() == "expires") expires = kvp[1];
+        }
+
+        QSqlQuery clearOldCookie(R"(
+            DELETE FROM bot_cookie_cache WHERE bot_id=? AND key=? AND domain=?;
+        )");
+
+        clearOldCookie.addBindValue(bot_id);
+        clearOldCookie.addBindValue(key);
+        clearOldCookie.addBindValue(domain);
+
+        clearOldCookie.exec();
+
+        QSqlQuery checkExistingCookie(R"(
+            INSERT INTO bot_cookie_cache(bot_id,key,value,domain,path,expire)
+            VALUES(?,?,?,?,?,?);
+        )");
+
+
+        if(expires == "") {
+            expires = "session";
+        } else {
+            QDateTime expireDate = QDateTime::fromString(expires, "ddd, dd-MMM-yyyy HH:mm:ss 'GMT'");
+            expireDate.setTimeSpec(Qt::UTC);
+            expires = expireDate.toString("yyyy-MM-dd HH:mm:ss");
+        }
+        checkExistingCookie.addBindValue(bot_id);
+        checkExistingCookie.addBindValue(key);
+        checkExistingCookie.addBindValue(value);
+        checkExistingCookie.addBindValue(domain);
+        checkExistingCookie.addBindValue(path);
+        checkExistingCookie.addBindValue(expires);
+        checkExistingCookie.exec();
+
+        qDebug() << "Cookie: " + key+"="+QUrl::toPercentEncoding(value)+"; Path=" + path + "; Domain=" + domain + "; Expires=" + expires+";";
+        //qDebug() << bot_id << key << value << domain << path << expires;
+
+    }
+
+    cookieDb.close();
+    cookieDb.removeDatabase("cookies");
+
+
 }

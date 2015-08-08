@@ -5,6 +5,8 @@
 #include "robot_base.h"
 #include "dbus.h"
 #include "setting.h"
+#include "blocking.h"
+#include <QSqlError>
 
 lookup_thread::lookup_thread(QObject *parent) :
     QObject(parent) {
@@ -15,9 +17,14 @@ void lookup_thread::start(QMap<QString,QString> parameters, QList<int> botIds) {
     //connect(&thread, SIGNAL(started()), this, SLOT(threadStarted()));
     connect(this, SIGNAL(start_worker(QMap<QString,QString>,QList<int>)), &w, SLOT(threadStarted(QMap<QString,QString>,QList<int>)) );
     connect(&w, SIGNAL(finished()), this, SLOT(worker_finish()));
+    connect(&w, SIGNAL(gotResult()), this, SLOT(worker_result()));
     thread.start();
     w.moveToThread(&thread);
     emit start_worker(parameters,botIds);
+}
+
+void lookup_thread::worker_result() {
+    emit gotResult(this);
 }
 
 void lookup_thread::worker_finish() {
@@ -35,20 +42,29 @@ lookup_thread::~lookup_thread() {
 
 void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> botIds) {
 
-    QString botQuery = "SELECT id, name, xml, country FROM bot WHERE 1=1";
+    // run bots with auto-block capability first
+    QString botQuery = R"(
+            SELECT bot.id, bot.name, bot.xml, bot.country FROM bot
+            LEFT JOIN block ON block.bot_id = bot.id
+            WHERE 1=1
+    )";
 
     // test run? (you can test run disabled bots too...)
     if(botIds.length() > 0) {
-        botQuery += " AND id IN (";
+        botQuery += " AND bot.id IN (";
         foreach(int id, botIds) {
             botQuery += QString::number(id) + ",";
         }
 
         botQuery.chop(1);
-        botQuery += ");";
+        botQuery += ")";
     } else {
         botQuery += " AND enabled = 1";
     }
+
+    botQuery += R"(
+        ORDER BY COALESCE(block.bot_id,9999),bot.id
+    )";
 
 
     QString tagWanted = "lookup";
@@ -77,29 +93,65 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
             }
         }
 
-        robot_base rb(sq.value("id").toInt());
 
-        if(!rb.parse(sq.value("xml").toString())) {
-            qDebug() << "xml parsing failed. skip robot.";
-            continue;
+        QSqlQuery cacheQ;
+        cacheQ.prepare("SELECT * FROM bot_result_cache WHERE bot_id=? AND telnr IN (?,?)");
+        cacheQ.addBindValue(sq.value("id").toInt());
+        cacheQ.addBindValue(parameters["telnr"]);
+        cacheQ.addBindValue(parameters["telnrInt"]);
+
+        cacheQ.exec();
+
+        QDomDocument result;
+
+        if(cacheQ.next()) {
+            result.setContent( QString::fromUtf8( qUncompress( cacheQ.value("result").toByteArray() ) )  );
+        } else {
+
+            robot_base rb(sq.value("id").toInt());
+
+            if(!rb.parse(sq.value("xml").toString())) {
+                qDebug() << "xml parsing failed. skip robot.";
+                continue;
+            }
+
+            if(tagWanted == "lookup")
+                dbus_adapter::Instance()->set_lookupState("running:" + sq.value("name").toString());
+
+            QSqlQuery sqp("SELECT * FROM bot_param WHERE bot_id = " + sq.value("id").toString() );
+            sqp.exec();
+
+            while(sqp.next()) {
+                parameters.insert(sqp.value("key").toString(), sqp.value("value").toString());
+            }
+
+            result = rb.run(parameters, tagWanted);
+
+            bool block = result.documentElement().elementsByTagName("block").count() > 0;
+
+            if(result.documentElement().elementsByTagName("nocache").count() == 0) {
+                QSqlQuery cacheInsert;
+                cacheInsert.prepare("INSERT INTO bot_result_cache (bot_id, telnr, result, block) VALUES(:id,:telnr,:result,:block)");
+                cacheInsert.bindValue(":id", sq.value("id").toInt());
+                cacheInsert.bindValue(":telnr", parameters["telnrInt"]);
+                cacheInsert.bindValue(":result", qCompress( result.toString().toUtf8() ));
+                cacheInsert.bindValue(":block", (int)block);
+                if(!cacheInsert.exec()) {
+                    qDebug() << sq.value("id").toInt();
+                    qDebug() << parameters["telnrInt"];
+                    qDebug() << result.toString();
+                    qDebug() << block;
+                    qDebug() << "cache insert error" << cacheInsert.lastError();
+                }
+            }
         }
 
-        if(tagWanted == "lookup")
-            dbus_adapter::Instance()->set_lookupState("running:" + sq.value("name").toString());
-
-        QSqlQuery sqp("SELECT * FROM bot_param WHERE bot_id = " + sq.value("id").toString() );
-        sqp.exec();
-
-        while(sqp.next()) {
-            parameters.insert(sqp.value("key").toString(), sqp.value("value").toString());
-        }
-
-        sqp.finish();
-
-        QDomDocument result = rb.run(parameters, tagWanted);
+        emit gotResult();
 
         qDebug() << "xml result";
         qDebug() << result.toString();
+
+        // save result in db cache
 
         QJsonArray displayArray;
 
@@ -182,10 +234,6 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
                                       Q_ARG(QString,displayDataDoc.toJson()));
         }
     }
-
-    sq.finish();
-//    db.close();
-
 
     // check if popup should timeout
     int popupTimeout = setting::get("popup_timeout","0").toInt() * 1000;

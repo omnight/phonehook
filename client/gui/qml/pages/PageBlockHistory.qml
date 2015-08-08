@@ -3,6 +3,7 @@ import Sailfish.Silica 1.0
 
 Page {
     id: root
+    property variant contextItem
 
     Label {
         text: "No events"
@@ -29,18 +30,58 @@ Page {
             anchors.right: parent.right
             height: contentHeight || 0
             interactive: false
-            anchors.margins: Theme.paddingLarge
+            property Item contextMenu
 
             delegate:
                 BackgroundItem {
                     id: delegate
+                    property string number: model.number
+                    property bool menuOpen: historyView.contextMenu != null && historyView.contextMenu.parent === delegate
+                    height: menuOpen ? historyView.contextMenu.height + contentItem.height : contentItem.height
 
-                    Label {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: model.date
-                        color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
+                    Column {
+                        id: contentItem
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.paddingMedium
+                        anchors.right: parent.right
+                        anchors.rightMargin: Theme.paddingMedium
+                        Label {
+                            text: model.number
+                            color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
+                        }
+                        Label {
+                            text: model.date
+                            color: delegate.highlighted ? Theme.highlightColor : Theme.secondaryColor
+                            font.pixelSize: Theme.fontSizeSmall
+                        }
+                    }
+
+                    onClicked: {
+                        contextItem = delegate
+                        if (!historyView.contextMenu)
+                            historyView.contextMenu = contextMenuComponent.createObject(historyView)
+                        historyView.contextMenu.show(delegate)
+                    }
+
+                }
+
+
+                Component {
+                    id: contextMenuComponent
+                    ContextMenu {
+                        MenuItem {
+                            text: qsTr("Lookup");
+                            enabled: contextItem.number.length > 4
+                            onClicked: {
+                                _bots.testBot(0, contextItem.number);
+                            }
+                        }
                     }
                 }
+
             }
     }
+
+
+
 }

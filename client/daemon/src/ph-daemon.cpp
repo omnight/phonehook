@@ -15,12 +15,44 @@
 
 #include "overlay.h"
 
+#include <QTextStream>
+#include <QtDebug>
+
+void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString txt;
+    switch (type) {
+    case QtDebugMsg:
+        txt = QString("Debug: %1").arg(msg);
+        break;
+    case QtWarningMsg:
+        txt = QString("Warning: %1").arg(msg);
+    break;
+    case QtCriticalMsg:
+        txt = QString("Critical: %1").arg(msg);
+    break;
+    case QtFatalMsg:
+        txt = QString("Fatal: %1").arg(msg);
+        abort();
+    }
+    QFile outFile("/home/nemo/ph-log.txt");
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    QTextStream ts(&outFile);
+    ts << txt << endl;
+}
+
 int main(int argc, char *argv[])
 {
+
+    // enable for file logging
+    //qInstallMessageHandler(myMessageHandler);
 
     setuid(0);
     qDebug() << "daemon starting?";
     QGuiApplication app(argc, argv);
+
+
+
     qDebug() << "open db";
 
     db::Instance(&app);
@@ -45,4 +77,6 @@ int main(int argc, char *argv[])
     return app.exec();
 
 }
+
+
 

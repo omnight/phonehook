@@ -40,6 +40,13 @@
     </message>
 </context>
 <context>
+    <name>PageBlockAddSource</name>
+    <message>
+        <source>Add Block Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PageBlockContact</name>
     <message>
         <source>Block Contact</source>
@@ -50,6 +57,10 @@
     <name>PageBlockHistory</name>
     <message>
         <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lookup</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

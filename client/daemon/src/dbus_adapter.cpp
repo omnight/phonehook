@@ -75,6 +75,11 @@ void dbus_adapter::testLookup(QString number, int botid) {
 
 }
 
+void dbus_adapter::testLookup2(QString number) {
+    // test number with all restrictions in place
+    dbus::Instance()->processNumber(number,true);
+}
+
 
 
 
@@ -86,7 +91,7 @@ void dbus_adapter::messageToPopup(QString function, QString data) {
 }
 
 
-void dbus_adapter::search(QMap<QString,QVariant> parameters, QList<QVariant> bots) {
+void dbus_adapter::search(QVariantMap parameters, QList<QVariant> bots) {
 
     qDebug() << "hello!!" << parameters << bots;
 
@@ -109,4 +114,20 @@ void dbus_adapter::search(QMap<QString,QVariant> parameters, QList<QVariant> bot
     lookup_thread *lt = new lookup_thread();
     lt->start(params, botInt);
 
+}
+
+void dbus_adapter::loginSuccess(int bot_id, QVariantMap parameters) {
+    QMap<QString,QString> params;
+    for(auto a = parameters.begin(); a != parameters.end(); ++a ) {
+        params.insert(a.key(), a.value().toString());
+    }
+
+    lookup_thread *lt = new lookup_thread();
+    lt->start(params, QList<int>() << bot_id);
+
+}
+
+
+void dbus_adapter::blockLastCall(QString alias) {
+    dbus::Instance()->blockLastCall(alias);
 }

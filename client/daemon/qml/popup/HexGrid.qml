@@ -4,6 +4,7 @@ Item {
     property Component hex_comp:  null
     property variant gridpcs: ({})
     property int hexW: 50
+    property bool showWarning: false
 
     id: mw
 
@@ -45,8 +46,10 @@ Item {
                 var old = oldGrid[x+","+y];
                 if(old) delete oldGrid[x+","+y];
 
-                var opacity_t = (y == 0 || yLeft == 0) ? Math.random() : 1;
-                opacity_t = (y == 1 || yLeft == 1) ? 0.7 + Math.random() * 0.3 : opacity_t;
+                var opacity_t = (y == 0 || yLeft == 0) ? 0.5 + Math.random() * 0.5 : 1;
+                opacity_t = (y == 1 || yLeft == 1) ? 0.9 + Math.random() * 0.1 : opacity_t;
+
+                var warn = (y == 0 && showWarning);
 
                 var hexo;
 
@@ -61,7 +64,12 @@ Item {
                     hexo = old;
                 }
 
-                hexo.max_opacity = opacity_t;
+//                console.log(yc, yLeft);
+
+                //console.log('x', xc, 'y', yc);
+
+                hexo.max_opacity = warn ? 1 : opacity_t;
+                hexo.isExclam = warn;
                 hexo.fadeIn();
 
                 newGrid[x+","+y] = hexo;

@@ -24,9 +24,8 @@ public:
 
     QDomDocument run(QMap<QString, QString> parameters, QString tagWanted);
 
-    static void expand(QString &expr);
-    static void expand_advanced(QString &expr, QString regex, QMap<QString,QString> replacement);
-
+    void expand(QString &expr);
+    void expand_advanced(QString &expr, QString regex, QMap<QString,QString> replacement);
 
 
 private:   
@@ -36,7 +35,7 @@ private:
     handler_format handleFormat;
     int botId;
 
-    static QMap<QString,QString> parameters;
+    QMap<QString,QString> parameters;
 
     void processNode(QStack<process_data*> inputDataTree, const QDomElement &inputNode, QDomElement outputNode);
 

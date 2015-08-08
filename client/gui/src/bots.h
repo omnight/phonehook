@@ -15,6 +15,23 @@
 #include <QDBusServiceWatcher>
 #include <QDBusMessage>
 #include "db_model.h"
+#include <QNetworkCookie>
+#include <QNetworkCookieJar>
+
+#include <QQuickView>
+#include <QQmlEngine>
+
+#include <private/qquickwebview_p.h>
+
+class OpenJar: public QNetworkCookieJar {
+    Q_OBJECT
+public:
+    explicit OpenJar(QObject *parent=0): QNetworkCookieJar(parent) { }
+    QList<QNetworkCookie> allCookies() {
+        return QNetworkCookieJar::allCookies();
+    }
+
+};
 
 class bots : public QObject
 {
@@ -23,6 +40,8 @@ class bots : public QObject
     Q_PROPERTY(PhSqlModel* botList READ botList NOTIFY botList_changed)
     Q_PROPERTY(PhSqlModel* botSearchList READ botSearchList NOTIFY botSearchList_changed)
     Q_PROPERTY(PhSqlModel* paramList READ paramList NOTIFY paramList_changed)
+    Q_PROPERTY(PhSqlModel* loginList READ loginList NOTIFY loginList_changed)
+
     Q_PROPERTY(bool daemonActive READ daemonActive NOTIFY daemonActive_changed)
     Q_PROPERTY(bool testSources READ testSources NOTIFY testSources_changed)
     Q_PROPERTY(QString country READ country NOTIFY country_changed)
@@ -40,6 +59,8 @@ public:
     }
     PhSqlModel *botSearchList() { return &m_botSearchList; }
     PhSqlModel *paramList() { return &m_paramList; }
+    PhSqlModel *loginList() { return &m_loginList; }
+
     bool daemonActive() { return m_daemonActive; }
     bool testSources() { return m_testSources; }
     QString country();
@@ -67,10 +88,32 @@ public:
     Q_INVOKABLE void clearCache(int botId);
     Q_INVOKABLE void setBotSearchListTag(QString tag);
 
+    Q_INVOKABLE bool hasBlockTag(int botId);
+    Q_INVOKABLE bool isBlockSource(int botId);
+    Q_INVOKABLE void setBlockSource(int botId, bool enabled);
+
+    OpenJar jar;
+
+    Q_INVOKABLE int cookieCount()
+    {
+        return jar.allCookies().length();
+    }
+
+    Q_INVOKABLE void setCookieManager(QQuickWebView *view) {
+        //view->experimental()->deleteAllCookies();
+        //qDebug() << view->experimental()->dynamicPropertyNames();
+        //view->experimental()->evaluateJavaScript();
+        //view->engine()->networkAccessManager()->setCookieJar(&jar);
+    }
+
+    Q_INVOKABLE void copyCookies(int bot_id);
+
 signals:
     void botList_changed(PhSqlModel*);
     void botSearchList_changed(PhSqlModel*);
     void paramList_changed(PhSqlModel*);
+    void loginList_changed(PhSqlModel*);
+
     void daemonActive_changed(bool active);
     void botDownloadSuccess(int botId);
     void botDownloadFailure();
@@ -87,6 +130,7 @@ private:
     PhSqlModel m_botList;
     PhSqlModel m_botSearchList;
     PhSqlModel m_paramList;
+    PhSqlModel m_loginList;
     int m_version;
     bool m_daemonActive;
     bool m_testSources;

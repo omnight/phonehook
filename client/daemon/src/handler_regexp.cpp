@@ -2,8 +2,9 @@
 #include <QDebug>
 #include "robot_base.h"
 
-handler_regexp::handler_regexp(QObject *parent) :
-    QObject(parent)
+handler_regexp::handler_regexp(robot_base *parent) :
+    QObject(parent),
+    owner(parent)
 {
 }
 
@@ -42,7 +43,7 @@ QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, Q
     foreach(auto r, replaceActions) {
 
 
-        robot_base::expand(r.first);
+        owner->expand(r.first);
         QRegularExpression regex(r.first, QRegularExpression::DotMatchesEverythingOption | QRegularExpression::CaseInsensitiveOption);
 
         qDebug() << "processing regex" << r.first;
@@ -76,7 +77,7 @@ QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, Q
                 }
 
                 QString res = r.second.toString();
-                robot_base::expand_advanced(res, "\\$(\\d+)", replaceMap );
+                owner->expand_advanced(res, "\\$(\\d+)", replaceMap );
                 results.at(0)->value.append( res );
                 lastCaptureIndex = m.capturedEnd();
             /// regex match (multi results)

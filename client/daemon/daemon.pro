@@ -1,6 +1,17 @@
 # The name of your application
 TARGET = phonehook-daemon
 
+
+debug {
+    QMAKE_CXXFLAGS_RELEASE -= -O
+    QMAKE_CXXFLAGS_RELEASE -= -O1
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE -= -O3
+
+    # add the desired -O3 if not present
+    QMAKE_CXXFLAGS_RELEASE += -O3
+}
+
 QT += dbus xml sql gui-private
 CONFIG += sailfishapp c++11
 SOURCES += src/ph-daemon.cpp \
@@ -54,4 +65,6 @@ RESOURCES += \
     ph.qrc
 
 OTHER_FILES += \
-    qml/popup/gui.qml
+    qml/popup/gui.qml \
+    qml/popup/Hex.qml \
+    qml/popup/HexGrid.qml

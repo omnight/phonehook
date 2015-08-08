@@ -13,6 +13,8 @@ Item {
     property bool active: false
     property bool phoneLocked: false
     property bool wantVisible: false
+    property bool adWarning: false
+    property string firstField: ""
 
     onActiveChanged: {
         if(active) fadeIn.start();
@@ -40,15 +42,6 @@ Item {
 
             PropertyAnimation {
                 target: popup;
-                property: "y";
-                duration: 1000;
-                from: -height;
-                to: 100
-                easing.type: Easing.OutBounce
-            }
-
-            PropertyAnimation {
-                target: popup;
                 property: "opacity";
                 duration: 500;
                 from: 0;
@@ -58,7 +51,10 @@ Item {
         }
 
         ScriptAction {
-            script: updateClickArea()
+            script: {
+                bgGrid.targetH = Qt.binding(function() { return popup.height })
+                updateClickArea()
+            }
         }
 
     }
@@ -72,13 +68,10 @@ Item {
 
         ParallelAnimation {
 
-            PropertyAnimation {
-                target: popup;
-                property: "y";
-                duration: 500;
-                from: y;
-                to: -height
-                easing.type: Easing.InOutQuad
+            PropertyAction {
+                target: bgGrid
+                property: "targetH"
+                value: 0
             }
 
             PropertyAnimation {
@@ -98,26 +91,39 @@ Item {
     }
 
 
-    Rectangle {
+    HexGrid {
+        id: bgGrid
+        anchors.topMargin: 0
+        anchors.bottomMargin: 0
+        targetH: popup.height+30
+        targetW: popup.width
+        anchors.fill: popup
+        showWarning: adWarning
+        Component.onCompleted: {
+            //console.log('hex fit?');
+            //hexFit()
+        }
+    }
+
+    Item {
         visible: wantVisible && !phoneLocked
-        width: Screen.width - 60
-        height: Math.max(150, results.height + 40 + btnRow.height + statusField.height)
+        width: Screen.width
+        height: Math.max(150, resultPager.height + 70 + statusField.height)
         id: popup
         y: 100
         x: (Screen.width - width) / 2
+        clip: true
 
-//        Timer {
-//            id: activeTest
-//            interval: 1000
-//            running: true
-//            onTriggered: {
-//                active=true;
-//            }
-//        }
 
-        Component.onCompleted: {
-    //        parent = notificationLayer;
-        }
+
+/*        Timer {
+            id: activeTest
+            interval: 1000
+            running: true
+            onTriggered: {
+                active=true;
+            }
+        }*/
 
 
     //    NemoDBus.DBusInterface {
@@ -147,10 +153,13 @@ Item {
 
             console.log('GOT LOOKUP STATE!!!', state);
 
-            if(state == "activate:lookup") {
+            if(state == "activate:lookup") {    // full reset
                 active = true;
                 statusRow.state = "idle";
                 infoModel.clear();
+                adWarning = false;
+                resultPager.state = "results";
+                firstField = "";
             } else if(state == "finished") {
                 statusRow.state = "idle";
                 if(infoModel.count == 0) {
@@ -192,115 +201,283 @@ Item {
 
             active = true;
             var arr = JSON.parse(data);
-            for(var i=0; i < arr.length; i++)
-                infoModel.append(arr[i]);
+            for(var i=0; i < arr.length; i++) {
+                if(arr[i].tagname=='field') {
+                    infoModel.append(arr[i]);
+                    if(firstField == "") firstField = arr[i].value
+                }
+                if(arr[i].tagname=='block')
+                    adWarning = true;
+            }
         }
 
-
-        RectangularGlow {
-            anchors.fill: inner
-            color: "#80222222"
-            spread: 0.2
-            glowRadius: 10
-        }
-
-        Rectangle {
+        Item {
             anchors.fill: parent
             id: inner
 
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: Qt.darker(Theme.highlightColor, 1.5) }
-                GradientStop { position: 1.0; color: Qt.darker(Theme.highlightColor, 3) }
-            }
-
-            border.width: 2
-            border.color: Theme.highlightDimmerColor
-
             Image {
                 id: img
-                source: "images/ph-logo.png"
+                source: "images/ph-logo-white.png"
                 width: sourceSize.width
                 height: sourceSize.height
                 anchors.top: parent.top
-                anchors.right: parent.right
-                anchors.margins: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: 20
             }
 
-            ListView {
-                id: results
-                model: infoModel
-                width: parent.width
-                anchors.horizontalCenter: parent.horizontalCenter
+
+            Flickable {
+
+                id: resultPager
+                anchors.left: parent.left
+                anchors.right: btnColumn.left
                 anchors.top: parent.top
-                anchors.topMargin: 20
-
-                //        interactive: !(atYBeginning && verticalVelocity < 0) &&
-                //                     !(atYEnd && verticalVelocity > 0)
-
-                boundsBehavior: Flickable.StopAtBounds
+                anchors.topMargin: 70
+                contentWidth: rw.width
                 clip: true
+                interactive: false
 
-                onCountChanged: {
-                    if(count > 0)
-                        height = Qt.binding(function() { return Math.min(Screen.height / 2, contentHeight); })
+                Behavior on contentX {
+                   NumberAnimation {
+                       duration: 250
+                       easing.type: Easing.OutBounce
+                   }
                 }
 
-
-                Behavior on height {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.InOutBack
-                    }
-                }
-
-                delegate: Column {
-                    width: parent.width * 0.9
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Row {
-                        width: parent.width
-                        spacing: 10
-                        Text {
-                            id: text_header
-                            font.pixelSize: 20
-                            font.weight: Font.Bold
-                            text: model.title
-                            color: Theme.primaryColor
-                            wrapMode: Text.NoWrap
+                states: [
+                    State {
+                        name: "results"
+                        PropertyChanges {
+                            target: resultPager
+                            height: rw.height
+                            contentX: 0
                         }
-                        Text {
-                            id: text_source
-                            font.pixelSize: 16
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: '- ' + model.source
-                            opacity: 0.6
-                            color: Theme.highlightColor
-                            wrapMode: Text.NoWrap
+                    },
+                    State {
+                        name: "settings"
+                        PropertyChanges {
+                            target: resultPager
+                            height: settingsBox.height
+                            contentX: resultPager.width
                         }
                     }
 
-                    Text {
-                        font.pixelSize: model.textsize || 26
-                        id: text_content
-                        text: model.value
-                        width: parent.width
-                        color: model.color || Theme.secondaryColor
-                        wrapMode: Text.WordWrap
-                        fontSizeMode: Text.Fit
-                        maximumLineCount: 5
+                ]
+
+                state: "results"
+
+                Rectangle {
+                    id: scrollbar
+                    anchors.left: rw.left
+                    anchors.leftMargin: 4
+                    opacity: 0.5
+                    y: (results.visibleArea.yPosition * results.height)
+                    width: 10
+                    height: results.visibleArea.heightRatio * results.height
+                    color: Theme.highlightColor
+                }
+
+                Row {
+                    id: rw
+                    height: results.height
+                    width: resultPager.width*2
+
+                    ListView {
+                        id: results
+                        model: infoModel
+                        width: resultPager.width
+
+                        //        interactive: !(atYBeginning && verticalVelocity < 0) &&
+                        //                     !(atYEnd && verticalVelocity > 0)
+
+                        boundsBehavior: Flickable.StopAtBounds
+                        clip: true
+
+                        onCountChanged: {
+                            if(count > 0)
+                                height = Qt.binding(function() { return Math.min(Screen.height / 2, contentHeight); })
+                        }
+
+                        Behavior on height {
+                            NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.InOutBack
+                            }
+                        }
+
+                        delegate: Column {
+                            width: parent.width * 0.9
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            Row {
+                                width: parent.width
+                                spacing: 10
+                                Text {
+                                    id: text_header
+                                    font.pixelSize: 20
+                                    font.weight: Font.Bold
+                                    text: model.title
+                                    color: Theme.secondaryColor
+                                    wrapMode: Text.NoWrap
+                                }
+                                Text {
+                                    id: text_source
+                                    font.pixelSize: 16
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: '- ' + model.source
+                                    opacity: 0.6
+                                    color: Theme.highlightColor
+                                    wrapMode: Text.NoWrap
+                                }
+                            }
+
+                            Text {
+                                font.pixelSize: model.textsize || 28
+                                id: text_content
+                                text: model.value
+                                width: parent.width
+                                color: model.color || Theme.primaryColor
+                                wrapMode: Text.WordWrap
+                                fontSizeMode: Text.Fit
+                                maximumLineCount: 5
+                            }
+                            Item {
+                                width: parent.width
+                                height: 15
+                            }
+
+                        }
                     }
+
                     Item {
-                        width: parent.width
-                        height: 15
+                        id: settingsBox
+                        width: resultPager.width
+                        height: 200
+
+                        Row {
+                            anchors.verticalCenter: settingsBox.verticalCenter
+                            anchors.horizontalCenter: settingsBox.horizontalCenter
+                            height: 85
+                            spacing: Theme.paddingLarge
+
+                            Image {
+                                id: backBtn
+                                source: "images/arrow-117-64.png"
+                                height: 64
+                                width: 64
+
+                                Label {
+                                    anchors.top: backBtn.bottom
+                                    anchors.horizontalCenter: backBtn.horizontalCenter
+                                    text: "Back"
+                                    font.pixelSize: Theme.fontSizeSmall
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        resultPager.state = "results"
+                                    }
+                                }
+                            }
+
+                            Image {
+                                id: stopBtn
+                                source: "images/stop-3-64.png"
+                                height: 64
+                                width: 64
+
+                                Label {
+                                    anchors.top: stopBtn.bottom
+                                    anchors.horizontalCenter: stopBtn.horizontalCenter
+                                    text: "Block"
+                                    font.pixelSize: Theme.fontSizeSmall
+                                }
+
+                                SequentialAnimation {
+                                    id: flash
+                                    loops: 2
+                                    animations: [
+                                        PropertyAnimation {
+                                            target: stopBtn
+                                            properties: "opacity"
+                                            from: 1
+                                            to: 0
+                                            duration: 100
+                                        },
+
+                                        PropertyAnimation {
+                                            target: stopBtn
+                                            properties: "opacity"
+                                            from: 0
+                                            to: 1
+                                            duration: 100
+                                        }
+                                    ]
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        _control.blockLastCall(firstField);
+                                        flash.restart();
+                                    }
+                                }
+                            }
+
+
+                        }
+
+
+
                     }
 
+                }
+
+            }
+
+            Column {
+                id: btnColumn
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 20
+                spacing: 20
+                anchors.topMargin: 40
+                width: 50
+
+                Image {
+                    width: 48
+                    height: 48
+                    source: "images/x-mark-5-48.png"
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            hidePopupTimer.stop();
+                            active = false;
+                        }
+
+                    }
+                }
+
+                Image {
+                    width: 48
+                    height: 48
+                    source: "images/gear-2-48.png"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            resultPager.state = "settings"
+                        }
+
+                    }
                 }
             }
 
 
             Item {
                 anchors.right: parent.right
-                anchors.bottom: btnRow.top
+                anchors.bottom: parent.bottom
                 anchors.left: parent.left
                 height: 30
                 anchors.leftMargin: 30
@@ -329,11 +506,6 @@ Item {
                     }
 
                 ]
-
-    //            ProgressBar {
-    //                indeterminate: true
-    //                anchors.fill: parent
-    //            }
 
                 Item {
                     id: loadingAnimation
@@ -390,96 +562,8 @@ Item {
 
             }
 
-            Item {
-                id: btnRow
-                anchors.bottomMargin: 10
-                height: 40
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                anchors.left: parent.left
-
-    //            Item {
-    //                id: spacer
-    //                width: 10
-    //                height: parent.height
-    //            }
-
-
-                Rectangle {
-                    height: parent.height
-                    width: parent.width * 0.7  // (parent.width - (spacer.width * 3)) / 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.darker(Theme.highlightColor, 1.5) }
-                        GradientStop { position: 1.0; color: Qt.darker(Theme.highlightColor, 2.0) }
-                    }
-
-                    border.width: 1
-                    border.color: Theme.highlightDimmerColor
-                    radius: 3
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            hidePopupTimer.stop();
-                            active = false;
-                        }
-                    }
-
-                    Text {
-                        text: "Close"
-                        font.pixelSize: parent.height/2
-                        anchors.centerIn: parent
-                        color: Theme.primaryColor
-                        //font.pixelSize: Theme.fontSizeMedium
-                        //font.weight: Font.Bold
-                    }
-
-                }
-
-    //            Item {
-    //                width: spacer.width
-    //                height: parent.height
-    //            }
-
-    //            Rectangle {
-    //                height: parent.height
-    //                width: (parent.width - (spacer.width * 3)) / 2
-
-    //                gradient: Gradient {
-    //                    GradientStop { position: 0.0; color: "#eeeeee" }
-    //                    GradientStop { position: 1.0; color: "#bfbfbf" }
-    //                }
-
-    //                border.width: 1
-    //                border.color: "#333333"
-    //                radius: 3
-
-    //                MouseArea {
-    //                    anchors.fill: parent
-    //                    onClicked: {
-    //                    }
-    //                }
-
-    //                Text {
-    //                    text: "Menu"
-    //                    font.pixelSize: parent.height/2
-    //                    anchors.centerIn: parent
-    //                }
-
-    //            }
-
-    //            Item {
-    //                width: spacer.width
-    //                height: parent.height
-    //            }
-
-            }
         }
-    }
-
-
+    }  
 
 }
 

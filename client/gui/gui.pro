@@ -12,8 +12,8 @@
 # The name of your application
 TARGET = phonehook
 
-CONFIG += sailfishapp
-QT += dbus xml sql xmlpatterns
+CONFIG += sailfishapp c++11
+QT += dbus xml sql xmlpatterns quick-private webkit-private
 
 SOURCES += \
     src/phonehook.cpp \
@@ -51,7 +51,9 @@ OTHER_FILES += qml/phonehook.qml \
     qml/pages/PageBlockHistory.qml \
     qml/pages/ControlBigButton.qml \
     qml/pages/PageCallLogStart.qml \
-    qml/pages/PageBlockAddManual.qml
+    qml/pages/PageBlockAddManual.qml \
+    qml/pages/PageBlockAddSource.qml \
+    qml/pages/PageOAuth.qml
 
 # to disable building translations every time, comment out the
 # following CONFIG line

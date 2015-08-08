@@ -20,6 +20,7 @@ public slots:
 
 signals:
     void finished();
+    void gotResult();
 
 };
 
@@ -40,10 +41,11 @@ private:
 
 public slots:
     void worker_finish();
+    void worker_result();
 
 signals:
     void start_worker(QMap<QString,QString> parameters, QList<int> botIds);
-
+    void gotResult(lookup_thread *sender);
 };
 
 #endif // LOOKUP_THREAD_H

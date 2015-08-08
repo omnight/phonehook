@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "../setting"
 
 Page {
     id: root
@@ -63,6 +64,7 @@ Page {
             botModel = _bots.getBotDetails(botId);
             _bots.setActiveBot(botId);
             params.model = _bots.paramList;
+            logins.model = _bots.loginList;
             //enabledSwitch.checked = (botModel.enabled === 1);
         }
 
@@ -102,7 +104,7 @@ Page {
 
             Label {
                 text: "None"
-                visible: params.model.count == 0
+                visible: params.model.count == 0 && !_bots.hasBlockTag(botId)
             }
 
             ListView {
@@ -126,6 +128,51 @@ Page {
 
                         onValueChanged: {
                             _bots.setBotParam(model.bot_id,model.key, value);
+                        }
+                    }
+                }
+            }
+
+
+            SettingBool {
+                visible: _bots.hasBlockTag(botId)
+                text: 'Enable Auto-blocking'
+                checked: _bots.isBlockSource(botId)
+                onCheckedChanged: {
+                    _bots.setBlockSource(botId, checked)
+                }
+            }
+
+            Label {
+                width: parent.width
+                text: "Login"
+                font.weight: Font.Bold
+                font.pixelSize: Theme.fontSizeMedium
+                color: Theme.primaryColor
+                visible: logins.model.count > 0
+            }
+
+
+            ListView {
+                id: logins
+                width: parent.width
+                interactive: false
+                height: contentHeight
+
+                delegate: Item {
+                    width: parent.width
+                    height: 70
+                    Button {
+                        anchors.centerIn: parent
+                        text: model.name
+                        onClicked: {
+                            onClicked: {
+                                pageStack.push(Qt.resolvedUrl("PageOAuth.qml"),
+                                               {
+                                                   'bot_id': botModel.id,
+                                                   'login_data': model
+                                               });
+                            }
                         }
                     }
                 }

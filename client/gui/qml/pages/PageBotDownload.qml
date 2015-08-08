@@ -21,7 +21,9 @@ Dialog {
             case 'lookup': return 'Reverse caller lookup';
             case 'person_search': return 'Search for people';
             case 'business_search': return 'Search for businesses';
+            case 'block': return 'Auto-blocking';
         }
+
         return s;   // non-nice name
     }
 

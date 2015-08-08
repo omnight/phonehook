@@ -66,11 +66,18 @@ Page {
         // PullDownMenu and PushUpMenu must be declared in SilicaFlickable, SilicaListView or SilicaGridView
         PullDownMenu {
             enabled: _bots.daemonActive
+/*
+            MenuItem {
+                text: qsTr("Number Test")
+                onClicked: {
+                    onClicked: pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: "Bot Test", botId: 0});
+                }
+            }
+*/
 
             MenuItem {
                 text: qsTr("Settings")
                 onClicked: {
-
                     onClicked: pageStack.push(Qt.resolvedUrl("PageAppSettings.qml"))
                 }
             }
@@ -182,7 +189,7 @@ Page {
                 id: botView
                 model: _bots.daemonActive ? _bots.botList : []
 
-                height: contentHeight || 0
+                height: (contentHeight || 0) + 100
                 anchors.left: parent.left
                 anchors.right: parent.right
 

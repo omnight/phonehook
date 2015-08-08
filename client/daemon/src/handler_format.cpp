@@ -5,8 +5,9 @@
 #include "robot_base.h"
 #include <QJSEngine>
 
-handler_format::handler_format(QObject *parent) :
-    QObject(parent)
+handler_format::handler_format(robot_base *parent) :
+    QObject(parent),
+    owner(parent)
 {
 }
 
@@ -234,7 +235,7 @@ void handler_format::format(QString method, QString params, process_data *p) {
         QMap<QString,QString> map;
         for(int i=0; i < p->value_parts.length(); i++)
             map.insert( QString::number(i) , p->value_parts[i]);
-        robot_base::expand_advanced(formattedValue, "\\{(\\d+)\\}", map);
+        owner->expand_advanced(formattedValue, "\\{(\\d+)\\}", map);
         p->value = formattedValue;
     } else if(method.toLower() == "relativeurl") {
 

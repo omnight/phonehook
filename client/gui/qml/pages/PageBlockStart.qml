@@ -32,6 +32,14 @@ Page {
             enabled: true
 
             MenuItem {
+                text: "Add Block Source"
+                onClicked: {
+                    _blocks.initSources();
+                    pageStack.push(Qt.resolvedUrl("PageBlockAddSource.qml"))
+                }
+            }
+
+            MenuItem {
                 text: "Block Contact"
                 onClicked: pageStack.push(Qt.resolvedUrl("PageBlockContact.qml"))
             }
@@ -71,7 +79,7 @@ Page {
                 property bool menuOpen: blockView.contextMenu != null && blockView.contextMenu.parent === myListItem
                 property int id: model.id
 
-                property string name: model.name ||
+                property string name: model.name || model.bot_name ||
                                       (model.contact_id ? _blocks.contactName(model.contact_id) : ' ??' )
 
                 width: ListView.view.width

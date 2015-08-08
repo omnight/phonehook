@@ -3,9 +3,11 @@
 #include <QNetworkProxy>
 #include "compression.h"
 #include <QSqlQuery>
+#include <QNetworkCookie>
 
-handler_url::handler_url(int botId, QObject *parent)
+handler_url::handler_url(int botId, robot_base *parent)
     : QObject(parent),
+      owner(parent),
       waitThreadObj(this),
       cookieStore(botId) {
 
@@ -52,7 +54,7 @@ void handler_url_thread::beginRequest(const QNetworkRequest request, QObject* ja
 void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, process_data *pd) {
 
     QString nextUrl = pd->value;
-    robot_base::expand(nextUrl);
+    owner->expand(nextUrl);
 
     // find earlier URL to use as relative URL
     QUrl urlBase;
@@ -62,178 +64,202 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
 
     if(pp) urlBase = pp->url;
 
-    QFile cacheFile;
-
     QString method = robotXml.attribute("postrequest", "false") == "true" ? "post" : "get";
     QString postdata = robotXml.attribute("postdata", "");
-    robot_base::expand(postdata);
-
-    while(nextUrl != "") {
-
-        // support relative paths
-        urlBase = urlBase.resolved(nextUrl);
-
-        qDebug() << "LOADING" << urlBase.toString();
-
-        pd->url = urlBase;
-
-        QNetworkRequest req;
-        req.setUrl(urlBase.toString());
-
-        if(robotXml.attribute("requestfields", "") == "Header") {
-
-            foreach(QString line, robotXml.attribute("requestvalue").split("\n", QString::SkipEmptyParts)) {
-                qDebug() << "HEADER" << line;
-                QStringList keyValue = line.split(":");
-                if(keyValue.length() >= 2) {
-                    QByteArray key = keyValue[0].toLocal8Bit();
-                    keyValue.removeFirst();
-                    QByteArray value = keyValue.join(":").toLocal8Bit();
-                    req.setRawHeader(key, value);
-                }
-            }
-        }
-
-        // calculate request hash
+    owner->expand(postdata);
 
 
-        int cacheMaxAge = robotXml.attribute("cache", "0").toInt();
-        QByteArray cacheData;
-        bool hasCache = false;
+    QString hashKey = "";
+    int cacheMax = 0;
+    bool hasCache = false;
 
-//        if(cacheMaxAge != 0) {
+    QRegularExpression timeSpanRx(R"(^(?:(?<day>\d+)?(?:\.|$))?(?:(?<hour>\d\d?)(?::(?<minute>\d\d?)(?::(?<second>\d\d?)(?:\.(?<ms>\d+))?)?)?)?$)");
+
+    QRegularExpressionMatch timeSpanMatch =
+            timeSpanRx.match(robotXml.attribute("httpcache", "0"));
+
+    qDebug() << "http cache = " << robotXml.attribute("httpcache", "0");
+
+    if(timeSpanMatch.hasMatch()) {
+        QString day_s = timeSpanMatch.captured("day");
+        QString hour_s = timeSpanMatch.captured("hour");
+        QString minute_s = timeSpanMatch.captured("minute");
+        QString second_s = timeSpanMatch.captured("second");
+        //QString ms_s = timeSpanMatch.captured("ms");
+
+        if(!day_s.isNull()) cacheMax += day_s.toInt() * 24 * 3600;
+        if(!hour_s.isNull()) cacheMax += hour_s.toInt() * 3600;
+        if(!minute_s.isNull()) cacheMax += minute_s.toInt() * 60;
+        if(!second_s.isNull()) cacheMax += second_s.toInt();
+
+        if(cacheMax > 0) {
+            qDebug() << "max cache (s)" << cacheMax;
 
             QByteArray hashData;
+            QString rv = robotXml.attribute("requestvalue");
+            owner->expand(rv);
+            hashData.append("rv:" + rv);
+            hashData.append("post:" + postdata);
+            hashData.append("encoding:" + robotXml.attribute("encoding", ""));
+            hashData.append("wheaders:" + robotXml.attribute("includeheaders", "false").toLower());
 
-            foreach(QByteArray b, req.rawHeaderList()) {
-                hashData.append(b);
+            hashKey = QCryptographicHash::hash(hashData,QCryptographicHash::Md5).toHex();
+
+            qDebug() << "hashkey is" << hashKey;
+        }
+    }
+
+    // try cache lookup if we have a hash key and max cache age
+    if(hashKey != "" && cacheMax != 0) {
+
+        QSqlQuery sq(R"(
+            SELECT result,
+                   CAST(strftime('%s', CURRENT_TIMESTAMP) AS INTEGER)
+                   - CAST(strftime('%s',cache_date) AS INTEGER) cache_age
+            FROM bot_response_cache
+            WHERE bot_id=? AND httpRequestKey=?
+            AND (CAST(strftime('%s', CURRENT_TIMESTAMP) AS INTEGER)
+                 - CAST(strftime('%s',cache_date) AS INTEGER) < ?)
+        )");
+
+        sq.addBindValue(botId);
+        sq.addBindValue(hashKey);
+        sq.addBindValue(cacheMax);
+
+        sq.exec();
+
+        if(sq.next()) {
+            qDebug() << "using data from bot_response_cache " << sq.value("cache_age").toInt() << " s old";
+            pd->value = QString::fromUtf8( qUncompress(sq.value("result").toByteArray()) );
+            hasCache = true;
+        }
+    }
+
+    if(!hasCache) {
+        while(nextUrl != "") {
+
+            // support relative paths
+            urlBase = urlBase.resolved(nextUrl);
+            pd->url = urlBase;
+
+            qDebug() << "LOADING" << urlBase.toString();
+
+            QNetworkRequest req;
+            req.setUrl(urlBase.toString());
+
+            if(robotXml.attribute("requestfields", "") == "Header") {
+
+                foreach(QString line, robotXml.attribute("requestvalue").split("\n", QString::SkipEmptyParts)) {
+                    qDebug() << "HEADER" << line;
+                    QStringList keyValue = line.split(":");
+                    if(keyValue.length() >= 2) {
+                        QByteArray key = keyValue[0].toLocal8Bit();
+                        keyValue.removeFirst();
+                        QByteArray value = keyValue.join(":").toLocal8Bit();
+                        req.setRawHeader(key, value);
+                    }
+                }
             }
 
             foreach(QNetworkCookie c, cookieStore.cookiesForUrl(urlBase)) {
-                hashData.append(c.name());
-                hashData.append(":");
-                hashData.append(c.value());
+                qDebug() << "COOKIE" << c.name() << ":" << c.value();
             }
 
-            hashData.append(postdata);
+            if(!hasCache) {
 
-            QString hashKey = QCryptographicHash::hash(hashData,QCryptographicHash::Md5).toHex();
+                waitForReplyMutex.lock();
+                QMetaObject::invokeMethod(&waitThreadObj, "beginRequest",
+                                          Q_ARG(const QNetworkRequest, req),
+                                          Q_ARG(QObject*, &cookieStore),
+                                          Q_ARG(QString, method),
+                                          Q_ARG(QByteArray, postdata.toUtf8()));
 
-            qDebug() << "hashkey is" << hashKey;
+                waitForReply.wait(&waitForReplyMutex);
+                qDebug() << "wait finished";
 
-            cacheFile.setFileName( "/home/nemo/.phonehook/cache/" + hashKey );
+                waitForReplyMutex.unlock();
 
-            if(cacheFile.exists()) {
-//                QFileInfo fi(cacheFile);
-//                long age =
-//                fi.lastModified().secsTo(QDateTime::currentDateTime());
+                nextUrl = "";
 
-//                if(age / 60 < cacheMaxAge) {
-//                    cacheData = cacheFile.readAll();
-//                    hasCache = true;
-//                } else {
-                    cacheFile.remove();
-//                }
+                qDebug() << "status code" << reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+
+                if(robotXml.attribute("followredirect", "true").toLower() == "true") {
+                    nextUrl = reply->rawHeader("Location");
+                    postdata = "";
+                    method = "get";
+                }
             }
-//        }
-
-        foreach(QNetworkCookie c, cookieStore.cookiesForUrl(urlBase)) {
-            qDebug() << "COOKIE" << c.name() << ":" << c.value();
-        }
-
-        if(!hasCache) {
-
-            waitForReplyMutex.lock();
-            QMetaObject::invokeMethod(&waitThreadObj, "beginRequest",
-                                      Q_ARG(const QNetworkRequest, req),
-                                      Q_ARG(QObject*, &cookieStore),
-                                      Q_ARG(QString, method),
-                                      Q_ARG(QByteArray, postdata.toUtf8()));
-
-            waitForReply.wait(&waitForReplyMutex);
-            qDebug() << "wait finished";
-
-            waitForReplyMutex.unlock();
+            if(nextUrl != "") reply->deleteLater();
 
         }
 
-        //pd->cookies.append( reply->header(QNetworkRequest::SetCookieHeader).value< QList<QNetworkCookie> >() );
 
-//        for(int i=0; i < pd->cookies.length(); i++) {
-//            QNetworkCookie cookie = pd->cookies.at(i);
-//            if(cookie.domain() == "") cookie.setDomain(QUrl(urlBase).host());
-//            pd->cookies.replace(i, cookie);
 
-//            qDebug() << "set-cookie" << pd->cookies.at(i).name() << pd->cookies.at(i).value() << pd->cookies.at(i).domain();
-//            jar->insertCookie(cookie);
-//        }
+        QByteArray responseBytes;
+        QByteArray rawResponse = reply->readAll();
+        QString encoding = reply->rawHeader("Content-Encoding").toLower();
 
-        nextUrl = "";
+        qDebug() << "content-encoding" << encoding << "encoding" << robotXml.attribute("encoding", "");
 
-        qDebug() << "status code" << reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
-
-        if(robotXml.attribute("followredirect", "true").toLower() == "true") {
-            nextUrl = reply->rawHeader("Location");
-            postdata = "";
-            method = "get";       
-        }
-
-        if(nextUrl != "") reply->deleteLater();
-
-    }
-
-    QByteArray responseBytes;
-    QByteArray rawResponse = reply->readAll();
-    QString encoding = reply->rawHeader("Content-Encoding").toLower();
-
-    qDebug() << "content-encoding" << encoding << "encoding" << robotXml.attribute("encoding", "");
-
-    if(encoding == "gzip") {
-        responseBytes = Compression::gUncompress(rawResponse);
-        if(responseBytes.length() == 0) {
+        if(encoding == "gzip") {
+            responseBytes = Compression::gUncompress(rawResponse);
+            if(responseBytes.length() == 0) {
+                responseBytes = rawResponse;
+            } else {
+                qDebug() << "warning: QNetworkReply gzip uncompression failed. manual un-gzip.";
+            }
+        } else  {
+            if(encoding != "")
+                qDebug() << "warning: unsupported encoding " << encoding;
             responseBytes = rawResponse;
+        }
+
+        if(robotXml.attribute("encoding", "") != "") {
+            QTextDecoder *dec = QTextCodec::codecForName(robotXml.attribute("encoding", "").toLocal8Bit())->makeDecoder();
+            pd->value = dec->toUnicode(responseBytes);
+            delete dec;
         } else {
-            qDebug() << "warning: QNetworkReply gzip uncompression failed. manual un-gzip.";
-        }
-    } else  {
-        if(encoding != "")
-            qDebug() << "warning: unsupported encoding " << encoding;
-        responseBytes = rawResponse;
-    }
-
-    if(robotXml.attribute("encoding", "") != "") {
-        QTextDecoder *dec = QTextCodec::codecForName(robotXml.attribute("encoding", "").toLocal8Bit())->makeDecoder();
-        pd->value = dec->toUnicode(responseBytes);
-        delete dec;
-    } else {
-        pd->value = responseBytes;
-    }
-
-
-    if( robotXml.attribute("includeheaders", "false").toLower() == "true" ) {
-        QString headers;
-        for(int i=0; i < reply->rawHeaderPairs().length(); i++) {
-            QPair< QByteArray, QByteArray > p = reply->rawHeaderPairs()[i];
-            headers += p.first + ": " + p.second + "\n";
+            pd->value = responseBytes;
         }
 
-        headers += "\n";
-        pd->value = headers + pd->value;
+
+        if( robotXml.attribute("includeheaders", "false").toLower() == "true" ) {
+            QString headers;
+            for(int i=0; i < reply->rawHeaderPairs().length(); i++) {
+                QPair< QByteArray, QByteArray > p = reply->rawHeaderPairs()[i];
+                headers += p.first + ": " + p.second + "\n";
+            }
+            headers += "\n";
+            pd->value = headers + pd->value;
+        }
+
+        if(hashKey != "" && cacheMax > 0) {
+
+            QSqlQuery sq(R"(
+                DELETE FROM bot_response_cache WHERE bot_id=? AND httpRequestKey=?
+            )");
+            sq.addBindValue(botId);
+            sq.addBindValue(hashKey);
+            sq.exec();
+
+            sq.prepare(R"(
+                INSERT INTO bot_response_cache(bot_id,httpRequestKey,result)
+                VALUES(?,?,?)
+            )");
+            sq.addBindValue(botId);
+            sq.addBindValue(hashKey);
+            sq.addBindValue(qCompress(pd->value.toUtf8()));
+            sq.exec();
+        }
+
     }
-
-
-    // save cache
-//    cacheFile.open(QFile::WriteOnly);
-//    cacheFile.write(pd->value.toUtf8());
-//    cacheFile.flush();
-//    cacheFile.close();
-
 
     qDebug() << pd->value.length() << "bytes" << pd->value.left(200);
 
     pd->node_id = robotXml.attribute("id", "");
 
-    reply->deleteLater();
+    if(!hasCache)
+        reply->deleteLater();
 
 }
 
@@ -363,4 +389,14 @@ QList<QNetworkCookie> CookieMonster::cookiesForUrl(const QUrl &url) const {
     }
 
     return result;
+}
+
+
+QString handler_url::getCookie(QString key) {
+
+    foreach (QNetworkCookie c,  cookieStore.allCookies()) {
+        if(c.name() == key) return c.value();
+    }
+
+    return "";
 }

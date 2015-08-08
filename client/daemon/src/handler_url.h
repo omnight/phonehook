@@ -13,6 +13,7 @@
 #include <QThread>
 
 class handler_url;
+class robot_base;
 
 class handler_url_thread: public QObject {
     Q_OBJECT
@@ -83,16 +84,16 @@ private:
 
     QThread waitThread;
     handler_url_thread waitThreadObj;
-
     QMutex waitForReplyMutex;
     CookieMonster cookieStore;
-
+    robot_base *owner;
     int botId;
 
 public:
     QWaitCondition waitForReply;
-    explicit handler_url(int botId, QObject *parent = 0);
+    explicit handler_url(int botId, robot_base *parent = 0);
     void loadUrl(const QDomElement &robotXml, process_data *inputData, process_data *pd);
+    QString getCookie(QString key);
 
     QNetworkReply *reply;
 
