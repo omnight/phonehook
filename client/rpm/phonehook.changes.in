@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* 2015-08-08 <omnight@gmail.com> 0.5.0-2
+- Fixed DB update script
+
 * 2015-08-08 <omnight@gmail.com> 0.5.0-1
 - Added automatic call blocking
 - New popup design (with quick call blocking)

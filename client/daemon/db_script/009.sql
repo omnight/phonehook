@@ -24,7 +24,7 @@ BEGIN TRANSACTION;
     INSERT INTO bot_result_cache(bot_id,telnr,cache_date,result) SELECT * FROM bot_result_cache_backup;
     DROP TABLE bot_result_cache_backup;
 
-COMMIT
+COMMIT;
 
 -- Re-create BOT_RESPONSE_CACHE
 BEGIN TRANSACTION;
@@ -39,7 +39,7 @@ BEGIN TRANSACTION;
         result BLOB
     );
 
-COMMIT
+COMMIT;
 
 ALTER TABLE BLOCK_HISTORY ADD COLUMN number TEXT;
 

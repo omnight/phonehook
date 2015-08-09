@@ -44,7 +44,7 @@ BEGIN TRANSACTION;
     INSERT INTO bot_param SELECT * FROM bot_param_backup;
     DROP TABLE bot_param_backup;
 
-COMMIT
+COMMIT;
 
 
 -- Add foreign key to BOT_COOKIE_CACHE
@@ -76,7 +76,7 @@ BEGIN TRANSACTION;
     INSERT INTO bot_cookie_cache SELECT * FROM bot_cookie_cache_backup;
     DROP TABLE bot_cookie_cache_backup;
 
-COMMIT
+COMMIT;
 
 -- Add foreign key to BOT_TAG
 BEGIN TRANSACTION;
@@ -98,4 +98,4 @@ BEGIN TRANSACTION;
     INSERT INTO bot_tag SELECT * FROM bot_tag_backup;
     DROP TABLE bot_tag_backup;
 
-COMMIT
+COMMIT;

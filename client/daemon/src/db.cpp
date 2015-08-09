@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QDebug>
 
 db *db::m_Instance = NULL;
@@ -73,6 +74,8 @@ void db::initDbTables() {
         foreach(QString part, queryText.split(";", QString::SkipEmptyParts)) {
             if(part.trimmed().isEmpty()) continue ;
             if(!q.exec( part )) {
+                qDebug() << part;
+                qDebug() << q.lastError();
                 qDebug() << "update failed - " << part;
             }
         }
