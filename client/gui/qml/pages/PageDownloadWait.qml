@@ -17,7 +17,7 @@ Page {
     Label {
         id: errorText
         anchors.centerIn: parent
-        text: "Download Error :("
+        text: qsTr("Download Error :(")
         visible: false
     }
 

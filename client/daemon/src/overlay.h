@@ -3,6 +3,7 @@
 
 #include "sailfishapp.h"
 #include <QObject>
+#include <QTimer>
 
 class overlay: public QObject
 {
@@ -11,6 +12,7 @@ class overlay: public QObject
 private:
     QQuickView *m_overlayView;
     bool m_overlayInitFinished;
+    QTimer showTimer;
 
 public:
     explicit overlay(QObject *parent = 0);
@@ -18,6 +20,8 @@ public:
     void show();
 
 private slots:
+
+    void onShowTimerTick();
 
 
 };

@@ -73,6 +73,13 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
         // parameters.remove("tagWanted");
     }
 
+    // delete previous vCard
+    if(QFile::exists("/home/nemo/.phonehook/phonehook.vcf"))
+        QFile::remove("/home/nemo/.phonehook/phonehook.vcf");
+
+    vCardData.clear();
+    vCardData["telnr"] = parameters["telnrInt"];
+
     qDebug() << "bot query" << botQuery;
 
     QSqlQuery sq(botQuery);
@@ -150,6 +157,12 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
 
         qDebug() << "xml result";
         qDebug() << result.toString();
+
+        // update contact card
+
+
+
+        updateVCard(result);
 
         // save result in db cache
 
@@ -248,5 +261,74 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
     qDebug() << "lookup finished?";
     emit finished();
 
+
+}
+
+
+
+void lookup_worker::updateVCard(QDomDocument data) {
+
+/*
+ * method call sender=:1.333 -> dest=com.jolla.contacts.ui serial=52 path=/com/jolla/contacts/ui; interface=com.jolla.contacts.ui; member=importContactFile
+   string "file:///home/nemo/vtest.vcf"
+ */
+
+// dbus-send --session --type=method_call --print-reply --dest=com.jolla.contacts.ui /com/jolla/contacts/ui com.jolla.contacts.ui.importContactFile string:"file://home/nemo/.phonehook/phonehook.vcf"
+
+    QDomNodeList nodeList = data.elementsByTagName("field");
+
+    for(int i=0; i < nodeList.count(); i++) {
+
+        QDomNode node = nodeList.at(i);
+
+        QDomNodeList titleList = node.toElement().elementsByTagName("stitle");
+        QDomNodeList valueList = node.toElement().elementsByTagName("value");
+        if(titleList.count() != 1 || valueList.count() != 1)
+            continue;
+
+        QString title = titleList.at(0).toElement().text();
+        QString value = valueList.at(0).toElement().text();
+
+
+        if(!vCardData.contains(title))
+            vCardData[title] = value;
+    }
+
+    QFile vCardFile("/home/nemo/.phonehook/phonehook.vcf");
+    if(vCardFile.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&vCardFile);
+        stream.setCodec("UTF-8");
+        stream << "BEGIN:VCARD" << endl <<
+                  "VERSION:3.0" << endl;
+
+        QMap<QString,QString>::iterator vi;
+
+        for(vi = vCardData.begin(); vi != vCardData.end(); ++vi) {
+            if(vi.key() == "name") {
+                stream << "FN:" << vi.value() << endl;
+            }
+
+            if(vi.key() == "address") {
+                stream << "ADR:" << vi.value().replace("\r\n", " ").replace("\n", " ").replace("\r", " ") << endl;
+            }
+
+            if(vi.key() == "email") {
+                stream << "EMAIL:" << vi.value() << endl;
+            }
+
+            if(vi.key() == "profession") {
+                stream << "TITLE:" << vi.value() << endl;
+            }
+
+            if(vi.key() == "telnr") {
+                stream << "TEL:" << vi.value() << endl;
+            }
+
+        }
+
+        stream << "END:VCARD";
+        stream.flush();
+        vCardFile.close();
+    }
 
 }

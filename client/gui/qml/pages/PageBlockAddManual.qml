@@ -21,7 +21,7 @@ Dialog {
 
         DialogHeader {
             id: header
-            acceptText: "Add Block"
+            acceptText: qsTr("Add Block")
         }
 
         Column {
@@ -34,7 +34,7 @@ Dialog {
 
             Text {
                 color: Theme.secondaryColor
-                text: "Add a number to be blocked. Number may be either local or international variety. Use * for wildcard matching."
+                text: qsTr("Add a number to be blocked. Number may be either local or international variety. Use * for wildcard matching.")
                 font.pixelSize: Theme.fontSizeSmall
                 width: parent.width
                 wrapMode: Text.Wrap
@@ -48,7 +48,8 @@ Dialog {
             TextSwitch {
                 width: parent.width
                 id: blockHidden
-                text: "Hidden number"
+                //: toggle switch for hidden number
+                text: qsTr("Hidden number")
                 checked: false
                 onCheckedChanged: {
 
@@ -58,7 +59,8 @@ Dialog {
             TextField {
                 id: blockName
                 width: parent.width
-                placeholderText: "Name"
+                //: placeholder for name input
+                placeholderText: qsTr("Name")
                 visible: !blockHidden.checked
                 text: name
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -68,7 +70,8 @@ Dialog {
                 id: blockNumber
                 visible: !blockHidden.checked
                 width: parent.width
-                placeholderText: "Phone Number"
+                //: placeholder for number input
+                placeholderText: qsTr("Phone Number")
                 text: number
                 anchors.horizontalCenter: parent.horizontalCenter
                 inputMethodHints: Qt.ImhDialableCharactersOnly

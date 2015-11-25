@@ -13,15 +13,15 @@ Dialog {
 
     DialogHeader {
         id: header
-        acceptText: "Install"
+        acceptText: qsTr("Install")
     }
 
     function niceNameCapability(s) {
         switch(s) {
-            case 'lookup': return 'Reverse caller lookup';
-            case 'person_search': return 'Search for people';
-            case 'business_search': return 'Search for businesses';
-            case 'block': return 'Auto-blocking';
+            case 'lookup': return qsTr('Reverse caller lookup');
+            case 'person_search': return qsTr('Search for people');
+            case 'business_search': return qsTr('Search for businesses');
+            case 'block': return qsTr('Auto-blocking');
         }
 
         return s;   // non-nice name
@@ -59,7 +59,7 @@ Dialog {
             }
 
             Label {
-                text: "Status"
+                text: qsTr("Status")
             }
 
             Text {
@@ -73,10 +73,10 @@ Dialog {
 
                     if(botData.minversion && botData.minversion > _bots.version()) status = 3;
 
-                    if(status == 0) { text = "Not installed yet"; }
-                    if(status == 1) { text = "Installed and up-to-date"; header.acceptText = "Reset"; color = "#DDFFDD" }
-                    if(status == 2) { text = "Update available"; header.acceptText = "Update"; color = "#FFFFDD" }
-                    if(status == 3) { text = "A newer version of phonehook is required"; header.enabled = false; canAccept = false; header.acceptText = ""; }
+                    if(status == 0) { text = qsTr("Not installed yet"); }
+                    if(status == 1) { text = qsTr("Installed and up-to-date"); header.acceptText = qsTr("Reset"); color = "#DDFFDD" }
+                    if(status == 2) { text = qsTr("Update available"); header.acceptText = qsTr("Update"); color = "#FFFFDD" }
+                    if(status == 3) { text = qsTr("A newer version of phonehook is required"); header.enabled = false; canAccept = false; header.acceptText = ""; }
                 }
             }
 
@@ -87,7 +87,7 @@ Dialog {
             }
 
             Label {
-                text: "Link"
+                text: qsTr("Link")
                 visible: botData.link != ""
             }
 
@@ -114,7 +114,7 @@ Dialog {
             }
 
             Label {
-                text: "Capabilities"
+                text: qsTr("Capabilities")
                 visible: botData.capabilities != ""
             }
 
@@ -137,7 +137,7 @@ Dialog {
             }
 
             Label {
-                text: "Description"
+                text: qsTr("Description")
             }
 
             Text {

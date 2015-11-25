@@ -58,7 +58,8 @@ OTHER_FILES += qml/phonehook.qml \
 # to disable building translations every time, comment out the
 # following CONFIG line
 CONFIG += sailfishapp_i18n
-TRANSLATIONS += translations/phonehook-de.ts
+TRANSLATIONS += translations/phonehook-de.ts \
+                translations/phonehook-sv.ts
 
 HEADERS += \
     src/bots.h \

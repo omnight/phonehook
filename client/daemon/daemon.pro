@@ -41,7 +41,9 @@ LIBS += -lz
 # to disable building translations every time, comment out the
 # following CONFIG line
 CONFIG += sailfishapp_i18n
-TRANSLATIONS += translations/ph-daemon-de.ts
+TRANSLATIONS += translations/phonehook-daemon-de.ts \
+                translations/phonehook-daemon-sv.ts
+
 
 HEADERS += \
     src/robot_base.h \
@@ -67,4 +69,5 @@ RESOURCES += \
 OTHER_FILES += \
     qml/popup/gui.qml \
     qml/popup/Hex.qml \
-    qml/popup/HexGrid.qml
+    qml/popup/HexGrid.qml \
+    translations/*.ts

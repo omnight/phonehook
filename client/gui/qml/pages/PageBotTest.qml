@@ -23,7 +23,7 @@ Page {
         TextField {
             id: testNumber
             width: parent.width
-            placeholderText: "Phone Number"
+            placeholderText: qsTr("Phone Number")
             anchors.horizontalCenter: parent.horizontalCenter
             inputMethodHints: Qt.ImhDigitsOnly
         }
@@ -31,7 +31,7 @@ Page {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
 
-            text: "Run"
+            text: qsTr("Run")
             enabled: testNumber.text.length > 0
 
             onClicked: {

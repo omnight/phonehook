@@ -742,3 +742,24 @@ void bots::copyCookies(int bot_id) {
 
 
 }
+
+void bots::vCardWrite(QString name, QStringList numbers, QString address) {
+    QFile vCardFile("/home/nemo/.phonehook/phonehook.vcf");
+    if(vCardFile.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&vCardFile);
+        stream.setCodec("UTF-8");
+        stream << "BEGIN:VCARD" << endl <<
+                  "VERSION:3.0" << endl;
+
+        if(!name.isEmpty()) stream << "FN:" << name << endl;
+        if(!address.isEmpty()) stream << "ADR:" << address.replace("\r\n", " ").replace("\n", " ").replace("\r", " ") << endl;
+
+        foreach(auto nr, numbers) {
+            stream << "TEL:" << nr << endl;
+        }
+
+        stream << "END:VCARD";
+        stream.flush();
+        vCardFile.close();
+    }
+}

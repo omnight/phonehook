@@ -4,121 +4,132 @@ import Sailfish.Silica 1.0
 Page {
     id: apps
 
-    PageHeader {
-        id: header
-        title: "App Settings"
-    }
+    SilicaFlickable {
 
-    Column {
-        id: contentColumn
+        contentHeight: contentColumn.height + header.height + 40
         anchors.fill: parent
-        anchors.margins: Theme.paddingLarge
-        anchors.topMargin: header.height
 
-        Label {
-            text: "Basic"
-            font.pixelSize: Theme.fontSizeLarge
+        PageHeader {
+            id: header
+            title: qsTr("App Settings")
         }
 
-        TextSwitch {
-            width: parent.width
-            text: "Show only for unknown contacts"
-            checked: _bots.querySetting("activate_only_unknown", "true") == "true"
-            onCheckedChanged: {
-                _bots.setSetting("activate_only_unknown", checked)
-            }
-        }
+        Column {
+            id: contentColumn
 
-        TextSwitch {
-            width: parent.width
-            text: "Old popup design"
-            checked: _bots.querySetting("old_popup_design", "false") == "true"
-            onCheckedChanged: {
-                _bots.setSetting("old_popup_design", checked)
-            }
-        }
-/*
-        TextSwitch {
-            width: parent.width
-            text: "Show for incoming SMS"
-            checked: _bots.querySetting("activate_on_sms", "false") == "true"
-            onCheckedChanged: {
-                _bots.setSetting("activate_on_sms", checked)
-            }
-        }
-*/
-        TextSwitch {
-            width: parent.width
-            text: "Enable while roaming"
-            checked: _bots.querySetting("enable_roaming", "false") == "true"
-            onCheckedChanged: {
-                _bots.setSetting("enable_roaming", checked)
-            }
-        }
-
-        Item {
-            height: Theme.paddingLarge
-            width: parent.width
-        }
-
-        Label {
-            text: "Popup Timeout"
-            font.pixelSize: Theme.fontSizeLarge
+            anchors.top: header.bottom
             anchors.left: parent.left
-        }
+            anchors.right: parent.right
+            spacing: 10
 
-        Slider {
-            width: parent.width
-            value: _bots.querySetting("popup_timeout", "0")
-            valueText: value == 0 ? "Disabled" : value + " s"
-            stepSize: 10
-            maximumValue: 120
-            onValueChanged: {
-                _bots.setSetting("popup_timeout", value)
+            anchors.margins: Theme.paddingLarge
+
+
+            Label {
+                text: qsTr("Basic")
+                font.pixelSize: Theme.fontSizeLarge
             }
-        }
 
-        Item {
-            height: Theme.paddingLarge
-            width: parent.width
-        }
-
-        Label {
-            text: "Advanced"
-            font.pixelSize: Theme.fontSizeLarge
-            width: parent.width
-        }
-
-        TextSwitch {
-            width: parent.width
-            text: "Source Test Mode"
-            checked: _bots.querySetting("source_test", "false") == "true"
-            onCheckedChanged: {
-                _bots.setSetting("source_test", checked)
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Show only for unknown contacts")
+                checked: _bots.querySetting("activate_only_unknown", "true") == "true"
+                onCheckedChanged: {
+                    _bots.setSetting("activate_only_unknown", checked)
+                }
             }
-        }
 
-        TextSwitch {
-            width: parent.width
-            text: "Kill dialer when blocking call"
-            checked: _bots.querySetting("kill_voicecall_ui", "false") == "true"
-            onCheckedChanged: {
-                _bots.setSetting("kill_voicecall_ui", checked)
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Old popup design")
+                checked: _bots.querySetting("old_popup_design", "false") == "true"
+                onCheckedChanged: {
+                    _bots.setSetting("old_popup_design", checked)
+                }
             }
+    /*
+            TextSwitch {
+                width: parent.width
+                text: "Show for incoming SMS"
+                checked: _bots.querySetting("activate_on_sms", "false") == "true"
+                onCheckedChanged: {
+                    _bots.setSetting("activate_on_sms", checked)
+                }
+            }
+    */
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Enable while roaming")
+                checked: _bots.querySetting("enable_roaming", "false") == "true"
+                onCheckedChanged: {
+                    _bots.setSetting("enable_roaming", checked)
+                }
+            }
+
+            Item {
+                height: Theme.paddingLarge
+                width: parent.width
+            }
+
+            Label {
+                text: qsTr("Popup Timeout")
+                font.pixelSize: Theme.fontSizeLarge
+                anchors.left: parent.left
+            }
+
+            Slider {
+                width: parent.width
+                value: _bots.querySetting("popup_timeout", "0")
+                valueText: value == 0 ? qsTr("Disabled") : value + " s"
+                stepSize: 10
+                maximumValue: 120
+                onValueChanged: {
+                    _bots.setSetting("popup_timeout", value)
+                }
+            }
+
+            Item {
+                height: Theme.paddingLarge
+                width: parent.width
+            }
+
+            Label {
+                text: qsTr("Advanced")
+                font.pixelSize: Theme.fontSizeLarge
+                width: parent.width
+            }
+
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Source Test Mode")
+                checked: _bots.querySetting("source_test", "false") == "true"
+                onCheckedChanged: {
+                    _bots.setSetting("source_test", checked)
+                }
+            }
+
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Kill dialer when blocking call")
+                checked: _bots.querySetting("kill_voicecall_ui", "false") == "true"
+                onCheckedChanged: {
+                    _bots.setSetting("kill_voicecall_ui", checked)
+                }
+            }
+
+
+
+            Button {
+                height: 70
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Restart Daemon")
+                onClicked: _bots.startDaemon()
+            }
+
+
         }
-
-
-
-        Button {
-            height: 70
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Restart Daemon"
-            onClicked: _bots.startDaemon()
-        }
-
 
     }
-
 
 
 

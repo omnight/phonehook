@@ -5,7 +5,7 @@ Page {
     id: root
 
     Label {
-        text: "No sources to add"
+        text: qsTr("No sources to add")
         anchors.horizontalCenter: root.horizontalCenter
         anchors.verticalCenter: root.verticalCenter
         font.pixelSize: Theme.fontSizeLarge

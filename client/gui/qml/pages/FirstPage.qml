@@ -103,13 +103,13 @@ Page {
                 ControlBigButton {
                     link: "PageServerBotList.qml"
                     icon: "../images/website-optimization-48.png"
-                    text: "Data Sources"
+                    text: qsTr("Data Sources")
                 }
 
                 ControlBigButton {
                     link: "PageSearchStart.qml"
                     icon: "../images/search-2-48.png"
-                    text: "Search"
+                    text: qsTr("Search")
                 }
 
             }
@@ -124,13 +124,13 @@ Page {
                 ControlBigButton {
                     link: "PageBlockStart.qml"
                     icon: "../images/restriction-shield-48.png"
-                    text: "Blocks"
+                    text: qsTr("Blocks")
                 }
 
                 ControlBigButton {
                     link: "PageCallLogStart.qml"
                     icon: "../images/view-details-48.png"
-                    text: "Call Log"
+                    text: qsTr("Call Log")
                 }
 
             }
@@ -142,14 +142,14 @@ Page {
                 color: "#FFFFFF"
                 wrapMode: Text.Wrap
                 textFormat: Text.RichText
-                text: "Daemon: <b>" + (_bots.daemonActive ? "Running" : "Not Running") + "</b>"
+                text: qsTr("Daemon") + ": <b>" + (_bots.daemonActive ? qsTr("Running") : qsTr("Not Running")) + "</b>"
             }
 
             Button {
                 visible: !_bots.daemonActive
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                text: "Start Daemon"
+                text: qsTr("Start Daemon")
 
                 onClicked: {
                     _bots.startDaemon();
@@ -163,14 +163,15 @@ Page {
 
             Label {
                 width: parent.width
-                text: "Installed Sources"
+                text: qsTr("Installed Sources")
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
             }
 
             Label {
-                text: "None"
+                //: No installed sources
+                text: qsTr("None")
                 visible: botView.model.count == 0
             }
 

@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import QtGraphicalEffects 1.0
+import org.nemomobile.dbus 1.0
 
 // debug
 //import "screen.js" as Screen
@@ -29,6 +30,38 @@ Item {
             _view.setClickArea(0, 0, 0,0);
         }
     }
+
+    function localize(text) {
+
+        // this function is here to auto-populate the TS files
+
+        if(text === 'name') return qsTr('Name');
+        if(text === 'address') return qsTr('Address');
+        if(text === 'country') return qsTr('Country');
+        //: network operator
+        if(text === 'operator') return qsTr('Operator');
+        //: owner properties
+        if(text === 'properties') return qsTr('Properties');
+        //: social security number/ personal number
+        if(text === 'ssn') return qsTr('SSN');
+        if(text === 'marital status') return qsTr('Marital Status');
+        if(text === 'vehicles') return qsTr('Vehicles');
+        if(text === 'organization number') return qsTr('Organization Number');
+        if(text === 'company information') return qsTr('Company Information');
+        if(text === 'remarks') return qsTr('Remarks');
+        if(text === 'owner') return qsTr('Owner');
+        if(text === 'error') return qsTr('Error');
+        if(text === 'email') return qsTr('Email');
+        if(text === 'website') return qsTr('Website');
+        if(text === 'profession') return qsTr('Profession');
+        if(text === 'category') return qsTr('Category');
+        if(text === 'comment') return qsTr('Comment');
+        if(text === 'status') return qsTr('Status');
+        if(text === 'age') return qsTr('Age');
+
+        return null;
+    }
+
 
     SequentialAnimation {
         id: fadeIn
@@ -139,6 +172,12 @@ Item {
 
     //    }
 
+        DBusInterface  {
+            id: contactIf
+            destination: 'com.jolla.contacts.ui'
+            iface: 'com.jolla.contacts.ui'
+            path: '/com/jolla/contacts/ui'
+        }
 
         onHeightChanged: {
             updateClickArea();
@@ -163,7 +202,7 @@ Item {
             } else if(state == "finished") {
                 statusRow.state = "idle";
                 if(infoModel.count == 0) {
-                    statusField.text = "No results"
+                    statusField.text = qsTr("No results");
                 } else {
                     statusField.text = "";
                 }
@@ -316,7 +355,7 @@ Item {
                                     id: text_header
                                     font.pixelSize: 20
                                     font.weight: Font.Bold
-                                    text: model.title
+                                    text: localize(model.stitle) || model.title
                                     color: Theme.secondaryColor
                                     wrapMode: Text.NoWrap
                                 }
@@ -358,7 +397,7 @@ Item {
                             anchors.verticalCenter: settingsBox.verticalCenter
                             anchors.horizontalCenter: settingsBox.horizontalCenter
                             height: 85
-                            spacing: Theme.paddingLarge
+                            spacing: Theme.paddingLarge * 2
 
                             Image {
                                 id: backBtn
@@ -369,7 +408,7 @@ Item {
                                 Label {
                                     anchors.top: backBtn.bottom
                                     anchors.horizontalCenter: backBtn.horizontalCenter
-                                    text: "Back"
+                                    text: qsTr("Back")
                                     font.pixelSize: Theme.fontSizeSmall
                                 }
 
@@ -390,7 +429,7 @@ Item {
                                 Label {
                                     anchors.top: stopBtn.bottom
                                     anchors.horizontalCenter: stopBtn.horizontalCenter
-                                    text: "Block"
+                                    text: qsTr("Block")
                                     font.pixelSize: Theme.fontSizeSmall
                                 }
 
@@ -421,6 +460,28 @@ Item {
                                     onClicked: {
                                         _control.blockLastCall(firstField);
                                         flash.restart();
+                                    }
+                                }
+                            }
+
+                            Image {
+                                id: contactBtn
+                                source: "images/contacts-64.png"
+                                height: 64
+                                width: 64
+
+                                Label {
+                                    anchors.top: contactBtn.bottom
+                                    anchors.horizontalCenter: contactBtn.horizontalCenter
+                                    text: qsTr("Save")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        active = false;
+                                        contactIf.call("importContactFile", [ "file:///home/nemo/.phonehook/phonehook.vcf" ]);
                                     }
                                 }
                             }
@@ -559,12 +620,9 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: ""
                 }
-
             }
-
         }
     }  
-
 }
 
 

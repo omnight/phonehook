@@ -6,7 +6,7 @@ Page {
     property variant contextItem
 
     Label {
-        text: "No events"
+        text: qsTr("No events")
         anchors.horizontalCenter: root.horizontalCenter
         anchors.verticalCenter: root.verticalCenter
         font.pixelSize: Theme.fontSizeLarge
@@ -50,7 +50,7 @@ Page {
                             color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
                         }
                         Label {
-                            text: model.date
+                            text: new Date(model.date).toLocaleString(null, Locale.ShortFormat)
                             color: delegate.highlighted ? Theme.highlightColor : Theme.secondaryColor
                             font.pixelSize: Theme.fontSizeSmall
                         }

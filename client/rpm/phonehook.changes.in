@@ -8,8 +8,12 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* 2015-08-08 <omnight@gmail.com> 0.5.0-2
-- Fixed DB update script
+* 2015-11-25 <omnight@gmail.com> 0.6.0-1
+- Fix for obscured status bar
+- Fix layout breaking when swiping forward to search
+- Added full localization support (+ Swedish translation)
+- Added contact save feature on popup and search function
+- Added more views to call log (incoming, outgoing, missed calls)
 
 * 2015-08-08 <omnight@gmail.com> 0.5.0-1
 - Added automatic call blocking

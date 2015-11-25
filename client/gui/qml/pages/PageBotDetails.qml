@@ -22,7 +22,7 @@ Page {
         PullDownMenu {
 
             MenuItem {
-                text: "Report a Problem"
+                text: qsTr("Report a Problem")
                 onClicked: {
                     Qt.openUrlExternally("https://github.com/omnight/phonehook/issues")
                 }
@@ -36,14 +36,14 @@ Page {
             }
 
             MenuItem {
-                text: "Test Number"
+                text: qsTr("Test Number")
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: botModel.name, botId: botModel.id })
                 }
             }
 
             MenuItem {
-                text: "Remove"
+                text: qsTr("Remove")
                 onClicked: {
                     pageStack.find(function(p) {
                         if(p.remorseDelete) {
@@ -96,14 +96,14 @@ Page {
 
             Label {
                 width: parent.width
-                text: "Bot Settings"
+                text: qsTr("Bot Settings")
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
             }
 
             Label {
-                text: "None"
+                text: qsTr("None")
                 visible: params.model.count == 0 && !_bots.hasBlockTag(botId)
             }
 
@@ -136,7 +136,7 @@ Page {
 
             SettingBool {
                 visible: _bots.hasBlockTag(botId)
-                text: 'Enable Auto-blocking'
+                text: qsTr('Enable Auto-blocking')
                 checked: _bots.isBlockSource(botId)
                 onCheckedChanged: {
                     _bots.setBlockSource(botId, checked)
@@ -145,7 +145,7 @@ Page {
 
             Label {
                 width: parent.width
-                text: "Login"
+                text: qsTr("Login")
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
@@ -186,7 +186,7 @@ Page {
 
             Label {
                 width: parent.width
-                text: "Description"
+                text: qsTr("Description")
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
@@ -209,7 +209,7 @@ Page {
 
             Label {
                 width: parent.width
-                text: "Link"
+                text: qsTr("Link")
                 visible: botModel.link != ""
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium

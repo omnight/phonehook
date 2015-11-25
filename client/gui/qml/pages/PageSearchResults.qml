@@ -56,6 +56,14 @@ Page {
         path: '/'
     }
 
+    DBusInterface  {
+        id: contactIf
+        destination: 'com.jolla.contacts.ui'
+        iface: 'com.jolla.contacts.ui'
+        path: '/com/jolla/contacts/ui'
+    }
+
+
     property variant nextParams: ({})
     property bool isLoading: true
     property int botId: 0
@@ -142,7 +150,7 @@ Page {
         anchors.fill: parent
 
         PageHeader {
-            title: "Results"
+            title: qsTr("Results")
             id: header
         }
 
@@ -150,7 +158,7 @@ Page {
         Label {
             id: noResultLabel
             visible: !isLoading && resultModel.count == 0
-            text: "No results"
+            text: qsTr("No results")
             font.pixelSize: Theme.fontSizeLarge
             color: Theme.primaryColor
             anchors.centerIn: parent
@@ -364,6 +372,42 @@ Page {
                                     onClicked: {
                                         clickAnimation.startWithTarget(urlContainer)
                                         Qt.openUrlExternally(model.url);
+                                    }
+                                }
+
+                            }
+                        }
+
+                        Rectangle {
+                            height: 86
+                            width: 86
+                            id: peopleContainer
+                            color: "#00000000"
+                            visible: model.name != ''
+
+                            Image {
+                                id: peopleIcon
+                                anchors.fill: parent
+                                source: 'image://theme/icon-launcher-people'
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        clickAnimation.startWithTarget(peopleContainer)
+                                        // Q_INVOKABLE void vCardWrite(QString name, QStringList numbers, QString address)
+
+                                        var numbers = [];
+                                        if(model.number_array) {
+                                            for(var i=0; i < model.number_array.count; i++)
+                                                numbers.push(model.number_array.get(i).number);
+                                        } else if(model.number) {
+                                            numbers.push(model.number);
+                                        }
+
+                                        _bots.vCardWrite(model.name,
+                                                         numbers,
+                                                         model.address || "");
+                                        contactIf.call("importContactFile", [ "file:///home/nemo/.phonehook/phonehook.vcf" ]);
                                     }
                                 }
 

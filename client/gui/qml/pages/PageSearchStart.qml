@@ -8,13 +8,14 @@ Dialog {
     property int selectedBotId: 0
     property string selectedTag: 'person_search'
     acceptDestinationAction: PageStackAction.Push
+    acceptDestination: Qt.resolvedUrl("PageSearchResults.qml")
 
     canAccept: inputName.text.length > 0 && selectedBotId != 0
 
 
     DialogHeader {
         id: header
-        acceptText: "Search"
+        acceptText: qsTr("Search")
     }
 
     SilicaFlickable {
@@ -36,18 +37,18 @@ Dialog {
             TextField {
                 id: inputName
                 width: parent.width
-                placeholderText: "What?"
+                placeholderText: qsTr("What?")
             }
 
             TextField {
                 id: inputLocation
                 width: parent.width
-                placeholderText: "Where?"
+                placeholderText: qsTr("Where?")
             }
 
             Label {
                 width: parent.width
-                text: "Search for"
+                text: qsTr("Search for")
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
@@ -68,7 +69,7 @@ Dialog {
                             checked = !searchBusinessCheck.checked
                         }
                     }
-                    text: 'People'
+                    text: qsTr('People')
                 }
 
                 TextSwitch {
@@ -84,7 +85,7 @@ Dialog {
                             checked = !searchPeopleCheck.checked
                         }
                     }
-                    text: 'Businesses'
+                    text: qsTr('Businesses')
                 }
             }
 
@@ -97,7 +98,8 @@ Dialog {
 
             Label {
                 width: parent.width
-                text: "Search at"
+                //: referring to what source to use
+                text: qsTr("Search at")
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
@@ -113,7 +115,7 @@ Dialog {
             Label {
                 width: parent.width
                 wrapMode: Text.Wrap
-                text: "There are no installed sources with search capability"
+                text: qsTr("There are no installed sources with search capability")
                 font.pixelSize: Theme.fontSizeSmall
                 visible: botView.model.count == 0
             }
@@ -155,7 +157,7 @@ Dialog {
 
     onAccepted: {
         acceptDestinationProperties = { botId : selectedBotId }
-        acceptDestination = Qt.resolvedUrl("PageSearchResults.qml")
+
 
         console.log('accepted', selectedBotId);
         searchService.call('search', [ {'tagWanted': selectedTag,

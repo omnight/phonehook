@@ -7,9 +7,16 @@
 #include <QtSql/QSqlQuery>
 #include <QDebug>
 #include "phonenumber.h"
+#include <QDomDocument>
 
 class lookup_worker : public QObject {
     Q_OBJECT
+
+private:
+
+    QMap<QString,QString> vCardData;
+    void updateVCard(QDomDocument data);
+
 public:
     explicit lookup_worker(QObject *parent = 0): QObject(parent) {
 

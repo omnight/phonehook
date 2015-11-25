@@ -20,7 +20,7 @@ Page {
 
     Label {
         anchors.centerIn: parent
-        text: "Failed to load"
+        text: qsTr("Failed to load")
         visible: serverBots.status == XmlListModel.Error || serverBots.status == XmlListModel.Null
     }
 
@@ -119,7 +119,7 @@ Page {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryColor
                 wrapMode: Text.Wrap
-                text: "All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services. "
+                text: qsTr("All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services. ")
             }
         }
 
@@ -287,9 +287,6 @@ Page {
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("PageBotDownload.qml"), { botData: model } )
                 }
-
             }
     }
-
-
 }

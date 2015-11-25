@@ -108,6 +108,9 @@ public:
 
     Q_INVOKABLE void copyCookies(int bot_id);
 
+
+    Q_INVOKABLE void vCardWrite(QString name, QStringList numbers, QString address);
+
 signals:
     void botList_changed(PhSqlModel*);
     void botSearchList_changed(PhSqlModel*);

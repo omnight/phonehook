@@ -9,14 +9,14 @@ Page {
     property variant remorseItem
     function remorseDelete() {
         remorseDeleteBlock.execute(remorseItem,
-                                 "Deleting " + remorseItem.name,
+                                 qsTr("Deleting %1").arg(remorseItem.name),
                                  function() {
                                      _blocks.deleteBlock(remorseItem.id);
                                  }, 5000);
     }
 
     Label {
-        text: "No blocks activated"
+        text: qsTr("No blocks activated")
         anchors.horizontalCenter: root.horizontalCenter
         anchors.verticalCenter: root.verticalCenter
         font.pixelSize: Theme.fontSizeLarge
@@ -32,7 +32,7 @@ Page {
             enabled: true
 
             MenuItem {
-                text: "Add Block Source"
+                text: qsTr("Add Block Source")
                 onClicked: {
                     _blocks.initSources();
                     pageStack.push(Qt.resolvedUrl("PageBlockAddSource.qml"))
@@ -40,17 +40,17 @@ Page {
             }
 
             MenuItem {
-                text: "Block Contact"
+                text: qsTr("Block Contact")
                 onClicked: pageStack.push(Qt.resolvedUrl("PageBlockContact.qml"))
             }
 
             MenuItem {
-                text: "Block Number"
+                text: qsTr("Block Number")
                 onClicked: pageStack.push(Qt.resolvedUrl("PageBlockAddManual.qml"))
             }
 
             MenuItem {
-                text: "Refresh"
+                text: qsTr("Refresh")
                 onClicked: _blocks.initBlocks()
             }
         }

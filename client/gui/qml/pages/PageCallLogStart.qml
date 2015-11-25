@@ -14,9 +14,45 @@ Page {
 
         PageHeader {
             id: header
-            title: qsTr("Missed Calls")
+            title: _calls.filter == "missed" ? qsTr("Missed") :
+                   _calls.filter == "incoming" ? qsTr("Incoming") :
+                   _calls.filter == "outgoing" ? qsTr("Outgoing") :
+                                                 qsTr("Calls");
         }
 
+
+        PullDownMenu {
+/*
+            MenuItem {
+                text: qsTr("Number Test")
+                onClicked: {
+                    onClicked: pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: "Bot Test", botId: 0});
+                }
+            }
+*/
+
+            MenuItem {
+                text: qsTr("Incoming Calls")
+                onClicked: {
+                    onClicked: _calls.filter = "incoming"
+                }
+            }
+
+            MenuItem {
+                text: qsTr("Missed Calls")
+                onClicked: {
+                    onClicked: _calls.filter = "missed"
+                }
+            }
+
+            MenuItem {
+                text: qsTr("Outgoing Calls")
+                onClicked: {
+                    onClicked: _calls.filter = "outgoing"
+                }
+            }
+
+        }
 
         SilicaListView {
             id: callView
@@ -55,9 +91,7 @@ Page {
                         Label {
                             font.pixelSize: Theme.fontSizeSmall
                             width: parent.width
-                            text: new Date(model.recent_time*1000).toISOString()
-                                    .replace("T", " ")
-                                    .replace(".000Z", "");
+                            text: new Date(model.recent_time*1000).toLocaleString(null, Locale.ShortFormat)
                             color: contentItem.highlighted ? Theme.highlightColor : Theme.secondaryColor
                         }
                     }
@@ -97,9 +131,6 @@ Page {
                     }
                 }
             }
-
         }
-
     }
-
 }
