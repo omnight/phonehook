@@ -72,7 +72,7 @@
     </message>
     <message>
         <source>Basic</source>
-        <translation>Basico</translation>
+        <translation>Básico</translation>
     </message>
     <message>
         <source>Show only for unknown contacts</source>
@@ -119,7 +119,7 @@
     </message>
     <message>
         <source>Add a number to be blocked. Number may be either local or international variety. Use * for wildcard matching.</source>
-        <translation>Añade el número de teléfono que quieres bloquear. El numero puede ser local o internacional. Utiliza el * como comodín.</translation>
+        <translation>Añade el número de teléfono que quieres bloquear. El número puede ser local o internacional. Utiliza el * como comodín.</translation>
     </message>
     <message>
         <source>Hidden number</source>
@@ -136,7 +136,7 @@
     <message>
         <source>Phone Number</source>
         <extracomment>placeholder for number input</extracomment>
-        <translatorcomment>Lugar para introducir número de teléfono</translatorcomment>
+        <translatorcomment>lugar para introducir número de teléfono</translatorcomment>
         <translation>Número de teléfono</translation>
     </message>
 </context>
@@ -368,7 +368,7 @@
     <name>PageDownloadWait</name>
     <message>
         <source>Download Error :(</source>
-        <translation>Errore de descarga :(</translation>
+        <translation>Error de descarga :(</translation>
     </message>
 </context>
 <context>
