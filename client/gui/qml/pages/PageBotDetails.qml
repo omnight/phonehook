@@ -82,18 +82,6 @@ Page {
                 text: "Rev. " + botModel.revision
             }
 
-//            TextSwitch {
-//                id: enabledSwitch
-//                text: qsTr("Enable")
-
-//                onCheckedChanged: {
-//                    var b = botModel
-//                    b.enabled = checked ? 1 : 0;
-//                    botModel = b;
-//                    _bots.updateBotData(botModel);
-//                }
-//            }
-
             Label {
                 width: parent.width
                 text: qsTr("Bot Settings")

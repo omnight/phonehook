@@ -9,5 +9,6 @@
         <file>db_script/007.sql</file>
         <file>db_script/008.sql</file>
         <file>db_script/009.sql</file>
+        <file>db_script/010.sql</file>
     </qresource>
 </RCC>

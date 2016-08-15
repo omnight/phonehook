@@ -99,15 +99,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Source Test Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Kill dialer when blocking call</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Restart Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto Update Sources</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -251,10 +251,6 @@
 <context>
     <name>PageBotDownload</name>
     <message>
-        <source>Install</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Reverse caller lookup</source>
         <translation type="unfinished"></translation>
     </message>
@@ -272,14 +268,6 @@
     </message>
     <message>
         <source>Status</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Not installed yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Installed and up-to-date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -308,6 +296,18 @@
     </message>
     <message>
         <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not activated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active and up-to-date</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

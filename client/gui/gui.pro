@@ -15,12 +15,17 @@ TARGET = phonehook
 CONFIG += sailfishapp c++11
 QT += dbus xml sql xmlpatterns quick-private webkit-private
 
+INCLUDEPATH += ../common
+
 SOURCES += \
     src/phonehook.cpp \
     src/bots.cpp \
     src/countries.cpp \
     src/blocks.cpp \
-    src/calls.cpp
+    src/calls.cpp \
+    ../common/bot_download.cpp \
+    ../common/setting.cpp \
+    ../common/util.cpp
 
 OTHER_FILES += qml/phonehook.qml \
     qml/cover/CoverPage.qml \
@@ -58,7 +63,7 @@ OTHER_FILES += qml/phonehook.qml \
 # to disable building translations every time, comment out the
 # following CONFIG line
 CONFIG += sailfishapp_i18n
-TRANSLATIONS += translations/phonehook-de.ts \
+TRANSLATIONS += translations/phonehook-es.ts \
                 translations/phonehook-sv.ts
 
 HEADERS += \
@@ -66,7 +71,14 @@ HEADERS += \
     src/countries.h \
     src/blocks.h \
     src/db_model.h \
-    src/calls.h
+    src/calls.h \
+    ../common/setting.h \
+    ../common/util.h \
+    ../common/macros.h \
+    ../common/bot_download.h
 
 RESOURCES +=
+
+DISTFILES += \
+    translations/phonehook-es.ts
 

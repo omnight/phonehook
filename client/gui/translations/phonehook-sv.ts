@@ -99,16 +99,16 @@
         <translation>Avancerat</translation>
     </message>
     <message>
-        <source>Source Test Mode</source>
-        <translation>Källor i testläge</translation>
-    </message>
-    <message>
         <source>Kill dialer when blocking call</source>
         <translation>Avsluta telefon-appen då samtal blockeras</translation>
     </message>
     <message>
         <source>Restart Daemon</source>
         <translation>Starta om tjänst</translation>
+    </message>
+    <message>
+        <source>Auto Update Sources</source>
+        <translation>Uppdatera källor automatiskt</translation>
     </message>
 </context>
 <context>
@@ -251,10 +251,6 @@
 <context>
     <name>PageBotDownload</name>
     <message>
-        <source>Install</source>
-        <translation>Installera</translation>
-    </message>
-    <message>
         <source>Reverse caller lookup</source>
         <translation>Nummeruppslagning</translation>
     </message>
@@ -273,14 +269,6 @@
     <message>
         <source>Status</source>
         <translation>Status</translation>
-    </message>
-    <message>
-        <source>Not installed yet</source>
-        <translation>Ej installerad</translation>
-    </message>
-    <message>
-        <source>Installed and up-to-date</source>
-        <translation>Installerad och uppdaterad</translation>
     </message>
     <message>
         <source>Reset</source>
@@ -309,6 +297,18 @@
     <message>
         <source>Description</source>
         <translation>Beskrivning</translation>
+    </message>
+    <message>
+        <source>Activate</source>
+        <translation>Aktivera</translation>
+    </message>
+    <message>
+        <source>Not activated</source>
+        <translation>Ej aktiverad</translation>
+    </message>
+    <message>
+        <source>Active and up-to-date</source>
+        <translation>Aktiv och uppdaterad</translation>
     </message>
 </context>
 <context>
@@ -431,4 +431,3 @@
     </message>
 </context>
 </TS>
-

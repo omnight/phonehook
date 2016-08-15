@@ -8,12 +8,12 @@ Dialog {
 
     onAccepted: {
         pageStack.replace(Qt.resolvedUrl("PageDownloadWait.qml"))
-        _bots.downloadBot(botData.file)
+        _bots.downloadBot(botData.file, true)
     }
 
     DialogHeader {
         id: header
-        acceptText: qsTr("Install")
+        acceptText: qsTr("Activate")
     }
 
     function niceNameCapability(s) {
@@ -73,8 +73,8 @@ Dialog {
 
                     if(botData.minversion && botData.minversion > _bots.version()) status = 3;
 
-                    if(status == 0) { text = qsTr("Not installed yet"); }
-                    if(status == 1) { text = qsTr("Installed and up-to-date"); header.acceptText = qsTr("Reset"); color = "#DDFFDD" }
+                    if(status == 0) { text = qsTr("Not activated"); }
+                    if(status == 1) { text = qsTr("Active and up-to-date"); header.acceptText = qsTr("Reset"); color = "#DDFFDD" }
                     if(status == 2) { text = qsTr("Update available"); header.acceptText = qsTr("Update"); color = "#FFFFDD" }
                     if(status == 3) { text = qsTr("A newer version of phonehook is required"); header.enabled = false; canAccept = false; header.acceptText = ""; }
                 }
@@ -108,25 +108,25 @@ Dialog {
             }
 
             Item {
-                visible: botData.capabilities != ""
+                visible: botData.tags.count > 0
                 height: 20
                 width: parent.width
             }
 
             Label {
                 text: qsTr("Capabilities")
-                visible: botData.capabilities != ""
+                visible: botData.tags.count > 0
             }
 
             ListView {
                 height: contentHeight
                 interactive: false
                 width: parent.width
-                model: botData.capabilities.split('|')
+                model: botData.tags
                 delegate: Text {
                     font.pixelSize: Theme.fontSizeSmall
                     color: Theme.secondaryColor
-                    text: '  • ' + niceNameCapability(modelData)
+                    text: '  • ' + niceNameCapability(model.cap)
                     width: parent.width
                 }
             }

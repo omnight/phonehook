@@ -32,37 +32,46 @@ Page {
 
             TextSwitch {
                 width: parent.width
-                text: qsTr("Show only for unknown contacts")
-                checked: _bots.querySetting("activate_only_unknown", "true") == "true"
+                text: qsTr("Auto Update Sources")
+                checked: _setting.get("auto_update_enabled", "true") == "true"
                 onCheckedChanged: {
-                    _bots.setSetting("activate_only_unknown", checked)
+                    _setting.put("auto_update_enabled", checked)
+                }
+            }
+
+            TextSwitch {
+                width: parent.width
+                text: qsTr("Show only for unknown contacts")
+                checked: _setting.get("activate_only_unknown", "true") == "true"
+                onCheckedChanged: {
+                    _setting.put("activate_only_unknown", checked)
                 }
             }
 
             TextSwitch {
                 width: parent.width
                 text: qsTr("Old popup design")
-                checked: _bots.querySetting("old_popup_design", "false") == "true"
+                checked: _setting.get("old_popup_design", "false") == "true"
                 onCheckedChanged: {
-                    _bots.setSetting("old_popup_design", checked)
+                    _setting.put("old_popup_design", checked)
                 }
             }
     /*
             TextSwitch {
                 width: parent.width
                 text: "Show for incoming SMS"
-                checked: _bots.querySetting("activate_on_sms", "false") == "true"
+                checked: _setting.get("activate_on_sms", "false") == "true"
                 onCheckedChanged: {
-                    _bots.setSetting("activate_on_sms", checked)
+                    _setting.put("activate_on_sms", checked)
                 }
             }
     */
             TextSwitch {
                 width: parent.width
                 text: qsTr("Enable while roaming")
-                checked: _bots.querySetting("enable_roaming", "false") == "true"
+                checked: _setting.get("enable_roaming", "false") == "true"
                 onCheckedChanged: {
-                    _bots.setSetting("enable_roaming", checked)
+                    _setting.put("enable_roaming", checked)
                 }
             }
 
@@ -79,12 +88,12 @@ Page {
 
             Slider {
                 width: parent.width
-                value: _bots.querySetting("popup_timeout", "0")
+                value: _setting.get("popup_timeout", "0")
                 valueText: value == 0 ? qsTr("Disabled") : value + " s"
                 stepSize: 10
                 maximumValue: 120
                 onValueChanged: {
-                    _bots.setSetting("popup_timeout", value)
+                    _setting.put("popup_timeout", value)
                 }
             }
 
@@ -99,21 +108,21 @@ Page {
                 width: parent.width
             }
 
-            TextSwitch {
+/*            TextSwitch {
                 width: parent.width
                 text: qsTr("Source Test Mode")
-                checked: _bots.querySetting("source_test", "false") == "true"
+                checked: _setting.get("source_test", "false") == "true"
                 onCheckedChanged: {
-                    _bots.setSetting("source_test", checked)
+                    _setting.put("source_test", checked)
                 }
-            }
+            }*/
 
             TextSwitch {
                 width: parent.width
                 text: qsTr("Kill dialer when blocking call")
-                checked: _bots.querySetting("kill_voicecall_ui", "false") == "true"
+                checked: _setting.get("kill_voicecall_ui", "false") == "true"
                 onCheckedChanged: {
-                    _bots.setSetting("kill_voicecall_ui", checked)
+                    _setting.put("kill_voicecall_ui", checked)
                 }
             }
 

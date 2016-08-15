@@ -12,7 +12,7 @@ debug {
     QMAKE_CXXFLAGS_RELEASE += -O3
 }
 
-QT += dbus xml sql gui-private
+QT += dbus xml sql gui-private xmlpatterns
 CONFIG += sailfishapp c++11
 SOURCES += src/ph-daemon.cpp \
     src/robot_base.cpp \
@@ -30,7 +30,11 @@ SOURCES += src/ph-daemon.cpp \
     src/compression.cpp \
     src/overlay.cpp \
     src/blocking.cpp \
-    src/setting.cpp
+    src/auto_update.cpp \    
+    ../common/bot_download.cpp \
+    ../common/util.cpp \
+    ../common/setting.cpp
+
 
 service.files = phonehook-daemon.service
 service.path = /usr/lib/systemd/user
@@ -41,9 +45,11 @@ LIBS += -lz
 # to disable building translations every time, comment out the
 # following CONFIG line
 CONFIG += sailfishapp_i18n
-TRANSLATIONS += translations/phonehook-daemon-de.ts \
+TRANSLATIONS += translations/phonehook-daemon-es.ts \
                 translations/phonehook-daemon-sv.ts
 
+
+INCLUDEPATH += ../common
 
 HEADERS += \
     src/robot_base.h \
@@ -61,7 +67,11 @@ HEADERS += \
     src/compression.h \
     src/overlay.h \
     src/blocking.h \
-    src/setting.h
+    src/auto_update.h \
+    ../common/macros.h \
+    ../common/util.h \
+    ../common/bot_download.h \
+    ../common/setting.h
 
 RESOURCES += \
     ph.qrc
@@ -71,3 +81,6 @@ OTHER_FILES += \
     qml/popup/Hex.qml \
     qml/popup/HexGrid.qml \
     translations/*.ts
+
+DISTFILES += \
+    translations/phonehook-daemon-es.ts

@@ -107,7 +107,7 @@ void blocks::initBlocks() {
     if(!m_blocks.query().isValid()) {
         qDebug() << "init blocks!";
         m_blocks.setQuery(R"(
-          SELECT block.*, COALESCE(x.cnt,0) block_count, bot.name bot_name FROM block LEFT JOIN
+          SELECT block.*, COALESCE(x.cnt,0) block_count, x.date, bot.name bot_name FROM block LEFT JOIN
           (SELECT block_id, MAX(date) date, COUNT(*) cnt FROM block_history GROUP BY block_id) x ON x.block_id = block.id
           LEFT JOIN bot ON block.bot_id = bot.id AND block.type = 2
           ORDER BY x.date DESC
