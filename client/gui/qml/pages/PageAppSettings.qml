@@ -89,7 +89,7 @@ Page {
             Slider {
                 width: parent.width
                 value: _setting.get("popup_timeout", "0")
-                valueText: value == 0 ? qsTr("Disabled") : value + " s"
+                valueText: value == 0 ? qsTr("Disabled") : value + qsTr(" s")
                 stepSize: 10
                 maximumValue: 120
                 onValueChanged: {
