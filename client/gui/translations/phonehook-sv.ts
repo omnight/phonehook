@@ -110,6 +110,10 @@
         <source>Auto Update Sources</source>
         <translation>Uppdatera källor automatiskt</translation>
     </message>
+    <message>
+        <source> s</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PageBlockAddManual</name>

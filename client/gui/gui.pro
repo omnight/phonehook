@@ -64,7 +64,9 @@ OTHER_FILES += qml/phonehook.qml \
 # following CONFIG line
 CONFIG += sailfishapp_i18n
 TRANSLATIONS += translations/phonehook-es.ts \
-                translations/phonehook-sv.ts
+                translations/phonehook-sv.ts \
+                translations/phonehook-ru.ts \
+                translations/phonehook-fi.ts
 
 HEADERS += \
     src/bots.h \

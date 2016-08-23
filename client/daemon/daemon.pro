@@ -46,7 +46,9 @@ LIBS += -lz
 # following CONFIG line
 CONFIG += sailfishapp_i18n
 TRANSLATIONS += translations/phonehook-daemon-es.ts \
-                translations/phonehook-daemon-sv.ts
+                translations/phonehook-daemon-sv.ts \
+                translations/phonehook-daemon-ru.ts \
+                translations/phonehook-daemon-fi.ts
 
 
 INCLUDEPATH += ../common

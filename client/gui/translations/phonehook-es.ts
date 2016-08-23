@@ -110,6 +110,10 @@
         <source>Auto Update Sources</source>
         <translation>Actualizar automáticamente las fuentes</translation>
     </message>
+    <message>
+        <source> s</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PageBlockAddManual</name>
