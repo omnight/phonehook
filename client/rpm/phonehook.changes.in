@@ -1,3 +1,8 @@
+* 2016-10-18 <omnight@gmail.com> 0.6.2-1
+- Added Finnish translation
+- Added Russian translation
+- Added new login/config system
+
 * 2016-08-15 <omnight@gmail.com> 0.6.1-1
 - Added auto-update of sources
 - Backported some code from Android version

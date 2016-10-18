@@ -69,7 +69,7 @@ Dialog {
 
                     var status = _bots.botStatusCompare(botData.name, botData.revision)
 
-                    console.log('minv', botData.minversion, _bots.version());
+                    //console.log('minv', botData.minversion, _bots.version());
 
                     if(botData.minversion && botData.minversion > _bots.version()) status = 3;
 

@@ -82,5 +82,7 @@ HEADERS += \
 RESOURCES +=
 
 DISTFILES += \
-    translations/phonehook-es.ts
+    translations/phonehook-es.ts \
+    qml/pages/ListPopup.qml \
+    qml/pages/ItemSelector2.qml
 

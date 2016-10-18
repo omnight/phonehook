@@ -108,14 +108,23 @@ Page {
                 width: parent.width
             }
 
-/*            TextSwitch {
+            TextSwitch {
                 width: parent.width
                 text: qsTr("Source Test Mode")
-                checked: _setting.get("source_test", "false") == "true"
+                checked: _setting.get("download_root_url", "") !== ""
                 onCheckedChanged: {
-                    _setting.put("source_test", checked)
+                    if(checked) {
+                        _setting.put("download_root_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/beta/files/")
+                        _setting.put("auto_update_index_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/beta/files/i.js")
+                        _setting.put("sources_index_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/beta/files/index.js")
+                    } else {
+                        // use default values
+                        _setting.remove("download_root_url")
+                        _setting.remove("auto_update_index_url")
+                        _setting.remove("sources_index_url")
+                    }
                 }
-            }*/
+            }
 
             TextSwitch {
                 width: parent.width

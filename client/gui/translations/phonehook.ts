@@ -111,6 +111,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Source Test Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -369,6 +373,13 @@
     <name>PageDownloadWait</name>
     <message>
         <source>Download Error :(</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PageOAuth</name>
+    <message>
+        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

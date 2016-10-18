@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "../setting"
+import org.nemomobile.dbus 1.0
 
 Page {
     id: root
@@ -154,17 +155,26 @@ Page {
                         anchors.centerIn: parent
                         text: model.name
                         onClicked: {
-                            onClicked: {
-                                pageStack.push(Qt.resolvedUrl("PageOAuth.qml"),
-                                               {
-                                                   'bot_id': botModel.id,
-                                                   'login_data': model
-                                               });
-                            }
+
+                            var login_data = JSON.stringify(model, function replacer(key, value) {
+                                if (["model", "objectName","hasModelChildren","index"].indexOf(key) != -1) {
+                                  return undefined;
+                                }
+                                return value;
+                          });
+
+                            console.log(login_data);
+
+                            pageStack.push(Qt.resolvedUrl("PageOAuth.qml"),
+                               {
+                                   'bot_id': botModel.id,
+                                   'login_data': model
+                               });
                         }
                     }
                 }
             }
+
 
             Item {
                 height: 20

@@ -114,6 +114,10 @@
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Source Test Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PageBlockAddManual</name>
@@ -370,6 +374,13 @@
     <message>
         <source>Download Error :(</source>
         <translation>Ошибка загрузки :(</translation>
+    </message>
+</context>
+<context>
+    <name>PageOAuth</name>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

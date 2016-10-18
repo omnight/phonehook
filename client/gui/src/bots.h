@@ -138,7 +138,6 @@ private:
     bool m_testSources;
 
     void initDbTables();
-    QNetworkAccessManager netman;
 
     QVariantMap recordToVariantMap(QSqlRecord r);
 

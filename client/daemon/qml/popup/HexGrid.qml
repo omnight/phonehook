@@ -43,7 +43,7 @@ Item {
                 yLeft = Math.floor(((targetH - hexW*0.75) - yc) / (hexW*0.75));
                 //console.log(((targetH - hexW*0.5) - yc), (hexW*0.75), yLeft)
 //                //console.log(x,y,xc,yc);
-                var old = oldGrid[x+","+y];
+                var old = oldGrid ? oldGrid[x+","+y] : undefined;
                 if(old) delete oldGrid[x+","+y];
 
                 var opacity_t = (y == 0 || yLeft == 0) ? 0.5 + Math.random() * 0.5 : 1;

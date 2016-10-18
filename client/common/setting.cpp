@@ -26,11 +26,14 @@ QString setting::get(QString key, QString defValue) {
 }
 
 void setting::put(QString key, QString value) {
-    QSqlQuery sq;
-    sq.prepare("INSERT OR REPLACE INTO setting (key, value) "
-               "VALUES (?,?)");
+    SQL("\
+        INSERT OR REPLACE INTO setting (key, value)\
+        VALUES (:key, :value)\
+    ", key, value);
+}
 
-    sq.addBindValue(key);
-    sq.addBindValue(value);
-    sq.exec();
+void setting::remove(QString key) {
+    SQL("\
+        DELETE FROM setting WHERE key = :key\
+    ", key);
 }

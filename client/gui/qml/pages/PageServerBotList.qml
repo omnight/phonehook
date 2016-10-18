@@ -77,9 +77,7 @@ Page {
             }
         };
 
-        xhr.onerror = function() {
-            isError = true;
-        }
+
 
         xhr.open('GET', _setting.get("sources_index_url", 'https://raw.githubusercontent.com/omnight/phonehook-sources/master/files/index.js'), true);
         xhr.send();
@@ -293,6 +291,7 @@ Page {
 
                     Connections {
                         target: _bots.botList
+                        ignoreUnknownSignals: true
                         onCount_changed: {
                             var bstatus = _bots.botStatusCompare(model.name, model.revision)
                             checkedUpdated.visible = (bstatus == 2)

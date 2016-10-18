@@ -12,7 +12,20 @@ robot_base::robot_base(int botId, QObject *parent) :
 
 bool robot_base::parse(QString xml) {
     robotXml = QDomDocument("robot");
-    return robotXml.setContent(xml);
+    QString errMsg = "";
+    int errLine = 0;
+    int errCol = 0;
+    bool parseResult = robotXml.setContent(xml, false, &errMsg, &errLine, &errCol);
+
+    if(!parseResult) {
+        qDebug() << "XML parse error:" << errMsg << "line" << errLine << "col" << errCol;
+
+        QString row = xml.split("\n")[errLine-1];
+        qDebug() << row.mid(errCol, 100);
+
+    }
+
+    return parseResult;
 }
 
 bool robot_base::load(QString filename) {

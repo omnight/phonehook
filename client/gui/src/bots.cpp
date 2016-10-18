@@ -37,8 +37,6 @@ bots::bots(QObject *parent) :
         }
     }
 
-    connect(&netman, SIGNAL(finished(QNetworkReply*)), this, SLOT(network_response(QNetworkReply*)));
-
     // check to see if injector DBus Adaptor in active
     connect(&serviceWatcher, SIGNAL(serviceRegistered(QString)), this, SLOT(service_registered(QString)));
     connect(&serviceWatcher, SIGNAL(serviceUnregistered(QString)), this, SLOT(service_unregistered(QString)));
@@ -80,6 +78,7 @@ void bots::botDownload_fail() {
 }
 
 void bots::botDownload_finish(int botId) {
+    botList()->refresh();
     emit botList_changed(&m_botList);
     emit botList()->count_changed(botList()->rowCount());
     emit botDownloadSuccess(botId);
@@ -212,7 +211,7 @@ void bots::startDaemon() {
 
 int bots::botStatusCompare(QString name, int rev) {
 
-    qDebug() << "check" << name << rev;
+    //qDebug() << "check" << name << rev;
 
     QSqlQuery qs;
     qs.prepare("SELECT revision FROM bot WHERE name = ?");

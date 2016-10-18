@@ -15,6 +15,7 @@ public:
 
     Q_INVOKABLE static QString get(QString key, QString defValue);
     Q_INVOKABLE static void put(QString key, QString value);
+    Q_INVOKABLE static void remove(QString key);
 
 signals:
 
