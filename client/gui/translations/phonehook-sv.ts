@@ -112,11 +112,11 @@
     </message>
     <message>
         <source>Source Test Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Källtestläge</translation>
     </message>
     <message>
         <source> s</source>
-        <translation type="unfinished"></translation>
+        <translation> s</translation>
     </message>
 </context>
 <context>
@@ -380,7 +380,7 @@
     <name>PageOAuth</name>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Avbryt</translation>
     </message>
 </context>
 <context>
