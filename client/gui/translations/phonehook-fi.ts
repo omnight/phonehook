@@ -24,7 +24,7 @@
     </message>
     <message>
         <source>Data Sources</source>
-        <translation>Datal‰hteet</translation>
+        <translation>Datal√§hteet</translation>
     </message>
     <message>
         <source>Search</source>
@@ -44,24 +44,24 @@
     </message>
     <message>
         <source>Running</source>
-        <translation>K‰ynniss‰</translation>
+        <translation>K√§ynniss√§</translation>
     </message>
     <message>
         <source>Not Running</source>
-        <translation>Ei ole k‰ynnissa</translation>
+        <translation>Ei ole k√§ynnissa</translation>
     </message>
     <message>
         <source>Start Daemon</source>
-        <translation>K‰ynnist‰ palveluprosessi</translation>
+        <translation>K√§ynnist√§ palveluprosessi</translation>
     </message>
     <message>
         <source>Installed Sources</source>
-        <translation>Asennetut l‰hteet</translation>
+        <translation>Asennetut l√§hteet</translation>
     </message>
     <message>
         <source>None</source>
         <extracomment>No installed sources</extracomment>
-        <translation>Ei asennettuja l‰hteit‰</translation>
+        <translation>Ei asennettuja l√§hteit√§</translation>
     </message>
 </context>
 <context>
@@ -76,23 +76,23 @@
     </message>
     <message>
         <source>Show only for unknown contacts</source>
-        <translation>N‰yt‰ vain tuntemattomille numeroille</translation>
+        <translation>N√§yt√§ vain tuntemattomille numeroille</translation>
     </message>
     <message>
         <source>Old popup design</source>
-        <translation>K‰yt‰ vanhaa pop-up designe‰</translation>
+        <translation>K√§yt√§ vanhaa pop-up designe√§</translation>
     </message>
     <message>
         <source>Enable while roaming</source>
-        <translation>K‰yt‰ verkkovierailun aikana</translation>
+        <translation>K√§yt√§ verkkovierailun aikana</translation>
     </message>
     <message>
         <source>Popup Timeout</source>
-        <translation>Popup-aikalis‰</translation>
+        <translation>Popup-aikalis√§</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation>Pois k‰ytˆst‰</translation>
+        <translation>Pois k√§yt√∂st√§</translation>
     </message>
     <message>
         <source>Advanced</source>
@@ -100,18 +100,22 @@
     </message>
     <message>
         <source>Kill dialer when blocking call</source>
-        <translation>Tapa puhelin-sovellus kun soitto estet‰‰n</translation>
+        <translation>Tapa puhelin-sovellus kun soitto estet√§√§n</translation>
     </message>
     <message>
         <source>Restart Daemon</source>
-        <translation>Uudelleen k‰ynnist‰ palveluprosessi</translation>
+        <translation>Uudelleen k√§ynnist√§ palveluprosessi</translation>
     </message>
     <message>
         <source>Auto Update Sources</source>
-        <translation>P‰ivit‰ automaattisesti l‰hteet</translation>
+        <translation>P√§ivit√§ automaattisesti l√§hteet</translation>
     </message>
     <message>
         <source> s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Source Test Mode</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -119,11 +123,11 @@
     <name>PageBlockAddManual</name>
     <message>
         <source>Add Block</source>
-        <translation>Lis‰‰ esto</translation>
+        <translation>Lis√§√§ esto</translation>
     </message>
     <message>
         <source>Add a number to be blocked. Number may be either local or international variety. Use * for wildcard matching.</source>
-        <translation>Lis‰‰ estett‰v‰ numero. Numero voi olla joko paikallinen tai kansainv‰linen. K‰yt‰ * jokerikortti t‰sm‰ykseen.</translation>
+        <translation>Lis√§√§ estett√§v√§ numero. Numero voi olla joko paikallinen tai kansainv√§linen. K√§yt√§ * jokerikortti t√§sm√§ykseen.</translation>
     </message>
     <message>
         <source>Hidden number</source>
@@ -145,18 +149,18 @@
     <name>PageBlockAddSource</name>
     <message>
         <source>Add Block Source</source>
-        <translation>Lis‰‰ estol‰hde</translation>
+        <translation>Lis√§√§ estol√§hde</translation>
     </message>
     <message>
         <source>No sources to add</source>
-        <translation>Ei lis‰tt‰vi‰ l‰hteit‰</translation>
+        <translation>Ei lis√§tt√§vi√§ l√§hteit√§</translation>
     </message>
 </context>
 <context>
     <name>PageBlockContact</name>
     <message>
         <source>Block Contact</source>
-        <translation>Est‰ kontakti</translation>
+        <translation>Est√§ kontakti</translation>
     </message>
 </context>
 <context>
@@ -190,30 +194,30 @@
     </message>
     <message>
         <source>No blocks activated</source>
-        <translation>Ei estett‰vi‰</translation>
+        <translation>Ei estett√§vi√§</translation>
     </message>
     <message>
         <source>Add Block Source</source>
-        <translation>Lis‰‰ esto l‰hde</translation>
+        <translation>Lis√§√§ esto l√§hde</translation>
     </message>
     <message>
         <source>Block Contact</source>
-        <translation>Est‰ kontakti</translation>
+        <translation>Est√§ kontakti</translation>
     </message>
     <message>
         <source>Block Number</source>
-        <translation>Est‰ numero</translation>
+        <translation>Est√§ numero</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation>P‰ivit‰</translation>
+        <translation>P√§ivit√§</translation>
     </message>
 </context>
 <context>
     <name>PageBotDetails</name>
     <message>
         <source>Clear Cache</source>
-        <translation>Tyhjenn‰ v‰limuisti</translation>
+        <translation>Tyhjenn√§ v√§limuisti</translation>
     </message>
     <message>
         <source>Report a Problem</source>
@@ -233,7 +237,7 @@
     </message>
     <message>
         <source>None</source>
-        <translation>Ei mit‰‰n</translation>
+        <translation>Ei mit√§√§n</translation>
     </message>
     <message>
         <source>Enable Auto-blocking</source>
@@ -256,15 +260,15 @@
     <name>PageBotDownload</name>
     <message>
         <source>Reverse caller lookup</source>
-        <translation>Soittajan numeron etsint‰</translation>
+        <translation>Soittajan numeron etsint√§</translation>
     </message>
     <message>
         <source>Search for people</source>
-        <translation>Etsi ihmisi‰</translation>
+        <translation>Etsi ihmisi√§</translation>
     </message>
     <message>
         <source>Search for businesses</source>
-        <translation>Etsi yrityksi‰</translation>
+        <translation>Etsi yrityksi√§</translation>
     </message>
     <message>
         <source>Auto-blocking</source>
@@ -280,11 +284,11 @@
     </message>
     <message>
         <source>Update available</source>
-        <translation>P‰ivitys saatavilla</translation>
+        <translation>P√§ivitys saatavilla</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation>P‰ivit‰</translation>
+        <translation>P√§ivit√§</translation>
     </message>
     <message>
         <source>A newer version of phonehook is required</source>
@@ -338,7 +342,7 @@
     </message>
     <message>
         <source>Block</source>
-        <translation>Est‰</translation>
+        <translation>Est√§</translation>
     </message>
     <message>
         <source>Incoming Calls</source>
@@ -373,6 +377,13 @@
     </message>
 </context>
 <context>
+    <name>PageOAuth</name>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PageSearchResults</name>
     <message>
         <source>Results</source>
@@ -391,11 +402,11 @@
     </message>
     <message>
         <source>What?</source>
-        <translation>Kuka/Mit‰?</translation>
+        <translation>Kuka/Mit√§?</translation>
     </message>
     <message>
         <source>Where?</source>
-        <translation>Miss‰?</translation>
+        <translation>Miss√§?</translation>
     </message>
     <message>
         <source>Search for</source>
@@ -403,7 +414,7 @@
     </message>
     <message>
         <source>People</source>
-        <translation>Henkilˆ</translation>
+        <translation>Henkil√∂</translation>
     </message>
     <message>
         <source>Businesses</source>
@@ -412,18 +423,18 @@
     <message>
         <source>Search at</source>
         <extracomment>referring to what source to use</extracomment>
-        <translation>Etsi k‰ytt‰en</translation>
+        <translation>Etsi k√§ytt√§en</translation>
     </message>
     <message>
         <source>There are no installed sources with search capability</source>
-        <translation>Ei lˆydy l‰hteit‰ etsint‰ ominaisuudella</translation>
+        <translation>Ei l√∂ydy l√§hteit√§ etsint√§ ominaisuudella</translation>
     </message>
 </context>
 <context>
     <name>PageServerBotList</name>
     <message>
         <source>Available Sources</source>
-        <translation>Saatavilla olevat l‰hteet</translation>
+        <translation>Saatavilla olevat l√§hteet</translation>
     </message>
     <message>
         <source>Failed to load</source>
@@ -431,7 +442,7 @@
     </message>
     <message>
         <source>All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services. </source>
-        <translation>Kaikki nimet ja logot lueteltu t‰ss‰ ovat ominaisuuksia vastaavien oikeuksien haltijoiden omaisuutta. Phonehook ei ole tuettu mist‰‰n n‰ist‰ palveluista. </translation>
+        <translation>Kaikki nimet ja logot lueteltu t√§ss√§ ovat ominaisuuksia vastaavien oikeuksien haltijoiden omaisuutta. Phonehook ei ole tuettu mist√§√§n n√§ist√§ palveluista. </translation>
     </message>
 </context>
 </TS>

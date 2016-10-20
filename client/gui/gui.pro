@@ -58,15 +58,18 @@ OTHER_FILES += qml/phonehook.qml \
     qml/pages/PageCallLogStart.qml \
     qml/pages/PageBlockAddManual.qml \
     qml/pages/PageBlockAddSource.qml \
-    qml/pages/PageOAuth.qml
+    qml/pages/PageOAuth.qml \
+    qml/pages/ListPopup.qml \
+    qml/pages/ItemSelector2.qml
 
 # to disable building translations every time, comment out the
 # following CONFIG line
 CONFIG += sailfishapp_i18n
 TRANSLATIONS += translations/phonehook-es.ts \
                 translations/phonehook-sv.ts \
-                translations/phonehook-ru.ts \
-                translations/phonehook-fi.ts
+                translations/phonehook-fi.ts \
+                translations/phonehook-ru.ts
+
 
 HEADERS += \
     src/bots.h \
@@ -81,8 +84,4 @@ HEADERS += \
 
 RESOURCES +=
 
-DISTFILES += \
-    translations/phonehook-es.ts \
-    qml/pages/ListPopup.qml \
-    qml/pages/ItemSelector2.qml
 

@@ -14,7 +14,7 @@ Name:       phonehook
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Phonehook
 Version:    0.6.2
-Release:    1
+Release:    2
 Group:      Qt/Qt
 License:    LICENSE
 URL:        https://github.com/omnight/phonehook

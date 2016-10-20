@@ -148,8 +148,10 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
             req.setUrl(urlBase.toString());
 
             if(robotXml.attribute("requestfields", "") == "Header") {
+                QString header = robotXml.attribute("requestvalue");
+                owner->expand(header);
 
-                foreach(QString line, robotXml.attribute("requestvalue").split("\n", QString::SkipEmptyParts)) {
+                foreach(QString line, header.split("\n", QString::SkipEmptyParts)) {
                     qDebug() << "HEADER" << line;
                     QStringList keyValue = line.split(":");
                     if(keyValue.length() >= 2) {

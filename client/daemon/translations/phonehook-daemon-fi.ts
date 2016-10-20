@@ -34,12 +34,12 @@
         <location filename="../qml/popup/gui.qml" line="46"/>
         <source>SSN</source>
         <extracomment>social security number/ personal number</extracomment>
-        <translation>SOTU / henkilˆkohtainen numero</translation>
+        <translation>SOTU / henkil√∂kohtainen numero</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="47"/>
         <source>Marital Status</source>
-        <translation>Siviilis‰‰ty</translation>
+        <translation>Siviilis√§√§ty</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="48"/>
@@ -74,7 +74,7 @@
     <message>
         <location filename="../qml/popup/gui.qml" line="54"/>
         <source>Email</source>
-        <translation>S‰hkˆposti</translation>
+        <translation>S√§hk√∂posti</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="55"/>
@@ -104,7 +104,7 @@
     <message>
         <location filename="../qml/popup/gui.qml" line="60"/>
         <source>Age</source>
-        <translation>Ik‰</translation>
+        <translation>Ik√§</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="205"/>
@@ -119,7 +119,7 @@
     <message>
         <location filename="../qml/popup/gui.qml" line="432"/>
         <source>Block</source>
-        <translation>Est‰</translation>
+        <translation>Est√§</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="476"/>

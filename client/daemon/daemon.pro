@@ -84,5 +84,4 @@ OTHER_FILES += \
     qml/popup/HexGrid.qml \
     translations/*.ts
 
-DISTFILES += \
-    translations/phonehook-daemon-es.ts
+

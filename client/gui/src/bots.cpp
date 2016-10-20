@@ -120,7 +120,8 @@ void bots::setActiveBot(int botId) {
 
     qDebug() << "setting active bot" << botId;
 
-    m_paramList.setQuery("SELECT * FROM bot_param WHERE bot_id = " + QString::number(botId));
+    m_paramList.setQuery("SELECT * FROM bot_param WHERE bot_id = " + QString::number(botId) +
+                         " ORDER BY CASE WHEN type='password' THEN 1 ELSE 0 END;");
     m_loginList.setQuery("SELECT * FROM bot_login WHERE bot_id = " + QString::number(botId));
 
     emit paramList_changed(&m_paramList);
