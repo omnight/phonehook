@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es_ES">
+<TS version="2.0" language="es_ES">
 <context>
     <name>CoverPage</name>
     <message>
@@ -36,7 +36,7 @@
     </message>
     <message>
         <source>Call Log</source>
-        <translation>Registro de llamadas</translation>
+        <translation>Registro llamadas</translation>
     </message>
     <message>
         <source>Daemon</source>
@@ -88,7 +88,7 @@
     </message>
     <message>
         <source>Popup Timeout</source>
-        <translation>Duración de la ventana de diálogo</translation>
+        <translation>Duración ventana de diálogo</translation>
     </message>
     <message>
         <source>Disabled</source>
@@ -108,15 +108,15 @@
     </message>
     <message>
         <source>Auto Update Sources</source>
-        <translation>Actualizar automáticamente las fuentes</translation>
+        <translation>Actualizar las fuentes automáticamente</translation>
     </message>
     <message>
         <source>Source Test Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Fuente en modo prueba</translation>
     </message>
     <message>
         <source> s</source>
-        <translation type="unfinished"></translation>
+        <translation> s</translation>
     </message>
 </context>
 <context>
@@ -383,7 +383,7 @@
     <name>PageOAuth</name>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
