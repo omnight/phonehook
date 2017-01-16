@@ -1,433 +1,448 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>CoverPage</name>
     <message>
         <source>Phonehook</source>
-        <translation type="unfinished"></translation>
+        <translation>Phonehook</translation>
     </message>
 </context>
 <context>
     <name>FirstPage</name>
     <message>
         <source>Phonehook</source>
-        <translation type="unfinished"></translation>
+        <translation>Phonehook</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <source>Data Sources</source>
-        <translation type="unfinished"></translation>
+        <translation>Источники</translation>
     </message>
     <message>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск</translation>
     </message>
     <message>
         <source>Blocks</source>
-        <translation type="unfinished"></translation>
+        <translation>Блокировки</translation>
     </message>
     <message>
         <source>Call Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Журнал звонков</translation>
     </message>
     <message>
         <source>Daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Фоновый процесс</translation>
     </message>
     <message>
         <source>Running</source>
-        <translation type="unfinished"></translation>
+        <translation>Запущен</translation>
     </message>
     <message>
         <source>Not Running</source>
-        <translation type="unfinished"></translation>
+        <translation>Не запущен</translation>
     </message>
     <message>
         <source>Start Daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить фоновый процесс</translation>
     </message>
     <message>
         <source>Installed Sources</source>
-        <translation type="unfinished"></translation>
+        <translation>Установленные источники данных</translation>
     </message>
     <message>
         <source>None</source>
         <extracomment>No installed sources</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Нет</translation>
     </message>
 </context>
 <context>
     <name>PageAppSettings</name>
     <message>
         <source>App Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки приложения</translation>
     </message>
     <message>
         <source>Basic</source>
-        <translation type="unfinished"></translation>
+        <translation>Базовые</translation>
     </message>
     <message>
         <source>Show only for unknown contacts</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать только для неизвестных контактов</translation>
     </message>
     <message>
         <source>Old popup design</source>
-        <translation type="unfinished"></translation>
+        <translation>Старый дизайн уведомления</translation>
     </message>
     <message>
         <source>Enable while roaming</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить при роуминге</translation>
     </message>
     <message>
         <source>Popup Timeout</source>
-        <translation type="unfinished"></translation>
+        <translation>Таймаут уведомления</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключен</translation>
     </message>
     <message>
         <source>Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation>Расширенные</translation>
     </message>
     <message>
         <source>Kill dialer when blocking call</source>
-        <translation type="unfinished"></translation>
+        <translation>Убивать интерфейс звонка при блокировке</translation>
     </message>
     <message>
         <source>Restart Daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Перезапустить фоновый процесс</translation>
     </message>
     <message>
         <source>Auto Update Sources</source>
-        <translation type="unfinished"></translation>
+        <translation>Автообновление данных</translation>
+    </message>
+    <message>
+        <source> s</source>
+        <translation> с</translation>
+    </message>
+    <message>
+        <source>Source Test Mode</source>
+        <translation>Режим тестирования источников</translation>
     </message>
 </context>
 <context>
     <name>PageBlockAddManual</name>
     <message>
         <source>Add Block</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить блокировку</translation>
     </message>
     <message>
         <source>Add a number to be blocked. Number may be either local or international variety. Use * for wildcard matching.</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавьте блокируемый номер. Формат номера может быть в местном или международном формате. Используйте * для подстановки соответствия.</translation>
     </message>
     <message>
         <source>Hidden number</source>
         <extracomment>toggle switch for hidden number</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Скрытый номер</translation>
     </message>
     <message>
         <source>Name</source>
         <extracomment>placeholder for name input</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <source>Phone Number</source>
         <extracomment>placeholder for number input</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Телефонный номер</translation>
     </message>
 </context>
 <context>
     <name>PageBlockAddSource</name>
     <message>
         <source>Add Block Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить источник блокировки</translation>
     </message>
     <message>
         <source>No sources to add</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет источников</translation>
     </message>
 </context>
 <context>
     <name>PageBlockContact</name>
     <message>
         <source>Block Contact</source>
-        <translation type="unfinished"></translation>
+        <translation>Заблокировать контакт</translation>
     </message>
 </context>
 <context>
     <name>PageBlockHistory</name>
     <message>
         <source>History</source>
-        <translation type="unfinished"></translation>
+        <translation>История</translation>
     </message>
     <message>
         <source>Lookup</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка</translation>
     </message>
     <message>
         <source>No events</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет событий</translation>
     </message>
 </context>
 <context>
     <name>PageBlockStart</name>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <source>Call Blocks</source>
-        <translation type="unfinished"></translation>
+        <translation>Блокировки звонков</translation>
     </message>
     <message>
         <source>No blocks activated</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет активных блокировок</translation>
     </message>
     <message>
         <source>Add Block Source</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить источник блокировки</translation>
     </message>
     <message>
         <source>Block Contact</source>
-        <translation type="unfinished"></translation>
+        <translation>Заблокировать контакт</translation>
     </message>
     <message>
         <source>Block Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Заблокировать номер</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить</translation>
     </message>
     <message>
         <source>Deleting %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаление %1</translation>
     </message>
 </context>
 <context>
     <name>PageBotDetails</name>
     <message>
         <source>Clear Cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Очистить кэш</translation>
     </message>
     <message>
         <source>Report a Problem</source>
-        <translation type="unfinished"></translation>
+        <translation>Сообщить о проблеме</translation>
     </message>
     <message>
         <source>Test Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить номер</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <source>Bot Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки бота</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет</translation>
     </message>
     <message>
         <source>Enable Auto-blocking</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить автоблокировку</translation>
     </message>
     <message>
         <source>Login</source>
-        <translation type="unfinished"></translation>
+        <translation>Войти</translation>
     </message>
     <message>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Описание</translation>
     </message>
     <message>
         <source>Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Ссылка</translation>
     </message>
 </context>
 <context>
     <name>PageBotDownload</name>
     <message>
         <source>Reverse caller lookup</source>
-        <translation type="unfinished"></translation>
+        <translation>Телефонный справочник</translation>
     </message>
     <message>
         <source>Search for people</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск людей</translation>
     </message>
     <message>
         <source>Search for businesses</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск компаний</translation>
     </message>
     <message>
         <source>Auto-blocking</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоблокировка</translation>
     </message>
     <message>
         <source>Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Статус</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Сбросить</translation>
     </message>
     <message>
         <source>Update available</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступно обновление</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление</translation>
     </message>
     <message>
         <source>A newer version of phonehook is required</source>
-        <translation type="unfinished"></translation>
+        <translation>Требуется более новая версия phonehook</translation>
     </message>
     <message>
         <source>Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Ссылка</translation>
     </message>
     <message>
         <source>Capabilities</source>
-        <translation type="unfinished"></translation>
+        <translation>Возможности</translation>
     </message>
     <message>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Описание</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Активировать</translation>
     </message>
     <message>
         <source>Not activated</source>
-        <translation type="unfinished"></translation>
+        <translation>Не активирован</translation>
     </message>
     <message>
         <source>Active and up-to-date</source>
-        <translation type="unfinished"></translation>
+        <translation>Активен и обновлен</translation>
     </message>
 </context>
 <context>
     <name>PageBotTest</name>
     <message>
         <source>Phone Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Телефонный номер</translation>
     </message>
     <message>
         <source>Run</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск</translation>
     </message>
 </context>
 <context>
     <name>PageCallLogStart</name>
     <message>
         <source>Missed Calls</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропущенные звонки</translation>
     </message>
     <message>
         <source>Lookup</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка</translation>
     </message>
     <message>
         <source>Block</source>
-        <translation type="unfinished"></translation>
+        <translation>Блокировка</translation>
     </message>
     <message>
         <source>Incoming Calls</source>
-        <translation type="unfinished"></translation>
+        <translation>Входящие звонки</translation>
     </message>
     <message>
         <source>Outgoing Calls</source>
-        <translation type="unfinished"></translation>
+        <translation>Исходящие звонки</translation>
     </message>
     <message>
         <source>Missed</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропущенные</translation>
     </message>
     <message>
         <source>Incoming</source>
-        <translation type="unfinished"></translation>
+        <translation>Входящие</translation>
     </message>
     <message>
         <source>Outgoing</source>
-        <translation type="unfinished"></translation>
+        <translation>Исходящие</translation>
     </message>
     <message>
         <source>Calls</source>
-        <translation type="unfinished"></translation>
+        <translation>Звонки</translation>
     </message>
 </context>
 <context>
     <name>PageDownloadWait</name>
     <message>
         <source>Download Error :(</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка загрузки :(</translation>
+    </message>
+</context>
+<context>
+    <name>PageOAuth</name>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
     </message>
 </context>
 <context>
     <name>PageSearchResults</name>
     <message>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Результаты</translation>
     </message>
     <message>
         <source>No results</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет результатов</translation>
     </message>
 </context>
 <context>
     <name>PageSearchStart</name>
     <message>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск</translation>
     </message>
     <message>
         <source>What?</source>
-        <translation type="unfinished"></translation>
+        <translation>Что?</translation>
     </message>
     <message>
         <source>Where?</source>
-        <translation type="unfinished"></translation>
+        <translation>Где?</translation>
     </message>
     <message>
         <source>Search for</source>
-        <translation type="unfinished"></translation>
+        <translation>Кого или что ищем</translation>
     </message>
     <message>
         <source>People</source>
-        <translation type="unfinished"></translation>
+        <translation>Людей</translation>
     </message>
     <message>
         <source>Businesses</source>
-        <translation type="unfinished"></translation>
+        <translation>Компании</translation>
     </message>
     <message>
         <source>Search at</source>
         <extracomment>referring to what source to use</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Где ищем</translation>
     </message>
     <message>
         <source>There are no installed sources with search capability</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет установленных источников данных с возможностью поиска</translation>
     </message>
 </context>
 <context>
     <name>PageServerBotList</name>
     <message>
         <source>Available Sources</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступные источники данных</translation>
     </message>
     <message>
         <source>Failed to load</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно загрузить</translation>
     </message>
     <message>
         <source>All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services. </source>
-        <translation type="unfinished"></translation>
+        <translation>Все названия и логотипы, перечисленные здесь, являются собственностью соответствующих правообладателей. Phonehook не поддерживается любым из этих сервисов.</translation>
     </message>
 </context>
 </TS>

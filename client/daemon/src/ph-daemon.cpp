@@ -15,6 +15,7 @@
 #include "db.h"
 #include "phonenumber.h"
 #include "overlay.h"
+#include "auto_update.h"
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -53,7 +54,9 @@ int main(int argc, char *argv[])
 
     qDebug() << "open db";
 
-    db::Instance(app);
+    db::Instance();
+    auto_update::Instance();
+
 
     QString dataDir = QDir::home().absolutePath() + "/.phonehook";
     QDir::home().mkpath(dataDir);

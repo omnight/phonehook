@@ -6,6 +6,10 @@ Page {
     id: root
 
     anchors.fill: parent
+    property bool isReady: false
+    property bool isError: false
+    property bool isLoading: false
+
 
     PageHeader {
         id: header
@@ -15,56 +19,87 @@ Page {
     BusyIndicator {
         anchors.centerIn: parent
         size: BusyIndicatorSize.Large
-        running: serverBots.status == XmlListModel.Loading
+        running: isLoading
     }
 
     Label {
         anchors.centerIn: parent
         text: qsTr("Failed to load")
-        visible: serverBots.status == XmlListModel.Error || serverBots.status == XmlListModel.Null
+        visible: isError
     }
 
-    XmlListModel {
+    Component.onCompleted: {
+        serverBots.clear()
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+
+            console.log('readystate', xhr.readyState)
+
+            if(xhr.readyState == 1 || xhr.readyState == 2 || xhr.readyState == 3) {
+                isLoading = true;
+            }
+
+            if(xhr.readyState == 4) {
+                isLoading = false;
+                var serverData =JSON.parse(xhr.responseText);
+
+                var myCountry = _setting.get('location', '');
+                var prioSort = [];
+                for(var n = 0; n < serverData.length; n++) {
+                    if(serverData[n].country == myCountry.toUpperCase()) {
+                        console.log(n);
+                        prioSort = prioSort.concat(serverData.splice(n, 1));
+                        n--;
+                    }
+                }
+
+                var sb = prioSort.concat(serverData);
+                isReady = true;
+
+                var sc = {};
+
+                for(var n in sb) {
+                    var t2 = [];
+                    for(var nn in sb[n].tags) {
+                        t2.push({ "cap": sb[n].tags[nn] })
+                    }
+                    sb[n].tags = t2;
+                    sc[sb[n].sort_key] = (sc[sb[n].sort_key] || 0) + 1
+                    serverBots.append(sb[n])
+                }
+
+                // auto-expand first selection
+                expandMap = [sb[0].sort_key];
+
+                console.log(JSON.stringify(sc))
+                sectionCount = sc;
+            }
+        };
+
+
+
+        xhr.open('GET', _setting.get("sources_index_url", 'https://raw.githubusercontent.com/omnight/phonehook-sources/master/files/index.js'), true);
+        xhr.send();
+    }
+
+
+    ListModel {
         id: serverBots
-        source: "http://phonehook.omnight.com/bots.ashx?country=" + _bots.country + (_bots.testSources ? "&beta=True" : "")
-        query: "/bots/bot"
-
-        XmlRole { name: "name"; query: "meta/name/string()" }
-        XmlRole { name: "country"; query: "meta/country/string()" }
-        XmlRole { name: "revision"; query: "meta/revision/string()" }
-        XmlRole { name: "description"; query: "meta/description/string()" }
-        XmlRole { name: "icon"; query: "meta/icon/string()" }
-        XmlRole { name: "link"; query: "meta/link/string()" }
-        XmlRole { name: "capabilities"; query: "string-join(meta/capabilities/capability/string(),'|')" }
-        XmlRole { name: "file"; query: "file/string()" }
-        XmlRole { name: "minversion"; query: "meta/minversion/string()" }
-        XmlRole { name: "sort_key"; query: "meta/sort_key/string()" }
-
-        property int retries: 0
-
-        onStatusChanged: {
-            console.log('load status changed - ', status);
-            if(status == XmlListModel.Error) {
-                if(retries < 3) {
-                    retries++;
-                    var bsource = source;
-                    source = "";
-                    source = bsource;
-                }
-            }
-
-            if(status == XmlListModel.Ready) {
-                expandMap = [ get(0).sort_key ]
-                var e = {};
-                for(var i=0; i < count; i ++) {
-                    if(!e[get(i).sort_key]) e[get(i).sort_key] = 1;
-                    else e[get(i).sort_key]++;
-                }
-                sectionCount = e;
-            }
-
+        ListElement {
+            name: ""
+            country: ""
+            revision: 0
+            description: ""
+            icon: ""
+            link: ""
+            tags: []
+            file: ""
+            minversion: 0
+            sort_key: ""
         }
     }
+
 
     property variant expandMap: [ ]
     property variant sectionCount: { 0 : 0 }
@@ -113,6 +148,7 @@ Page {
             }
 
             Text {
+                visible: isReady
                 anchors.margins: Theme.paddingLarge
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -140,7 +176,7 @@ Page {
                 Image {
                     id: flag
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "http://phonehook.omnight.com/flags/" + sectionCountry + ".png"
+                    source: "https://omnight.github.io/phonehook-sources/flags/" + sectionCountry.toLowerCase() + ".png"
 
                     Rectangle {
                         anchors.left: parent.right
@@ -255,6 +291,7 @@ Page {
 
                     Connections {
                         target: _bots.botList
+                        ignoreUnknownSignals: true
                         onCount_changed: {
                             var bstatus = _bots.botStatusCompare(model.name, model.revision)
                             checkedUpdated.visible = (bstatus == 2)

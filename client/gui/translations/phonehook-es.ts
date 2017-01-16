@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="es_ES">
+<TS version="2.1" language="es_ES">
 <context>
     <name>CoverPage</name>
     <message>
@@ -99,16 +99,24 @@
         <translation>Avanzado</translation>
     </message>
     <message>
-        <source>Source Test Mode</source>
-        <translation>Fuentes en modo de prueba</translation>
-    </message>
-    <message>
         <source>Kill dialer when blocking call</source>
         <translation>Suprimir el teclado numérico al bloquear llamada</translation>
     </message>
     <message>
         <source>Restart Daemon</source>
         <translation>Reiniciar servicio</translation>
+    </message>
+    <message>
+        <source>Auto Update Sources</source>
+        <translation>Actualizar automáticamente las fuentes</translation>
+    </message>
+    <message>
+        <source>Source Test Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> s</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -254,10 +262,6 @@
 <context>
     <name>PageBotDownload</name>
     <message>
-        <source>Install</source>
-        <translation>Instalar</translation>
-    </message>
-    <message>
         <source>Reverse caller lookup</source>
         <translation>Búsqueda inversa de llamadas</translation>
     </message>
@@ -276,14 +280,6 @@
     <message>
         <source>Status</source>
         <translation>Estado</translation>
-    </message>
-    <message>
-        <source>Not installed yet</source>
-        <translation>No instalada aún</translation>
-    </message>
-    <message>
-        <source>Installed and up-to-date</source>
-        <translation>Instalada y actualizada</translation>
     </message>
     <message>
         <source>Reset</source>
@@ -312,6 +308,18 @@
     <message>
         <source>Description</source>
         <translation>Descripción</translation>
+    </message>
+    <message>
+        <source>Activate</source>
+        <translation>Activar</translation>
+    </message>
+    <message>
+        <source>Not activated</source>
+        <translation>No esta activado</translation>
+    </message>
+    <message>
+        <source>Active and up-to-date</source>
+        <translation>Activa y actualizada</translation>
     </message>
 </context>
 <context>
@@ -372,6 +380,13 @@
     </message>
 </context>
 <context>
+    <name>PageOAuth</name>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PageSearchResults</name>
     <message>
         <source>Results</source>
@@ -402,7 +417,7 @@
     </message>
     <message>
         <source>People</source>
-        <translation>Particulares</translation>
+        <translation>Personas</translation>
     </message>
     <message>
         <source>Businesses</source>

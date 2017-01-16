@@ -13,7 +13,7 @@ Name:       phonehook
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Phonehook
-Version:    0.6.0
+Version:    0.6.2
 Release:    2
 Group:      Qt/Qt
 License:    LICENSE

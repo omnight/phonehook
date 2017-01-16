@@ -107,7 +107,7 @@ void dbus::gotModems(QDBusMessage reply) {
                                                      "PropertyChanged",
                                                      this, SLOT(gotNetworkStatusChange(QDBusMessage)));
 
-                break;
+                //break;
             }
 
         }
@@ -147,6 +147,8 @@ void dbus::gotNetworkStatus(QDBusMessage reply) {
             if(t == "Status") { m_isRoaming = (v.toString() == "roaming"); }
             if(t == "MobileCountryCode") { m_mobileCountryCode = v.toInt(); }
             if(t == "MobileNetworkCode") { m_mobileNetworkCode = v.toInt(); }
+
+            qDebug() << "network status: roaming" << m_isRoaming << "mcc" << m_mobileCountryCode << "mnc" << m_mobileNetworkCode;
 
             QSqlQuery qs("INSERT OR REPLACE INTO setting (key,value) VALUES(?,?);");
             qs.addBindValue("location");

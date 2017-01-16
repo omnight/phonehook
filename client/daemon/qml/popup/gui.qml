@@ -128,7 +128,7 @@ Item {
         id: bgGrid
         anchors.topMargin: 0
         anchors.bottomMargin: 0
-        targetH: popup.height+30
+        targetH: 0 //popup.height+30
         targetW: popup.width
         anchors.fill: popup
         showWarning: adWarning

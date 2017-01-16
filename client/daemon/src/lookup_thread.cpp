@@ -1,12 +1,15 @@
-#include "lookup_thread.h"
-#include "dbus_adapter.h"
 #include <QDebug>
 #include <QProcess>
+#include <QSqlError>
+
+#include "lookup_thread.h"
+#include "dbus_adapter.h"
 #include "robot_base.h"
 #include "dbus.h"
 #include "setting.h"
 #include "blocking.h"
-#include <QSqlError>
+#include "macros.h"
+
 
 lookup_thread::lookup_thread(QObject *parent) :
     QObject(parent) {
@@ -175,6 +178,21 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
             QDomNodeList fields = root.childNodes();
             for(int i=0; i < fields.length(); i++) {
                 if(!fields.at(i).isElement()) continue;
+
+                if(fields.at(i).toElement().tagName() == "setting") {
+                    for(int j=0; j < fields.at(i).toElement().childNodes().length(); j++ ) {
+                        QDomNode cn = fields.at(i).toElement().childNodes().at(j);
+                        if(!cn.isElement()) continue;
+
+                        int botId = sq.value("id").toInt();
+                        QString key = cn.toElement().tagName();
+                        QString value = cn.toElement().text();
+
+                        SQL(R"( REPLACE INTO BOT_PARAM (bot_id, key, value) VALUES(:botId, :key, :value) )",
+                            botId, key, value);
+                    }
+                    continue;
+                }
 
                 QDomNodeList attr = fields.at(i).toElement().childNodes();
 

@@ -4,7 +4,7 @@
 #include <QSqlQuery>
 #include <QDebug>
 
-db *db::m_Instance = NULL;
+SINGLETON_CPP(db)
 
 db::db(QObject *parent) :
     QObject(parent)
@@ -25,20 +25,13 @@ db::db(QObject *parent) :
     m_db_contacts.open();
 
     initDbTables();
+	m_db.setConnectOptions("foreign_keys = ON");
 }
 
 
 db::~db() {
     m_db.close();
     m_db_contacts.close();
-}
-
-
-db* db::Instance(QObject *parent) {
-    if(m_Instance == NULL)
-        m_Instance = new db(parent);
-
-    return m_Instance;
 }
 
 void db::initDbTables() {

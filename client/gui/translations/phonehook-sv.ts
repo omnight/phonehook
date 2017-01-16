@@ -52,7 +52,7 @@
     </message>
     <message>
         <source>Start Daemon</source>
-        <translation>Starta tjänst</translation>
+        <translation>Starta tjänsten</translation>
     </message>
     <message>
         <source>Installed Sources</source>
@@ -61,7 +61,7 @@
     <message>
         <source>None</source>
         <extracomment>No installed sources</extracomment>
-        <translation>Saknas</translation>
+        <translation>Inga installerade källor</translation>
     </message>
 </context>
 <context>
@@ -72,11 +72,11 @@
     </message>
     <message>
         <source>Basic</source>
-        <translation>Basic</translation>
+        <translation>Grundläggande</translation>
     </message>
     <message>
         <source>Show only for unknown contacts</source>
-        <translation>Visa bara för okända nummer</translation>
+        <translation>Visa bara vid okända nummer</translation>
     </message>
     <message>
         <source>Old popup design</source>
@@ -84,23 +84,19 @@
     </message>
     <message>
         <source>Enable while roaming</source>
-        <translation>Använd med roaming</translation>
+        <translation>Använd vid roaming</translation>
     </message>
     <message>
         <source>Popup Timeout</source>
-        <translation>Popup-timeout</translation>
+        <translation>Popup-tidsgräns</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation>Avstängd</translation>
+        <translation>Inaktiverad</translation>
     </message>
     <message>
         <source>Advanced</source>
         <translation>Avancerat</translation>
-    </message>
-    <message>
-        <source>Source Test Mode</source>
-        <translation>Källor i testläge</translation>
     </message>
     <message>
         <source>Kill dialer when blocking call</source>
@@ -109,6 +105,18 @@
     <message>
         <source>Restart Daemon</source>
         <translation>Starta om tjänst</translation>
+    </message>
+    <message>
+        <source>Auto Update Sources</source>
+        <translation>Uppdatera källor automatiskt</translation>
+    </message>
+    <message>
+        <source>Source Test Mode</source>
+        <translation>Källtestläge</translation>
+    </message>
+    <message>
+        <source> s</source>
+        <translation> s</translation>
     </message>
 </context>
 <context>
@@ -119,7 +127,7 @@
     </message>
     <message>
         <source>Add a number to be blocked. Number may be either local or international variety. Use * for wildcard matching.</source>
-        <translation>Lägg till ett nummer att blockera. Kan vara antingen lokalt eller internationellt format. Använd * som wildcard.</translation>
+        <translation>Lägg till ett nummer att blockera. Nummret kan vara lokalt eller internationellt. Använd * som jokertecken.</translation>
     </message>
     <message>
         <source>Hidden number</source>
@@ -134,7 +142,7 @@
     <message>
         <source>Phone Number</source>
         <extracomment>placeholder for number input</extracomment>
-        <translation>Nummer</translation>
+        <translation>Telefonnummer</translation>
     </message>
 </context>
 <context>
@@ -202,7 +210,7 @@
     </message>
     <message>
         <source>Refresh</source>
-        <translation>Ladda om</translation>
+        <translation>Uppdatera</translation>
     </message>
 </context>
 <context>
@@ -225,7 +233,7 @@
     </message>
     <message>
         <source>Bot Settings</source>
-        <translation>Inställningar</translation>
+        <translation>Robotinställningar</translation>
     </message>
     <message>
         <source>None</source>
@@ -251,12 +259,8 @@
 <context>
     <name>PageBotDownload</name>
     <message>
-        <source>Install</source>
-        <translation>Installera</translation>
-    </message>
-    <message>
         <source>Reverse caller lookup</source>
-        <translation>Uppslag på nummer</translation>
+        <translation>Nummeruppslagning</translation>
     </message>
     <message>
         <source>Search for people</source>
@@ -275,16 +279,8 @@
         <translation>Status</translation>
     </message>
     <message>
-        <source>Not installed yet</source>
-        <translation>Ej installerad</translation>
-    </message>
-    <message>
-        <source>Installed and up-to-date</source>
-        <translation>Installerad och uppdaterad</translation>
-    </message>
-    <message>
         <source>Reset</source>
-        <translation>Nollställ</translation>
+        <translation>Återställ</translation>
     </message>
     <message>
         <source>Update available</source>
@@ -310,6 +306,18 @@
         <source>Description</source>
         <translation>Beskrivning</translation>
     </message>
+    <message>
+        <source>Activate</source>
+        <translation>Aktivera</translation>
+    </message>
+    <message>
+        <source>Not activated</source>
+        <translation>Ej aktiverad</translation>
+    </message>
+    <message>
+        <source>Active and up-to-date</source>
+        <translation>Aktiv och uppdaterad</translation>
+    </message>
 </context>
 <context>
     <name>PageBotTest</name>
@@ -319,7 +327,7 @@
     </message>
     <message>
         <source>Run</source>
-        <translation>Kör</translation>
+        <translation>Starta</translation>
     </message>
 </context>
 <context>
@@ -338,11 +346,11 @@
     </message>
     <message>
         <source>Incoming Calls</source>
-        <translation>Mottagna samtal</translation>
+        <translation>Inkommande samtal</translation>
     </message>
     <message>
         <source>Outgoing Calls</source>
-        <translation>Ringda samtal</translation>
+        <translation>Utgående samtal</translation>
     </message>
     <message>
         <source>Missed</source>
@@ -350,11 +358,11 @@
     </message>
     <message>
         <source>Incoming</source>
-        <translation>Mottagna</translation>
+        <translation>Inkommande</translation>
     </message>
     <message>
         <source>Outgoing</source>
-        <translation>Ringda</translation>
+        <translation>Utgående</translation>
     </message>
     <message>
         <source>Calls</source>
@@ -366,6 +374,13 @@
     <message>
         <source>Download Error :(</source>
         <translation>Nedladdningsfel :(</translation>
+    </message>
+</context>
+<context>
+    <name>PageOAuth</name>
+    <message>
+        <source>Cancel</source>
+        <translation>Avbryt</translation>
     </message>
 </context>
 <context>
@@ -387,7 +402,7 @@
     </message>
     <message>
         <source>What?</source>
-        <translation>Vad/vem?</translation>
+        <translation>Vad/Vem?</translation>
     </message>
     <message>
         <source>Where?</source>
@@ -423,11 +438,11 @@
     </message>
     <message>
         <source>Failed to load</source>
-        <translation>Misslyckades att ladda</translation>
+        <translation>Kunde inte läsa in</translation>
     </message>
     <message>
         <source>All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services. </source>
-        <translation>Alla namn och logotyper listade här tillhör sina respektive ägare. Phonehook har ej stöd från någon av dessa tjänster.</translation>
+        <translation>Alla listade namn och logotyper tillhör respektive rättighetsinnehavare. Phonehook stöds inte av någon av dessa tjänster. </translation>
     </message>
 </context>
 </TS>

@@ -116,7 +116,7 @@ void dbus_adapter::search(QVariantMap parameters, QList<QVariant> bots) {
 
 }
 
-void dbus_adapter::loginSuccess(int bot_id, QVariantMap parameters) {
+void dbus_adapter::login(int bot_id, QVariantMap parameters) {
     QMap<QString,QString> params;
     for(auto a = parameters.begin(); a != parameters.end(); ++a ) {
         params.insert(a.key(), a.value().toString());

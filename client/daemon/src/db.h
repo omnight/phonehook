@@ -3,12 +3,15 @@
 
 #include <QObject>
 #include <QSqlDatabase>
+#include "macros.h"
 
 class db : public QObject
 {
     Q_OBJECT
+
+    SINGLETON(db)
+
 public:
-    static db *Instance(QObject* parent=0);
     void initDbTables();
 
     ~db();
@@ -20,7 +23,6 @@ signals:
 public slots:
 
 private:   
-    static db* m_Instance;
     explicit db(QObject *parent = 0);
 
     QSqlDatabase m_db;

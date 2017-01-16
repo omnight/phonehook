@@ -37,7 +37,7 @@ class dbus_adapter : public QDBusAbstractAdaptor
                 "</signal>\n"
                 "<method name=\"notificationAction\">\n"
                 "</method>\n"
-                "<method name=\"loginSuccess\">\n"
+                "<method name=\"login\">\n"
                 "<arg direction=\"in\" name=\"bot_id\" type=\"i\"/>\n"
                 "<arg direction=\"in\" name=\"parameters\" type=\"a{sv}\"/>\n"
                 "</method>\n"
@@ -76,7 +76,7 @@ public Q_SLOTS:
     void blockLastCall(QString alias);
 
     void search(QVariantMap parameters, QList<QVariant> bots);
-    void loginSuccess(int bot_id, QVariantMap parameters);
+    void login(int bot_id, QVariantMap parameters);
 signals:
     void searchResult(QString xml);
     void command(QString fn, QString data);

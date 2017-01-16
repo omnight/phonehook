@@ -3,17 +3,18 @@
 
 #include <QObject>
 #include "phonenumber.h"
+#include "macros.h"
 
 class blocking : public QObject
 {
     Q_OBJECT
+
+    SINGLETON(blocking)
+
 private:
     explicit blocking(QObject *parent = 0);
-    static blocking *m_Instance;
 
 public:   
-    static blocking *Instance();
-
     bool preCheckBlock(phonenumber number);
 
     bool checkContactBlock(phonenumber number);

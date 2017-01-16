@@ -1,130 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es_ES">
+<TS version="2.1" language="fi_FI">
 <context>
     <name>gui</name>
     <message>
         <location filename="../qml/popup/gui.qml" line="38"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation>Nimi</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="39"/>
         <source>Address</source>
-        <translation>Dirección</translation>
+        <translation>Osoite</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="40"/>
         <source>Country</source>
-        <translation>País</translation>
+        <translation>Maa</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="42"/>
         <source>Operator</source>
         <extracomment>network operator</extracomment>
-        <translation>Operador</translation>
+        <translation>verkko operaattori</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="44"/>
         <source>Properties</source>
         <extracomment>owner properties</extracomment>
-        <translation>Propiedades</translation>
+        <translation>omistajan ominaisuudet</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="46"/>
         <source>SSN</source>
         <extracomment>social security number/ personal number</extracomment>
-        <translation>NSS</translation>
+        <translation>SOTU / henkilökohtainen numero</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="47"/>
         <source>Marital Status</source>
-        <translation>Estado civil</translation>
+        <translation>Siviilisääty</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="48"/>
         <source>Vehicles</source>
-        <translation>Vehículos</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="49"/>
         <source>Organization Number</source>
-        <translation>Número de empresa</translation>
+        <translation>Yrityksen numero</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="50"/>
         <source>Company Information</source>
-        <translation>Información de la compañía</translation>
+        <translation>Yrityksen tiedot</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="51"/>
         <source>Remarks</source>
-        <translation>Comentarios</translation>
+        <translation>Huomautuksia</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="52"/>
         <source>Owner</source>
-        <translation>Propietario</translation>
+        <translation>Omistaja</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="53"/>
         <source>Error</source>
-        <translation>Error</translation>
+        <translation>Virhe</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="54"/>
         <source>Email</source>
-        <translation>Correo eletrónico</translation>
+        <translation>Sähköposti</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="55"/>
         <source>Website</source>
-        <translation>Sitio Web</translation>
+        <translation>Verkkosivu</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="56"/>
         <source>Profession</source>
-        <translation>Profesión</translation>
+        <translation>Ammatti</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="57"/>
         <source>Category</source>
-        <translation>Categoría</translation>
+        <translation>Kategoria</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="58"/>
         <source>Comment</source>
-        <translation>Comentario</translation>
+        <translation>Kommentti</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="59"/>
         <source>Status</source>
-        <translation>Estado</translation>
+        <translation>Tila</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="60"/>
         <source>Age</source>
-        <translation>Edad</translation>
+        <translation>Ikä</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="205"/>
         <source>No results</source>
-        <translation>No hay resultados</translation>
+        <translation>Ei tuloksia</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="411"/>
         <source>Back</source>
-        <translation>Volver</translation>
+        <translation>Takaisin</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="432"/>
         <source>Block</source>
-        <translation>Bloquear</translation>
+        <translation>Estä</translation>
     </message>
     <message>
         <location filename="../qml/popup/gui.qml" line="476"/>
         <source>Save</source>
-        <translation>Guardar</translation>
+        <translation>Tallenna</translation>
     </message>
 </context>
 </TS>

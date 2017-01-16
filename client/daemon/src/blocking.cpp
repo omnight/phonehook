@@ -5,21 +5,14 @@
 #include <QSqlError>
 #include "setting.h"
 
-blocking* blocking::m_Instance = NULL;
+
+SINGLETON_CPP(blocking)
 
 blocking::blocking(QObject *parent) :
     QObject(parent)
 {
-    m_Instance = this;
+
 }
-
-
-blocking* blocking::Instance() {
-    if(m_Instance == NULL)
-        m_Instance = new blocking();
-    return m_Instance;
-}
-
 
 bool blocking::checkManualBlock(phonenumber number) {
 
@@ -30,6 +23,7 @@ bool blocking::checkManualBlock(phonenumber number) {
         WHERE (? like REPLACE(number, '*','%'))
            OR (? like REPLACE(number, '*','%'));
     )");
+
 
     checkManualBlock.addBindValue(number.number_local);
     checkManualBlock.addBindValue(number.number_international);
