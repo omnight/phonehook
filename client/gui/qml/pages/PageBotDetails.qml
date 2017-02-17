@@ -129,6 +129,7 @@ Page {
                 checked: _bots.isBlockSource(botId)
                 onCheckedChanged: {
                     _bots.setBlockSource(botId, checked)
+					_blocks.initBlocks()
                 }
             }
 

@@ -13,14 +13,15 @@ Name:       phonehook
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Phonehook
-Version:    0.6.2
-Release:    2
+Version:    0.6.3
+Release:    1
 Group:      Qt/Qt
-License:    LICENSE
+License:    GPLv3
 URL:        https://github.com/omnight/phonehook
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  phonehook.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
+Requires:   sailfish-version >= 2.1.0
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
