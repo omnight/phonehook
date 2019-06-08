@@ -1,6 +1,6 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import Sailfish.Silica 1.0
-import org.nemomobile.dbus 1.0
+import Nemo.DBus 2.0
 
 Rectangle {
 
@@ -18,8 +18,8 @@ Rectangle {
 	
 	DBusInterface {
         id: dbi
-        busType: DBusInterface.SessionBus
-        destination: "com.omnight.phonehook"
+        bus: DBusInterface.SessionBus
+        service: "com.omnight.phonehook"
         path: "/"
         iface: "com.omnight.phonehook"
 		signalsEnabled: true		

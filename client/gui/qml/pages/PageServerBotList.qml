@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.XmlListModel 2.0
 import Sailfish.Silica 1.0
 
@@ -47,7 +47,7 @@ Page {
                 var myCountry = _setting.get('location', '');
                 var prioSort = [];
                 for(var n = 0; n < serverData.length; n++) {
-                    if(serverData[n].country == myCountry.toUpperCase()) {
+                    if(serverData[n].country === myCountry.toUpperCase()) {
                         console.log(n);
                         prioSort = prioSort.concat(serverData.splice(n, 1));
                         n--;
@@ -285,7 +285,7 @@ Page {
 
                     Component.onCompleted: {
                         var bstatus = _bots.botStatusCompare(model.name, model.revision)
-                        checkedUpdated.visible = (bstatus == 2)
+                        checkedUpdated.visible = (bstatus === 2)
                         checkedInstalled.visible = (bstatus >= 1)
                     }
 
@@ -294,7 +294,7 @@ Page {
                         ignoreUnknownSignals: true
                         onCount_changed: {
                             var bstatus = _bots.botStatusCompare(model.name, model.revision)
-                            checkedUpdated.visible = (bstatus == 2)
+                            checkedUpdated.visible = (bstatus === 2)
                             checkedInstalled.visible = (bstatus >= 1)
                         }
                     }

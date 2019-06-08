@@ -1,7 +1,7 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import Sailfish.Silica 1.0
 import "../setting"
-import org.nemomobile.dbus 1.0
+import Nemo.DBus 2.0
 
 Page {
     id: root
@@ -93,7 +93,7 @@ Page {
 
             Label {
                 text: qsTr("None")
-                visible: params.model.count == 0 && !_bots.hasBlockTag(botId)
+                visible: params.model.count === 0 && !_bots.hasBlockTag(botId)
             }
 
             ListView {
@@ -209,7 +209,7 @@ Page {
             Label {
                 width: parent.width
                 text: qsTr("Link")
-                visible: botModel.link != ""
+                visible: botModel.link !== ""
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.primaryColor
@@ -220,7 +220,7 @@ Page {
                 width: parent.width
                 color: Theme.secondaryColor
                 text: botModel.link
-                visible: botModel.link != ""
+                visible: botModel.link !== ""
                 wrapMode: Text.Wrap
                 font.pixelSize: Theme.fontSizeSmall
                 font.underline: true

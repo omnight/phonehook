@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import Sailfish.Silica 1.0
 
 Page {
@@ -20,7 +20,7 @@ Page {
         anchors.horizontalCenter: root.horizontalCenter
         anchors.verticalCenter: root.verticalCenter
         font.pixelSize: Theme.fontSizeLarge
-        visible: blockView.model.count == 0
+        visible: blockView.model.count === 0
     }
 
     SilicaFlickable {
@@ -97,9 +97,9 @@ Page {
                         height: 48
                         width: 48
                         fillMode: Image.PreserveAspectCrop
-                        source: model.type == 0 ? '../images/edit-6-48.png' :
-                                model.type == 1 ? '../images/contacts-48.png' :
-                                model.type == 2 ? '../images/online-48.png': ''
+                        source: model.type === 0 ? '../images/edit-6-48.png' :
+                                model.type === 1 ? '../images/contacts-48.png' :
+                                model.type === 2 ? '../images/online-48.png': ''
                     }
 
                     Column {
@@ -112,7 +112,7 @@ Page {
                             color: contentItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                         }
                         Label {
-                            visible: model.number != null
+                            visible: model.number !== null
                             text: model.number
                             font.pixelSize: Theme.fontSizeExtraSmall
                             color: Theme.secondaryColor

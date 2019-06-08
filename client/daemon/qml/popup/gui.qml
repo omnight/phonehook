@@ -1,8 +1,7 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import Sailfish.Silica 1.0
 import QtGraphicalEffects 1.0
-import org.nemomobile.dbus 1.0
-
+import Nemo.DBus 2.0
 // debug
 //import "screen.js" as Screen
 
@@ -174,7 +173,7 @@ Item {
 
         DBusInterface  {
             id: contactIf
-            destination: 'com.jolla.contacts.ui'
+            service: 'com.jolla.contacts.ui'
             iface: 'com.jolla.contacts.ui'
             path: '/com/jolla/contacts/ui'
         }

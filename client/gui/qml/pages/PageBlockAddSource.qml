@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import Sailfish.Silica 1.0
 
 Page {
@@ -9,7 +9,7 @@ Page {
         anchors.horizontalCenter: root.horizontalCenter
         anchors.verticalCenter: root.verticalCenter
         font.pixelSize: Theme.fontSizeLarge
-        visible: blockSourceView.model.count == 0
+        visible: blockSourceView.model.count === 0
     }
 
     SilicaFlickable {

@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import Sailfish.Silica 1.0
 
 Dialog {
@@ -73,10 +73,10 @@ Dialog {
 
                     if(botData.minversion && botData.minversion > _bots.version()) status = 3;
 
-                    if(status == 0) { text = qsTr("Not activated"); }
-                    if(status == 1) { text = qsTr("Active and up-to-date"); header.acceptText = qsTr("Reset"); color = "#DDFFDD" }
-                    if(status == 2) { text = qsTr("Update available"); header.acceptText = qsTr("Update"); color = "#FFFFDD" }
-                    if(status == 3) { text = qsTr("A newer version of phonehook is required"); header.enabled = false; canAccept = false; header.acceptText = ""; }
+                    if(status === 0) { text = qsTr("Not activated"); }
+                    if(status === 1) { text = qsTr("Active and up-to-date"); header.acceptText = qsTr("Reset"); color = "#DDFFDD" }
+                    if(status === 2) { text = qsTr("Update available"); header.acceptText = qsTr("Update"); color = "#FFFFDD" }
+                    if(status === 3) { text = qsTr("A newer version of phonehook is required"); header.enabled = false; canAccept = false; header.acceptText = ""; }
                 }
             }
 
