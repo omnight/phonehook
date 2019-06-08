@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
     calls calls;
 
     QQuickView* view = SailfishApp::createView();
-    view->setSource(SailfishApp::pathTo("qml/phonehook.qml") );
 
     qmlRegisterType<PhSqlModel>("com.omnight.querymodel", 1, 0, "botmodel");
 
@@ -42,7 +41,7 @@ int main(int argc, char *argv[])
     view->rootContext()->setContextProperty("_calls", &calls);
     view->rootContext()->setContextProperty("_setting", setting::Instance());
 
-
+    view->setSource(SailfishApp::pathTo("qml/phonehook.qml") );
 
 
     view->showFullScreen();

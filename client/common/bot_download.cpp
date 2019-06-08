@@ -15,7 +15,7 @@
 bot_download::bot_download(QObject *parent) :
     QObject(parent)
 {
-    connect(&netman, SIGNAL(finished(QNetworkReply*)), this, SLOT(network_response(QNetworkReply*)));
+    connect(&netman, &QNetworkAccessManager::finished , this, &bot_download::network_response);
 }
 
 
@@ -26,6 +26,7 @@ void bot_download::download(QString file, bool KeepData) {
     req.setUrl(QUrl(downloadUrlRoot + file));
     req.setRawHeader("KeepData", KeepData ? "true" : "false");
     QNetworkReply* rep = netman.get(req);
+    Q_UNUSED(rep)
 }
 
 

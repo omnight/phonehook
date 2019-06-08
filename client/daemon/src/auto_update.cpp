@@ -10,8 +10,8 @@ SINGLETON_CPP(auto_update)
 auto_update::auto_update(QObject *parent) : QObject(parent)
 {
 
-    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(checkForUpdates()));
-    connect(&netMan, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotServerResponse(QNetworkReply*)));
+    connect(&updateTimer, &QTimer::timeout, this, &auto_update::checkForUpdates);
+    connect(&netMan, &QNetworkAccessManager::finished, this, &auto_update::gotServerResponse);
 
     botMan = NULL;
 
@@ -109,8 +109,8 @@ void auto_update::gotServerResponse(QNetworkReply *reply) {
         if(botDownloadQueue.count() > 0) {
             botMan = new bot_download();
 
-            connect(botMan, SIGNAL(botDownloadSuccess(int)), this, SLOT(botDownloadFinish(int)));
-            connect(botMan, SIGNAL(botDownloadFailure()), this, SLOT(botDownloadFailure()));
+            connect(botMan, &bot_download::botDownloadSuccess, this, &auto_update::botDownloadFinish);
+            connect(botMan, &bot_download::botDownloadFailure, this, &auto_update::botDownloadFailure);
 
             botMan->download(botDownloadQueue.first(), true);
         } else {

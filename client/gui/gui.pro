@@ -12,7 +12,7 @@
 # The name of your application
 TARGET = phonehook
 
-CONFIG += sailfishapp c++11
+CONFIG += sailfishapp c++17
 QT += dbus xml sql xmlpatterns quick-private webkit-private
 
 INCLUDEPATH += ../common

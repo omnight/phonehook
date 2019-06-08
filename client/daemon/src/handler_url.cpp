@@ -7,14 +7,14 @@
 
 handler_url::handler_url(int botId, robot_base *parent)
     : QObject(parent),
-      owner(parent),
       waitThreadObj(this),
-      cookieStore(botId) {
+      cookieStore(botId),
+      owner(parent){
 
     this->botId = botId;
 
     waitThreadObj.moveToThread(&waitThread);
-    connect(&waitThread,SIGNAL(started()), &waitThreadObj, SLOT(run()));
+    connect(&waitThread,&QThread::started, &waitThreadObj, &handler_url_thread::run);
     waitThread.start();
 
 }
@@ -26,7 +26,7 @@ void handler_url_thread::run() {
 
     netman.moveToThread(QThread::currentThread());
 
-    connect(&netman, SIGNAL(finished(QNetworkReply*)), this, SLOT(network_response(QNetworkReply*)));
+    connect(&netman, &QNetworkAccessManager::finished, this, &handler_url_thread::network_response);
     QEventLoop loop;
 
     loop.exec();
@@ -283,11 +283,11 @@ handler_url::~handler_url() {
 }
 
 void response_wrapper::saveToStream(QDataStream &stream) {
-
+    Q_UNUSED(stream)
 }
 
 void response_wrapper::loadFromStream(QDataStream &stream) {
-
+    Q_UNUSED(stream)
 }
 
 void response_wrapper::loadFromReply(QNetworkReply *reply) {

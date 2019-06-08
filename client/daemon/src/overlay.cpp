@@ -11,7 +11,7 @@ overlay::overlay(QObject *parent):QObject(parent)
 {
     showTimer.setSingleShot(true);
     showTimer.start(10000);
-    connect(&showTimer, SIGNAL(timeout()), this, SLOT(onShowTimerTick()));
+    connect(&showTimer, &QTimer::timeout, this, &overlay::onShowTimerTick);
 }
 
 void overlay::onShowTimerTick() {

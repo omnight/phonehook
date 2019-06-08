@@ -18,9 +18,9 @@ lookup_thread::lookup_thread(QObject *parent) :
 
 void lookup_thread::start(QMap<QString,QString> parameters, QList<int> botIds) {
     //connect(&thread, SIGNAL(started()), this, SLOT(threadStarted()));
-    connect(this, SIGNAL(start_worker(QMap<QString,QString>,QList<int>)), &w, SLOT(threadStarted(QMap<QString,QString>,QList<int>)) );
-    connect(&w, SIGNAL(finished()), this, SLOT(worker_finish()));
-    connect(&w, SIGNAL(gotResult()), this, SLOT(worker_result()));
+    connect(this, &lookup_thread::start_worker, &w, &lookup_worker::threadStarted);
+    connect(&w, &lookup_worker::finished, this, &lookup_thread::worker_finish);
+    connect(&w, &lookup_worker::gotResult, this, &lookup_thread::worker_result);
     thread.start();
     w.moveToThread(&thread);
     emit start_worker(parameters,botIds);

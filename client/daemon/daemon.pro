@@ -13,7 +13,7 @@ debug {
 }
 
 QT += dbus xml sql gui-private xmlpatterns
-CONFIG += sailfishapp c++11
+CONFIG += sailfishapp c++17
 SOURCES += src/ph-daemon.cpp \
     src/robot_base.cpp \
     src/process_data.cpp \

@@ -38,11 +38,11 @@ bots::bots(QObject *parent) :
     }
 
     // check to see if injector DBus Adaptor in active
-    connect(&serviceWatcher, SIGNAL(serviceRegistered(QString)), this, SLOT(service_registered(QString)));
-    connect(&serviceWatcher, SIGNAL(serviceUnregistered(QString)), this, SLOT(service_unregistered(QString)));
+    connect(&serviceWatcher, &QDBusServiceWatcher::serviceRegistered, this, &bots::service_registered);
+    connect(&serviceWatcher, &QDBusServiceWatcher::serviceUnregistered, this, &bots::service_unregistered);
 
-    connect(&botDownloader, SIGNAL(botDownloadFailure()), this, SLOT(botDownload_fail()));
-    connect(&botDownloader, SIGNAL(botDownloadSuccess(int)), this, SLOT(botDownload_finish(int)));
+    connect(&botDownloader, &bot_download::botDownloadFailure, this, &bots::botDownload_fail);
+    connect(&botDownloader, &bot_download::botDownloadSuccess, this, &bots::botDownload_finish);
 
 //    serviceWatcher.setWatchMode(QDBusServiceWatcher::WatchForRegistration);
     serviceWatcher.setConnection(QDBusConnection::sessionBus());

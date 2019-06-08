@@ -5,8 +5,8 @@
 robot_base::robot_base(int botId, QObject *parent) :
     QObject(parent),
     handleUrl(botId, this),
-    handleFormat(this),
-    handleRegex(this) {
+    handleRegex(this),
+    handleFormat(this){
     this->botId = botId;
 }
 
@@ -218,7 +218,7 @@ QDomDocument robot_base::run(QMap<QString, QString> parameters, QString tagWante
 
 
 void robot_base::expand(QString &expr) {
-    expand_advanced(expr, "\\$\\{([a-z0-9-_:]+)\\}", parameters);
+   expand_advanced(expr, "\\$\\{([a-z0-9-_:]+)\\}", parameters);
 }
 
 void robot_base::expand_advanced(QString &expr, QString regex, QMap<QString, QString> replacements) {

@@ -210,7 +210,7 @@ void dbus::processNumber(QString callingNr, bool isTest) {
     qs.exec("SELECT key, value FROM setting");
 
     bool activateOnSms = false, activateOnlyUnknown = true, enableRoaming = false;
-
+    Q_UNUSED(activateOnSms)
     while(qs.next()) {
         if(qs.value("key").toString() == "activate_only_unknown")
             activateOnlyUnknown = (qs.value("value").toString() == "true");
@@ -256,7 +256,7 @@ void dbus::processNumber(QString callingNr, bool isTest) {
     qDebug() << "connecting" << lt;
 
     if(!isTest)
-        connect(lt, SIGNAL(gotResult(lookup_thread*)), this, SLOT(lookupResult(lookup_thread*)));
+        connect(lt, &lookup_thread::gotResult, this, &dbus::lookupResult);
 
     lt->start(lastNumber, QList<int>());
 }
@@ -264,7 +264,7 @@ void dbus::processNumber(QString callingNr, bool isTest) {
 void dbus::lookupResult(lookup_thread *sender) {
     if(blocking::Instance()->checkAutoBlock(lastNumber)) {
         qDebug() << "disconnecting signal" << sender;
-        disconnect(sender, SIGNAL(gotResult(lookup_thread*)), this, SLOT(lookupResult(lookup_thread*)));
+        disconnect(sender, &lookup_thread::gotResult, this, &dbus::lookupResult);
     }
 }
 

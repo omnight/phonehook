@@ -35,6 +35,7 @@ QList<long long> QuickSand::recoverSolution(long long l,
                                  QuickSandHeader &p,
                                  long long q,
                                  long long r) {
+    Q_UNUSED(q)
 
     QList<long long> t;
     QSet<lpair> u;

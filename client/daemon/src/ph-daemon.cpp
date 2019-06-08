@@ -19,17 +19,20 @@
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    Q_UNUSED(context)
     QString txt;
     switch (type) {
+    case QtInfoMsg:
+        break;
     case QtDebugMsg:
         txt = QString("Debug: %1").arg(msg);
         break;
     case QtWarningMsg:
         txt = QString("Warning: %1").arg(msg);
-    break;
+        break;
     case QtCriticalMsg:
         txt = QString("Critical: %1").arg(msg);
-    break;
+        break;
     case QtFatalMsg:
         txt = QString("Fatal: %1").arg(msg);
         abort();

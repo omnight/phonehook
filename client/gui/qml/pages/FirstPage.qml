@@ -172,7 +172,7 @@ Page {
             Label {
                 //: No installed sources
                 text: qsTr("None")
-                visible: botView.model.count == 0
+                visible: botView.model.count === 0
             }
 
             RemorseItem {
