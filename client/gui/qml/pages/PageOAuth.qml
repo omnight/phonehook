@@ -47,7 +47,7 @@ Dialog {
 
             for(var i=0; i < result.length; i++) {
 
-                if(result[i].tagname != 'result')
+                if(result[i].tagname !== 'result')
                     continue;
 
                 if(result[i].success) {

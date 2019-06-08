@@ -109,7 +109,7 @@ Dialog {
             Item {
                 height: 20
                 width: parent.width
-                visible: botView.model.count == 0
+                visible: botView.model.count === 0
             }
 
             Label {
@@ -117,7 +117,7 @@ Dialog {
                 wrapMode: Text.Wrap
                 text: qsTr("There are no installed sources with search capability")
                 font.pixelSize: Theme.fontSizeSmall
-                visible: botView.model.count == 0
+                visible: botView.model.count === 0
             }
 
             ListView {
@@ -134,13 +134,13 @@ Dialog {
                         TextSwitch {
                             width: parent.width
                             text: model.name || ''
-                            checked: selectedBotId == model.id
+                            checked: selectedBotId === model.id
                             onCheckedChanged: {
                                 console.log('checked to', model.id, checked);
                                 if(checked)
                                     selectedBotId = model.id;
 
-                                checked = Qt.binding(function() { return selectedBotId == model.id; });
+                                checked = Qt.binding(function() { return selectedBotId === model.id; });
                             }
                         }
                     }
@@ -178,7 +178,7 @@ Dialog {
             // validate selection
             var valid = false;
             for(var i=0; i < _bots.botSearchList.count; i++) {
-                valid = valid || (_bots.botSearchList.getValue(i, "id") == selectedBotId);
+                valid = valid || (_bots.botSearchList.getValue(i, "id") === selectedBotId);
             }
 
             if(!valid)

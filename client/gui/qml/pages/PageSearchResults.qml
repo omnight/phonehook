@@ -17,7 +17,7 @@ Page {
         function searchState(state) {
             console.log('search state', state);
 
-            if(state == 'active:person_search' || state == 'activate:business_search') {
+            if(state === 'active:person_search' || state === 'activate:business_search') {
                 isLoading = true;
             }
         }
@@ -31,9 +31,9 @@ Page {
             var arr = JSON.parse(result);
 
             for(var i=0; i < arr.length; i++) {
-                if(arr[i].tagname == "result")
+                if(arr[i].tagname === "result")
                     resultModel.append(arr[i]);
-                if(arr[i].tagname == "next") {
+                if(arr[i].tagname === "next") {
                     delete arr[i].tagname;
                     nextParams = arr[i];
                 }
@@ -44,21 +44,21 @@ Page {
 
     DBusInterface {
         id: dialIf
-        destination: 'com.jolla.voicecall.ui'
+        service: 'com.jolla.voicecall.ui'
         iface: 'com.jolla.voicecall.ui'
         path: '/'
     }
 
     DBusInterface {
         id: mapIf
-        destination: 'org.sailfishos.maps'
+        service: 'org.sailfishos.maps'
         iface: 'org.sailfishos.maps'
         path: '/'
     }
 
     DBusInterface  {
         id: contactIf
-        destination: 'com.jolla.contacts.ui'
+        service: 'com.jolla.contacts.ui'
         iface: 'com.jolla.contacts.ui'
         path: '/com/jolla/contacts/ui'
     }
@@ -89,7 +89,7 @@ Page {
             property: "scale"
             from: 1
             to: 0.8
-            easing: Easing.InBack
+            easing.type: Easing.InBack
             duration: 150
         }
 
@@ -99,7 +99,7 @@ Page {
             from: 0.8
             to: 1
             duration: 200
-            easing: Easing.OutBack
+            easing.type: Easing.OutBack
         }
 
         ScriptAction {
@@ -128,10 +128,11 @@ Page {
         PauseAnimation { duration: 300 }
 
         ColorAnimation {
-            target: rowAnimation.target
+            target:rowAnimation.target
             property: "color"
             to: "#00000000";
             duration: 1000
+
         }
 
         function startWithTarget(t) {
@@ -225,7 +226,7 @@ Page {
                     height: 60
                     width: 60
                     fillMode: Image.PreserveAspectCrop
-                    source: model.image || (model.type == 'person' ?
+                    source: model.image || (model.type === 'person' ?
                                             '../images/contacts-48.png' :
                                             '../images/home-5-48.png')
                 }
@@ -249,7 +250,7 @@ Page {
                         width: parent.width
                         id: lblAddress
                         text: model.address
-                        visible: model.address != ''
+                        visible: model.address !== ''
                         color: Theme.secondaryColor
                         font.pixelSize: Theme.fontSizeSmall
                         wrapMode: expanded ? Text.Wrap : Text.NoWrap
@@ -335,7 +336,7 @@ Page {
                             height: 86
                             width: 86
                             id: mapContainer
-                            visible: model.address != ''
+                            visible: model.address !== ''
                             color: "#00000000"
 
                             Image {
@@ -359,7 +360,7 @@ Page {
                             height: 86
                             width: 86
                             id: urlContainer
-                            visible: model.url != ''
+                            visible: model.url !== ''
                             color: "#00000000"
 
                             Image {
@@ -383,7 +384,7 @@ Page {
                             width: 86
                             id: peopleContainer
                             color: "#00000000"
-                            visible: model.name != ''
+                            visible: model.name !== ''
 
                             Image {
                                 id: peopleIcon

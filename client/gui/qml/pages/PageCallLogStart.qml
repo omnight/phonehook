@@ -4,7 +4,7 @@ import Sailfish.Silica 1.0
 Page {
     id: root
 
-    anchors.fill: parent
+    //anchors.fill: parent
     property variant contextItem
 
     SilicaFlickable {

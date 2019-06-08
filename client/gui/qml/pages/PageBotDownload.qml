@@ -83,19 +83,19 @@ Dialog {
             Item {
                 height: 20
                 width: parent.width
-                visible: botData.link != ""
+                visible: botData.link !== ""
             }
 
             Label {
                 text: qsTr("Link")
-                visible: botData.link != ""
+                visible: botData.link !== ""
             }
 
             Text {
                 width: parent.width
                 color: Theme.secondaryColor
                 text: botData.link
-                visible: botData.link != ""
+                visible: botData.link !== ""
                 wrapMode: Text.Wrap
                 font.pixelSize: Theme.fontSizeSmall
                 font.underline: true

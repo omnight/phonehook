@@ -33,7 +33,7 @@ Page {
             TextSwitch {
                 width: parent.width
                 text: qsTr("Auto Update Sources")
-                checked: _setting.get("auto_update_enabled", "true") == "true"
+                checked: _setting.get("auto_update_enabled", "true") === "true"
                 onCheckedChanged: {
                     _setting.put("auto_update_enabled", checked)
                 }
@@ -42,7 +42,7 @@ Page {
             TextSwitch {
                 width: parent.width
                 text: qsTr("Show only for unknown contacts")
-                checked: _setting.get("activate_only_unknown", "true") == "true"
+                checked: _setting.get("activate_only_unknown", "true") === "true"
                 onCheckedChanged: {
                     _setting.put("activate_only_unknown", checked)
                 }
@@ -51,7 +51,7 @@ Page {
             TextSwitch {
                 width: parent.width
                 text: qsTr("Old popup design")
-                checked: _setting.get("old_popup_design", "false") == "true"
+                checked: _setting.get("old_popup_design", "false") === "true"
                 onCheckedChanged: {
                     _setting.put("old_popup_design", checked)
                 }
@@ -69,7 +69,7 @@ Page {
             TextSwitch {
                 width: parent.width
                 text: qsTr("Enable while roaming")
-                checked: _setting.get("enable_roaming", "false") == "true"
+                checked: _setting.get("enable_roaming", "false") === "true"
                 onCheckedChanged: {
                     _setting.put("enable_roaming", checked)
                 }
@@ -129,7 +129,7 @@ Page {
             TextSwitch {
                 width: parent.width
                 text: qsTr("Kill dialer when blocking call")
-                checked: _setting.get("kill_voicecall_ui", "false") == "true"
+                checked: _setting.get("kill_voicecall_ui", "false") === "true"
                 onCheckedChanged: {
                     _setting.put("kill_voicecall_ui", checked)
                 }
