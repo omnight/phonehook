@@ -1,6 +1,7 @@
-#include "setting.h"
 #include <QSqlQuery>
 #include <QVariant>
+
+#include "setting.h"
 
 SINGLETON_CPP(setting)
 

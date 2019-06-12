@@ -1,4 +1,5 @@
 #include <QSqlError>
+
 #include "blocks.h"
 
 blocks::blocks(QObject *parent) :

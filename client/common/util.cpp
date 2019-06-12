@@ -1,6 +1,7 @@
+#include <QSqlRecord>
+
 #include "util.h"
 #include "macros.h"
-#include <QSqlRecord>
 
 util::util(QObject *parent) : QObject(parent)
 {
