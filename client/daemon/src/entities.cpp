@@ -2,12 +2,13 @@
 	Distributed under the Boost Software License, Version 1.0
 */
 
-#include "entities.h"
-
 #include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "entities.h"
+
 
 #define UNICODE_MAX 0x10FFFFul
 

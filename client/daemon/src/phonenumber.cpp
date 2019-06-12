@@ -1,7 +1,8 @@
-#include "phonenumber.h"
 #include <QDebug>
-
 #include <QRegularExpression>
+
+#include "phonenumber.h"
+
 
 phonenumber::phonenumber(QString number, QString location, QString mnc) {
 

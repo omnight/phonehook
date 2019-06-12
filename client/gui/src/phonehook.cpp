@@ -6,6 +6,7 @@
 
 #include <QtDBus>
 #include <sailfishapp.h>
+
 #include "dbus.h"
 #include "bots.h"
 #include "db_model.h"

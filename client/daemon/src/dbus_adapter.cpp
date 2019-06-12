@@ -1,9 +1,10 @@
 #include <QDebug>
-#include "dbus_adapter.h"
 #include <QtDBus>
+#include <QJsonObject>
+
+#include "dbus_adapter.h"
 #include "lookup_thread.h"
 #include "dbus.h"
-#include <QJsonObject>
 
 dbus_adapter *dbus_adapter::m_Instance = NULL;
 

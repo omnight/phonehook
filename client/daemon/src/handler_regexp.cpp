@@ -1,5 +1,6 @@
-#include "handler_regexp.h"
 #include <QDebug>
+
+#include "handler_regexp.h"
 #include "robot_base.h"
 
 handler_regexp::handler_regexp(robot_base *parent) :

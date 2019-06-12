@@ -1,6 +1,7 @@
+#include <QTextStream>
+
 #include "robot_base.h"
 #include "handler_url.h"
-#include <QTextStream>
 
 robot_base::robot_base(int botId, QObject *parent) :
     QObject(parent),

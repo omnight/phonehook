@@ -1,6 +1,7 @@
-#include "quicksand.h"
 #include <QDebug>
 #include <QCryptographicHash>
+
+#include "quicksand.h"
 
 QuickSand::QuickSand(QObject *parent) :
     QObject(parent)

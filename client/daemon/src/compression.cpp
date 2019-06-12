@@ -1,5 +1,6 @@
-#include "compression.h"
 #include <zlib.h>
+
+#include "compression.h"
 
 Compression::Compression(QObject *parent) :
     QObject(parent)

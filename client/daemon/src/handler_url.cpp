@@ -1,9 +1,10 @@
-#include "handler_url.h"
-#include "robot_base.h"
 #include <QNetworkProxy>
-#include "compression.h"
 #include <QSqlQuery>
 #include <QNetworkCookie>
+
+#include "handler_url.h"
+#include "robot_base.h"
+#include "compression.h"
 
 handler_url::handler_url(int botId, robot_base *parent)
     : QObject(parent),

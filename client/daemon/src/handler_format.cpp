@@ -1,9 +1,10 @@
-#include "handler_format.h"
 #include <QtXml>
+#include <QJSEngine>
+
+#include "handler_format.h"
 #include "entities.h"
 #include "quicksand.h"
 #include "robot_base.h"
-#include <QJSEngine>
 
 handler_format::handler_format(robot_base *parent) :
     QObject(parent),

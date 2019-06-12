@@ -1,8 +1,8 @@
-#include "db.h"
-
 #include <QDir>
 #include <QSqlQuery>
 #include <QDebug>
+
+#include "db.h"
 
 SINGLETON_CPP(db)
 

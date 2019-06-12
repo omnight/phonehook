@@ -1,8 +1,9 @@
-#include "dbus.h"
 #include <QDebug>
 #include <QSqlError>
-#include "phonenumber.h"
 #include <QFile>
+
+#include "dbus.h"
+#include "phonenumber.h"
 #include "blocking.h"
 #include "db.h"
 

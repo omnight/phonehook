@@ -1,10 +1,10 @@
-#include "overlay.h"
 #include <qpa/qplatformnativeinterface.h>
-#include "dbus_adapter.h"
 #include <QColor>
 #include <QQuickView>
 #include <QQmlContext>
 #include <QGuiApplication>
+#include "overlay.h"
+#include "dbus_adapter.h"
 #include "setting.h"
 
 overlay::overlay(QObject *parent):QObject(parent)

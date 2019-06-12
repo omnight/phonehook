@@ -1,5 +1,6 @@
-#include "countries.h"
 #include <QMap>
+
+#include "countries.h"
 
 countries::countries(QObject *parent) :
     QObject(parent)

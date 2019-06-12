@@ -1,9 +1,10 @@
-#include "auto_update.h"
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+
+#include "auto_update.h"
 
 SINGLETON_CPP(auto_update)
 
