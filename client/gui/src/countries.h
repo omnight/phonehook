@@ -2,19 +2,11 @@
 #define COUNTRIES_H
 
 #include <QObject>
+#include <QHash>
 
-class countries : public QObject
-{
-    Q_OBJECT
-public:
-    explicit countries(QObject *parent = 0);
+namespace countries {
 
-    static QString getCountryNameISO3166(QString code);
-
-signals:
-
-public slots:
-
+    QString getCountryNameISO3166(const QString &code);
 };
 
 #endif // COUNTRIES_H

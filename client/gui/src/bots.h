@@ -69,21 +69,21 @@ public:
 
     Q_INVOKABLE QVariantMap getBotDetails(int botId);
 
-    Q_INVOKABLE int getBotId(QString name);
+    Q_INVOKABLE int getBotId(const QString &name);
     Q_INVOKABLE void setActiveBot(int botId);
-    Q_INVOKABLE void downloadBot(QString file, bool KeepData);
+    Q_INVOKABLE void downloadBot(const QString& file, bool KeepData);
 
     Q_INVOKABLE void initBotList();
-    Q_INVOKABLE void setBotParam(int botId, QString key, QString value);
-    Q_INVOKABLE void testBot(int botId, QString testNumber);
+    Q_INVOKABLE void setBotParam(int botId, const QString &key, const QString &value);
+    Q_INVOKABLE void testBot(int botId, const QString &testNumber);
     Q_INVOKABLE bool removeBot(int botId);
     Q_INVOKABLE void startDaemon();
-    Q_INVOKABLE int botStatusCompare(QString name, int rev);
+    Q_INVOKABLE int botStatusCompare(const QString &name, int rev);
 
-    Q_INVOKABLE QString getCountryName(QString code);
+    Q_INVOKABLE QString getCountryName(const QString &code);
     Q_INVOKABLE int version();
     Q_INVOKABLE void clearCache(int botId);
-    Q_INVOKABLE void setBotSearchListTag(QString tag);
+    Q_INVOKABLE void setBotSearchListTag(const QString &tag);
 
     Q_INVOKABLE bool hasBlockTag(int botId);
     Q_INVOKABLE bool isBlockSource(int botId);
@@ -106,7 +106,7 @@ public:
     Q_INVOKABLE void copyCookies(int bot_id);
 
 
-    Q_INVOKABLE void vCardWrite(QString name, QStringList numbers, QString address);
+    Q_INVOKABLE void vCardWrite(const QString &name, const QStringList &numbers, QString address);
 
 signals:
     void botList_changed(PhSqlModel*);
@@ -124,8 +124,8 @@ public slots:
 
     void botDownload_finish(int botId);
     void botDownload_fail();
-    void service_registered(QString);
-    void service_unregistered(QString);
+    void service_registered(const QString&);
+    void service_unregistered(const QString&);
 
 private:
     QSqlDatabase m_db;
@@ -139,7 +139,7 @@ private:
 
     void initDbTables();
 
-    QVariantMap recordToVariantMap(QSqlRecord r);
+    QVariantMap recordToVariantMap(const QSqlRecord &r);
 
     QDBusServiceWatcher serviceWatcher;
 

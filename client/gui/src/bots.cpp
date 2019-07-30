@@ -69,7 +69,7 @@ int bots::version() {
     return m_version;
 }
 
-void bots::downloadBot(QString file, bool KeepData) {
+void bots::downloadBot(const QString &file, bool KeepData) {
     botDownloader.download(file, KeepData);
 }
 
@@ -84,7 +84,7 @@ void bots::botDownload_finish(int botId) {
     emit botDownloadSuccess(botId);
 }
 
-QVariantMap bots::recordToVariantMap(QSqlRecord r) {
+QVariantMap bots::recordToVariantMap(const QSqlRecord &r) {
     QVariantMap vm;
 
     for(int i=0; i < r.count(); i++) {
@@ -111,7 +111,7 @@ QVariantMap bots::getBotDetails(int botId) {
 
 }
 
-void bots::setBotSearchListTag(QString tag) {
+void bots::setBotSearchListTag(const QString &tag) {
     m_botSearchList.setQuery("SELECT bot.id, bot.name FROM bot JOIN bot_tag ON bot.id = bot_tag.bot_id WHERE bot_tag.tag='" + tag + "';");
     emit botSearchList_changed(&m_botSearchList);
 }
@@ -129,7 +129,7 @@ void bots::setActiveBot(int botId) {
 
 }
 
-void bots::setBotParam(int botId, QString key, QString value) {
+void bots::setBotParam(int botId, const QString &key, const QString &value) {
     QSqlQuery sq;
 
     sq.prepare("UPDATE bot_param SET value = ? WHERE bot_id = ? AND key = ?;");
@@ -139,7 +139,7 @@ void bots::setBotParam(int botId, QString key, QString value) {
     qDebug() << "update bot param " << sq.exec();
 }
 
-void bots::testBot(int botId, QString testNumber) {
+void bots::testBot(int botId, const QString &testNumber) {
 
 
     QVariantList args;
@@ -167,7 +167,7 @@ void bots::testBot(int botId, QString testNumber) {
 }
 
 
-void bots::service_registered(QString serviceName) {
+void bots::service_registered(const QString &serviceName) {
     qDebug() << "registered" << serviceName;
 
     if(serviceName == "com.omnight.phonehook") {
@@ -196,7 +196,7 @@ void bots::initBotList() {
 }
 
 
-void bots::service_unregistered(QString serviceName) {
+void bots::service_unregistered(const QString &serviceName) {
     qDebug() << "unregistered" << serviceName;
     if(serviceName == "com.omnight.phonehook") {
         m_daemonActive = false;
@@ -210,7 +210,7 @@ void bots::startDaemon() {
 }
 
 
-int bots::botStatusCompare(QString name, int rev) {
+int bots::botStatusCompare(const QString &name, int rev) {
 
     //qDebug() << "check" << name << rev;
 
@@ -230,7 +230,7 @@ int bots::botStatusCompare(QString name, int rev) {
 
 
 }
-int bots::getBotId(QString name) {
+int bots::getBotId(const QString &name) {
     QSqlQuery qs;
 
     qs.prepare("SELECT id FROM bot WHERE name = ?");
@@ -264,7 +264,7 @@ bool bots::removeBot(int botId) {
     return status;
 }
 
-QString bots::getCountryName(QString code) {
+QString bots::getCountryName(const QString &code) {
     return countries::getCountryNameISO3166(code);
 }
 
@@ -400,7 +400,7 @@ void bots::copyCookies(int bot_id) {
 
 }
 
-void bots::vCardWrite(QString name, QStringList numbers, QString address) {
+void bots::vCardWrite(const QString &name, const QStringList &numbers,  QString address) {
     QFile vCardFile("/home/nemo/.phonehook/phonehook.vcf");
     if(vCardFile.open(QIODevice::WriteOnly)) {
         QTextStream stream(&vCardFile);

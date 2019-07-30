@@ -3,7 +3,7 @@
 #include "blocks.h"
 
 blocks::blocks(QObject *parent) :
-    QObject(parent)
+    QObject(parent),contacts_db{}
 {
 
 
@@ -54,7 +54,7 @@ QString blocks::contactName(int contactId) {
 }
 
 
-QString blocks::contactNameFromNumber(QString number) {
+QString blocks::contactNameFromNumber(const QString &number) {
 
     if(contactNumberCache.contains(number))
         return contactName(contactNumberCache[number]);
@@ -88,7 +88,7 @@ void blocks::addBlockedContact(int contactId) {
 
 }
 
-void blocks::addManualBlock(QString name, QString number, bool isHidden) {
+void blocks::addManualBlock(const QString &name, const QString &number, bool isHidden) {
     QSqlQuery sq;
     sq.prepare("INSERT INTO block (type, name, number) VALUES(0,?,?)");
 

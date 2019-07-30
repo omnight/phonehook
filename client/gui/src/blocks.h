@@ -22,12 +22,12 @@ public:
     Q_INVOKABLE void initSources();
 
     Q_INVOKABLE void addBlockedContact(int contactId);
-    Q_INVOKABLE void addManualBlock(QString name, QString number, bool isHidden);
+    Q_INVOKABLE void addManualBlock(const QString &name, const QString &number, bool isHidden);
 
     Q_INVOKABLE void deleteBlock(int blockId);
 
     Q_INVOKABLE QString contactName(int contactId);
-    Q_INVOKABLE QString contactNameFromNumber(QString number);
+    Q_INVOKABLE QString contactNameFromNumber(const QString &number);
 
     PhSqlModel *contacts() {
         if(!m_contacts.query().isValid())
