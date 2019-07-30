@@ -225,10 +225,12 @@ Page {
                     anchors.left: parent.left
                     height: 60
                     width: 60
+                    sourceSize.height: height
+                    sourceSize.width: width
                     fillMode: Image.PreserveAspectCrop
                     source: model.image || (model.type === 'person' ?
-                                            '../images/contacts-48.png' :
-                                            '../images/home-5-48.png')
+                                            '../images/contacts.svg' :
+                                            '../images/home-5.svg')
                 }
 
                 Column {
@@ -303,7 +305,9 @@ Page {
                                         id: callIcon
                                         height: 48
                                         width: 48
-                                        source: '../images/phone-46-48.png'
+                                        sourceSize.height: height
+                                        sourceSize.width: width
+                                        source: '../images/phone-46.svg'
                                     }
 
                                     Text {

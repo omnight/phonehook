@@ -19,6 +19,8 @@ Rectangle {
         width: parent.width*.4
         height: parent.width*.4
         source: btn.icon
+        sourceSize.height: height
+        sourceSize.width: width
     }
 
     Text {

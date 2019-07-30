@@ -96,10 +96,12 @@ Page {
                         anchors.verticalCenter: parent.verticalCenter
                         height: 48
                         width: 48
+                        sourceSize.height: height
+                        sourceSize.width: width
                         fillMode: Image.PreserveAspectCrop
-                        source: model.type === 0 ? '../images/edit-6-48.png' :
-                                model.type === 1 ? '../images/contacts-48.png' :
-                                model.type === 2 ? '../images/online-48.png': ''
+                        source: model.type === 0 ? '../images/edit-6.svg' :
+                                model.type === 1 ? '../images/contacts.svg' :
+                                model.type === 2 ? '../images/online.svg': ''
                     }
 
                     Column {

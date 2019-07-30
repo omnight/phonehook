@@ -216,9 +216,11 @@ Page {
             }
 
             Image {
-                source: "../images/expand.png"
+                source: "../images/expand.svg"
                 height: 31
                 width: 30
+                sourceSize.height: height
+                sourceSize.width: width
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: Theme.paddingLarge
@@ -303,7 +305,7 @@ Page {
                         id: checkedUpdated
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: checkedInstalled.left
-                        source: "../images/new-48.png"
+                        source: "../images/new.svg"
                         height: parent.height*0.8
                         width: height
                         visible: false
@@ -313,7 +315,7 @@ Page {
                         id: checkedInstalled
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        source: "../images/approval-48.png"
+                        source: "../images/approval.svg"
                         height: parent.height*0.8
                         width: height
                         visible: false
