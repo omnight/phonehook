@@ -102,13 +102,13 @@ Page {
 
                 ControlBigButton {
                     link: "PageServerBotList.qml"
-                    icon: "../images/website-optimization-48.png"
+                    icon: "../images/website-optimization.svg"
                     text: qsTr("Data Sources")
                 }
 
                 ControlBigButton {
                     link: "PageSearchStart.qml"
-                    icon: "../images/search-2-48.png"
+                    icon: "../images/search-2.svg"
                     text: qsTr("Search")
                 }
 
@@ -123,13 +123,13 @@ Page {
 
                 ControlBigButton {
                     link: "PageBlockStart.qml"
-                    icon: "../images/restriction-shield-48.png"
+                    icon: "../images/restriction-shield.svg"
                     text: qsTr("Blocks")
                 }
 
                 ControlBigButton {
                     link: "PageCallLogStart.qml"
-                    icon: "../images/view-details-48.png"
+                    icon: "../images/view-details.svg"
                     text: qsTr("Call Log")
                 }
 
