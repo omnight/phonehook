@@ -68,7 +68,8 @@ CONFIG += sailfishapp_i18n
 TRANSLATIONS += translations/phonehook-es.ts \
                 translations/phonehook-sv.ts \
                 translations/phonehook-fi.ts \
-                translations/phonehook-ru.ts
+                translations/phonehook-ru.ts \
+                translations/phonehook-cz.ts
 
 
 HEADERS += \
