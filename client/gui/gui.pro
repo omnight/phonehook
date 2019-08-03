@@ -69,7 +69,7 @@ TRANSLATIONS += translations/phonehook-es.ts \
                 translations/phonehook-sv.ts \
                 translations/phonehook-fi.ts \
                 translations/phonehook-ru.ts \
-                translations/phonehook-cz.ts \
+                translations/phonehook-cs.ts \
                 translations/phonehook-de.ts
 
 HEADERS += \
