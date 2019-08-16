@@ -58,9 +58,9 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
     QNetworkCookieJar *jar = new QNetworkCookieJar();
     QUrl urlBase;
 
-    foreach(process_data *p, parents) {
+    for(const process_data *p: parents) {
         if(!p->url.isEmpty()) urlBase = p->url;
-        foreach(QNetworkCookie c, p->cookies) {
+        for(const auto &c: p->cookies) {
             qDebug() << "setting cookie " <<  c.name() << ":" << c.value() << c.path() << c.domain();
             jar->insertCookie(c);
         }
@@ -84,7 +84,7 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
 
         if(robotXml.attribute("requestfields", "") == "Header") {
 
-            foreach(QString line, robotXml.attribute("requestvalue").split("\n", QString::SkipEmptyParts)) {
+            for(const auto &line: robotXml.attribute("requestvalue").split("\n", QString::SkipEmptyParts)) {
                 qDebug() << "HEADER" << line;
                 QStringList keyValue = line.split(":");
                 if(keyValue.length() >= 2) {

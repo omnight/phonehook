@@ -6,7 +6,7 @@
 #include "lookup_thread.h"
 #include "dbus.h"
 
-dbus_adapter *dbus_adapter::m_Instance = NULL;
+dbus_adapter *dbus_adapter::m_Instance = nullptr;
 
 dbus_adapter::dbus_adapter(QObject *parent) :
     QDBusAbstractAdaptor(parent)
@@ -23,7 +23,7 @@ dbus_adapter::dbus_adapter(QObject *parent) :
 
 
 dbus_adapter* dbus_adapter::Instance(QObject *parent) {
-    if(m_Instance == NULL) {
+    if(m_Instance == nullptr) {
         qDebug() << "new dbus_adapter";
         m_Instance = new dbus_adapter(parent);
     }
@@ -102,7 +102,7 @@ void dbus_adapter::search(QVariantMap parameters, QList<QVariant> bots) {
     }
 
     QList<int> botInt;
-    foreach(auto v, bots) {
+    for (const auto &v: bots) {
         botInt.append(v.toInt());
     }
 

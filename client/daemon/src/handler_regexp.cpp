@@ -32,7 +32,7 @@ QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, Q
 
     QList<process_data*> results;
 
-    if(inputData == NULL) {
+    if(inputData == nullptr) {
         qDebug() << "no input data!";
         return results;
     }
@@ -41,8 +41,7 @@ QList<process_data*> handler_regexp::processRegex(const QDomElement &robotXml, Q
 
     QString inputString = inputData->value;
 
-    foreach(auto r, replaceActions) {
-
+    for(QPair<QString,QVariant> &r: replaceActions) {
 
         owner->expand(r.first);
         QRegularExpression regex(r.first, QRegularExpression::DotMatchesEverythingOption | QRegularExpression::CaseInsensitiveOption);

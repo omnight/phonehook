@@ -14,7 +14,7 @@ auto_update::auto_update(QObject *parent) : QObject(parent)
     connect(&updateTimer, &QTimer::timeout, this, &auto_update::checkForUpdates);
     connect(&netMan, &QNetworkAccessManager::finished, this, &auto_update::gotServerResponse);
 
-    botMan = NULL;
+    botMan = nullptr;
 
     //updateTimer.setInterval(1000);
     updateTimer.setSingleShot(true);
@@ -88,13 +88,12 @@ void auto_update::gotServerResponse(QNetworkReply *reply) {
 
         botDownloadQueue.clear();
 
-        foreach(QVariant ib, installedBots) {
+        for(const auto &ib: installedBots){
 
             QString botName = ib.value<QVariantMap>()["name"].toString();
             int revision = ib.value<QVariantMap>()["revision"].toInt();
 
-
-            foreach(QVariant b, serverBots) {
+            for(const auto &b : serverBots){
                 /*qDebug() << b.value<QVariantMap>()["n"].toString()
                         << botName
                         << b.value<QVariantMap>()["v"].toInt()
@@ -142,7 +141,7 @@ void auto_update::botDownloadFinish(int botId) {
     } else {
         qDebug() << "no more in list";
         botMan->deleteLater();
-        botMan = NULL;
+        botMan = nullptr;
         setting::put("auto_update_last_check", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
         scheduleNext();
     }
