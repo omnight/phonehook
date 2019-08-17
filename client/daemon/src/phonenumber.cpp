@@ -4,7 +4,7 @@
 #include "phonenumber.h"
 
 
-phonenumber::phonenumber(QString number, QString location, QString mnc) {
+phonenumber::phonenumber(QString number, const QString &location, const QString &mnc) {
 
     number = number.replace(QRegularExpression("[^+0-9]"), "");
 
@@ -54,8 +54,8 @@ phonenumber::phonenumber(QString number, QString location, QString mnc) {
 
         QString number_wo_trunk = number.replace( QRegularExpression("^" + rule_found->trunk_code), "" );
         this->number_international = "+" + location_prefix + number_wo_trunk;
-        this->country_prefix = location_prefix;
         this->country_iso = location;
+        this->country_prefix = location_prefix;
     }
 }
 

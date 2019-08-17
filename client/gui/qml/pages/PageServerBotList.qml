@@ -36,11 +36,11 @@ Page {
 
             console.log('readystate', xhr.readyState)
 
-            if(xhr.readyState == 1 || xhr.readyState == 2 || xhr.readyState == 3) {
+            if(xhr.readyState === 1 || xhr.readyState === 2 || xhr.readyState === 3) {
                 isLoading = true;
             }
 
-            if(xhr.readyState == 4) {
+            if(xhr.readyState === 4) {
                 isLoading = false;
                 var serverData =JSON.parse(xhr.responseText);
 
@@ -118,7 +118,7 @@ Page {
 
     function contract(section) {
         var i = expandMap.indexOf(section);
-        if(i != -1) {
+        if(i !== -1) {
             var e = expandMap;
             e.splice(i,1);
             expandMap = e;

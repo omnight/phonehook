@@ -7,13 +7,13 @@ class phonenumber {
 
 public:
     phonenumber() {}
-    phonenumber(QString number, QString location, QString mnc);
+    phonenumber(QString number, const QString &location, const QString &mnc);
     phonenumber(const phonenumber& other);
 
     QString number_local;
-    QString country_prefix;
     QString number_international;
     QString country_iso;
+    QString country_prefix;
 
 
     static QString mobilecc_to_iso32662(int code);
@@ -38,11 +38,12 @@ public:
 
     static QList<rule>::const_iterator find(const QString &country_prefix, const QString &mnc);
 
-    QString country_prefix;
     QString country_name;
-    QString network_code;
+    QString country_prefix;
     QString exit_code;
     QString trunk_code;
+    QString network_code;
+
 };
 
 
