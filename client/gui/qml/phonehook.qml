@@ -36,6 +36,18 @@ import "pages"
 ApplicationWindow
 {
     id: rootWindow
+    property bool largeScreen: Screen.width > 1080
+    property bool mediumScreen: (Screen.width > 720 && Screen.width <= 1080)
+    property bool smallScreen: (Screen.width >= 720 && Screen.width < 1080)
+    property bool smallestScreen: Screen.width < 720
+    property int sizeRatio: smallestScreen ? 1 : smallScreen ? 1.5 : 2
+    property bool isLightTheme: {
+        if (Theme.colorScheme === Theme.LightOnDark)
+            return false
+        else
+            return true
+    }
+
     initialPage: Component { FirstPage { } }
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 
@@ -43,5 +55,3 @@ ApplicationWindow
     }
 
 }
-
-
