@@ -15,6 +15,17 @@ Item {
     property bool wantVisible: false
     property bool adWarning: false
     property string firstField: ""
+    property bool largeScreen: Screen.width > 1080
+    property bool mediumScreen: (Screen.width > 720 && Screen.width <= 1080)
+    property bool smallScreen: (Screen.width >= 720 && Screen.width < 1080)
+    property bool smallestScreen: Screen.width < 720
+    property int sizeRatio: smallestScreen ? 1 : smallScreen ? 1.5 : 2
+    property bool isLightTheme: {
+        if (Theme.colorScheme === Theme.LightOnDark)
+            return false
+        else
+            return true
+    }
 
     onActiveChanged: {
         if(active) fadeIn.start();
@@ -140,7 +151,7 @@ Item {
     Item {
         visible: wantVisible && !phoneLocked
         width: Screen.width
-        height: Math.max(150, resultPager.height + 70 + statusField.height)
+        height: Math.max(150 * sizeRatio, resultPager.height + 70 * sizeRatio + statusField.height)
         id: popup
         y: 100
         x: (Screen.width - width) / 2
@@ -256,11 +267,27 @@ Item {
             Image {
                 id: img
                 source: "images/ph-logo-white.png"
-                width: sourceSize.width
-                height: sourceSize.height
+                width: sourceSize.width * sizeRatio
+                height: sourceSize.height * sizeRatio
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.topMargin: 20
+                layer.effect: ShaderEffect {
+                    property color color: Theme.primaryColor
+
+                    fragmentShader: "
+                    varying mediump vec2 qt_TexCoord0;
+                    uniform highp float qt_Opacity;
+                    uniform lowp sampler2D source;
+                    uniform highp vec4 color;
+                    void main() {
+                        highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                        gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                    }
+                    "
+                }
+                layer.enabled: true
+                layer.samplerName: "source"
             }
 
 
@@ -310,7 +337,7 @@ Item {
                     anchors.leftMargin: 4
                     opacity: 0.5
                     y: (results.visibleArea.yPosition * results.height)
-                    width: 10
+                    width: 10 * sizeRatio
                     height: results.visibleArea.heightRatio * results.height
                     color: Theme.highlightColor
                 }
@@ -349,10 +376,10 @@ Item {
 
                             Row {
                                 width: parent.width
-                                spacing: 10
+                                spacing: 10 * sizeRatio
                                 Text {
                                     id: text_header
-                                    font.pixelSize: 20
+                                    font.pixelSize: 20 * sizeRatio
                                     font.weight: Font.Bold
                                     text: localize(model.stitle) || model.title
                                     color: Theme.secondaryColor
@@ -360,7 +387,7 @@ Item {
                                 }
                                 Text {
                                     id: text_source
-                                    font.pixelSize: 16
+                                    font.pixelSize: 16 * sizeRatio
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: '- ' + model.source
                                     opacity: 0.6
@@ -370,7 +397,7 @@ Item {
                             }
 
                             Text {
-                                font.pixelSize: model.textsize || 28
+                                font.pixelSize: model.textsize || 28 * sizeRatio
                                 id: text_content
                                 text: model.value
                                 width: parent.width
@@ -381,7 +408,7 @@ Item {
                             }
                             Item {
                                 width: parent.width
-                                height: 15
+                                height: 15 * sizeRatio
                             }
 
                         }
@@ -390,19 +417,35 @@ Item {
                     Item {
                         id: settingsBox
                         width: resultPager.width
-                        height: 200
+                        height: 200 * sizeRatio
 
                         Row {
                             anchors.verticalCenter: settingsBox.verticalCenter
                             anchors.horizontalCenter: settingsBox.horizontalCenter
-                            height: 85
+                            height: 85 * sizeRatio
                             spacing: Theme.paddingLarge * 2
 
                             Image {
                                 id: backBtn
                                 source: "images/arrow-117-64.png"
-                                height: 64
-                                width: 64
+                                height: 64 * sizeRatio
+                                width: height
+                                layer.effect: ShaderEffect {
+                                    property color color: Theme.primaryColor
+
+                                    fragmentShader: "
+                                    varying mediump vec2 qt_TexCoord0;
+                                    uniform highp float qt_Opacity;
+                                    uniform lowp sampler2D source;
+                                    uniform highp vec4 color;
+                                    void main() {
+                                        highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                                        gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                                    }
+                                    "
+                                }
+                                layer.enabled: true
+                                layer.samplerName: "source"
 
                                 Label {
                                     anchors.top: backBtn.bottom
@@ -422,8 +465,24 @@ Item {
                             Image {
                                 id: stopBtn
                                 source: "images/stop-3-64.png"
-                                height: 64
-                                width: 64
+                                height: 64 * sizeRatio
+                                width: height
+                                layer.effect: ShaderEffect {
+                                    property color color: Theme.primaryColor
+
+                                    fragmentShader: "
+                                    varying mediump vec2 qt_TexCoord0;
+                                    uniform highp float qt_Opacity;
+                                    uniform lowp sampler2D source;
+                                    uniform highp vec4 color;
+                                    void main() {
+                                        highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                                        gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                                    }
+                                    "
+                                }
+                                layer.enabled: true
+                                layer.samplerName: "source"
 
                                 Label {
                                     anchors.top: stopBtn.bottom
@@ -466,9 +525,25 @@ Item {
                             Image {
                                 id: contactBtn
                                 source: "images/contacts-64.png"
-                                height: 64
-                                width: 64
+                                height: 64 * sizeRatio
+                                width: height
 
+                                layer.effect: ShaderEffect {
+                                    property color color: Theme.primaryColor
+
+                                    fragmentShader: "
+                                    varying mediump vec2 qt_TexCoord0;
+                                    uniform highp float qt_Opacity;
+                                    uniform lowp sampler2D source;
+                                    uniform highp vec4 color;
+                                    void main() {
+                                        highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                                        gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                                    }
+                                    "
+                                }
+                                layer.enabled: true
+                                layer.samplerName: "source"
                                 Label {
                                     anchors.top: contactBtn.bottom
                                     anchors.horizontalCenter: contactBtn.horizontalCenter
@@ -503,26 +578,57 @@ Item {
                 anchors.rightMargin: 20
                 spacing: 20
                 anchors.topMargin: 40
-                width: 50
+                width: 50 * sizeRatio
 
                 Image {
-                    width: 48
-                    height: 48
+                    width: 48 * sizeRatio
+                    height: width
                     source: "images/x-mark-5-48.png"
+                    layer.effect: ShaderEffect {
+                        property color color: Theme.primaryColor
+
+                        fragmentShader: "
+                        varying mediump vec2 qt_TexCoord0;
+                        uniform highp float qt_Opacity;
+                        uniform lowp sampler2D source;
+                        uniform highp vec4 color;
+                        void main() {
+                            highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                            gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                        }
+                        "
+                    }
+                    layer.enabled: true
+                    layer.samplerName: "source"
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             hidePopupTimer.stop();
                             active = false;
                         }
-
                     }
                 }
 
                 Image {
-                    width: 48
-                    height: 48
+                    width: 48 * sizeRatio
+                    height: width
                     source: "images/gear-2-48.png"
+                    layer.effect: ShaderEffect {
+                        property color color: Theme.primaryColor
+
+                        fragmentShader: "
+                        varying mediump vec2 qt_TexCoord0;
+                        uniform highp float qt_Opacity;
+                        uniform lowp sampler2D source;
+                        uniform highp vec4 color;
+                        void main() {
+                            highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                            gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                        }
+                        "
+                    }
+                    layer.enabled: true
+                    layer.samplerName: "source"
 
                     MouseArea {
                         anchors.fill: parent
@@ -539,7 +645,7 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
-                height: 30
+                height: 30 * sizeRatio
                 anchors.leftMargin: 30
                 anchors.rightMargin: 30
                 id: statusRow
@@ -573,7 +679,7 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: sourceName.paintedWidth + 10
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 20
+                    height: 20 * sizeRatio
                     clip: true
                     visible: false
 
@@ -603,7 +709,7 @@ Item {
                     anchors.right: parent.right
                     id: sourceName
                     color: Theme.primaryColor
-                    font.pixelSize: 20
+                    font.pixelSize: 20 * sizeRatio
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
                     text: ""
@@ -611,18 +717,15 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    height: 25
+                    height: 25 * sizeRatio
                     id: statusField
                     color: Theme.secondaryColor
-                    font.pixelSize: 20
+                    font.pixelSize: 20 * sizeRatio
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
                     text: ""
                 }
             }
         }
-    }  
+    }
 }
-
-
-
