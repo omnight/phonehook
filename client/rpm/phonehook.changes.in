@@ -1,3 +1,8 @@
+* 2019-10-05 <armin.felder@gmail.com> 0.7.3
+- improvements for dark themes (thanks to a-dekker)
+- improvements for high DPI screens (thanks to a-dekker)
+- improvements regarding reinstallation (thanks to a-dekker)
+
 * 2019-08-03 <armin.felder@gmail.com> 0.7.2
 - german translation
 - fix for czech translation

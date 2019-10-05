@@ -45,7 +45,7 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
         QString sourceNodeId = robotNode.attribute("source", "");
         qDebug() << "lookup data for node " << sourceNodeId;
 
-        foreach(process_data *p, inputDataTree) {
+        for(const process_data *p: inputDataTree) {
             if(p->node_id == sourceNodeId)
                 inputData = p;
         }
@@ -89,7 +89,7 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
     /// PROCESS OUTPUT AND RECURSE
 
 
-    foreach(process_data* p, output) {
+    for(process_data* p: output) {
 
         if(p && !p->parent())
             p->setParent(inputData);

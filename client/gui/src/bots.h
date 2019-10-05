@@ -97,6 +97,7 @@ public:
     }
 
     Q_INVOKABLE void setCookieManager(QQuickWebView *view) {
+        Q_UNUSED(view)
         //view->experimental()->deleteAllCookies();
         //qDebug() << view->experimental()->dynamicPropertyNames();
         //view->experimental()->evaluateJavaScript();

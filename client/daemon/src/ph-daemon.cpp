@@ -71,7 +71,6 @@ int main(int argc, char *argv[])
     QDBusConnection::sessionBus().registerService("com.omnight.phonehook");
 
     qRegisterMetaType<QMap<QString,QString> >("QMap<QString,QString>");
-    rule::initialize();
 
 
     // init overlay

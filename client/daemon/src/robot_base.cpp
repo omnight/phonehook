@@ -1,4 +1,5 @@
 #include <QTextStream>
+#include <algorithm>
 
 #include "robot_base.h"
 #include "handler_url.h"
@@ -53,22 +54,32 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
 
     /// DETERMINE WHAT NODE TO PULL INPUT FROM
 
-    process_data *inputData = NULL;
+    process_data *inputData = nullptr;
     if(robotNode.attribute("input", "") != "") {
 
         QString sourceNodeId = robotNode.attribute("input", "");
         qDebug() << "lookup data for node " << sourceNodeId;
 
-        foreach(process_data *p, inputDataTree) {
-            if(p->node_id == sourceNodeId)
+       /* for(const auto &p: inputDataTree) {
+            if(p.node_id == sourceNodeId){
                 inputData = p;
+                break;
+            }
+        }*/
+
+        auto findIterator = std::find_if(inputDataTree.begin(),inputDataTree.end(),[=](process_data *p){
+            return p->node_id == sourceNodeId;
+        });
+
+        if(findIterator != inputDataTree.end()){
+            inputData = *findIterator;
         }
 
     } else if(inputDataTree.count() > 0) {
         inputData = inputDataTree.top();
     }
 
-    if(inputData != NULL)
+    if(inputData != nullptr)
         qDebug() << "input data = " << inputData->node_id;
 
     QList<process_data*> output;
@@ -97,11 +108,11 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
 
     // if this is an "inherit" type, append null value to execute children.
     if(!robotNode.hasAttribute("url") && !robotNode.hasAttribute("value")) {
-        output.append(NULL);
+        output.append(nullptr);
     }
 
     /// PROCESS OUTPUT AND RECURSE
-    foreach(process_data* p, output) {
+    for(process_data* p: output) {
 
         if(p && !p->parent())
             p->setParent(inputData);
@@ -146,7 +157,7 @@ void robot_base::processNode(QStack<process_data*> inputDataTree, const QDomElem
         /// process child nodes
         if(p) inputDataTree.push(p);
 
-        for(int i=0; i < robotNode.childNodes().length(); i++) {
+       for(int i=0; i < robotNode.childNodes().length(); i++) {
             QDomNode n = robotNode.childNodes().at(i);
             if(!n.isElement()) continue;
             processNode(inputDataTree, n.toElement(), newOutput);

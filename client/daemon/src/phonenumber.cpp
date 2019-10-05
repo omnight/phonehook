@@ -4,7 +4,7 @@
 #include "phonenumber.h"
 
 
-phonenumber::phonenumber(QString number, QString location, QString mnc) {
+phonenumber::phonenumber(QString number, const QString &location, const QString &mnc) {
 
     number = number.replace(QRegularExpression("[^+0-9]"), "");
 
@@ -12,33 +12,33 @@ phonenumber::phonenumber(QString number, QString location, QString mnc) {
 
     qDebug() << "location prefix" << location_prefix;
 
-    rule *r =
-    rule::find(location_prefix, mnc);
+    QList<rule>::const_iterator rule_found = rule::find(location_prefix, mnc);
 
 
-    if(number.startsWith("+") || (r && number.startsWith(r->exit_code))) {
+
+    if(number.startsWith("+") || ( number.startsWith(rule_found->exit_code))) {
         qDebug() << "this is international number!";
 
         this->number_international = number;
 
-        if(!r) {
+        if(rule_found == rule::rules.end()){
             qDebug() << "no rule found";
-            return ;
+            return;
         }
 
         // remove exit code pre
-        QString number_wo_xc = number.replace( QRegularExpression("^" + r->exit_code + "|^\\+"), "" );
+        QString number_wo_xc = number.replace( QRegularExpression("^" + rule_found->exit_code + "|^\\+"), "" );
 
         // strip country code
         this->country_iso = countryPrefix("","", number_wo_xc);
         if(this->country_iso != "")
             this->country_prefix = countryPrefix(this->country_iso);
 
-        rule *foreign_rule = rule::find(this->country_prefix, "");
+        QList<rule>::const_iterator foreign_rule = rule::find(this->country_prefix, "");
 
         QString number_wo_prefix = number.replace( QRegularExpression("^" + this->country_prefix), "");
 
-        if(foreign_rule)
+        if(foreign_rule != rule::rules.end())
             this->number_local = foreign_rule->trunk_code + number_wo_prefix;
         else
             this->number_local = number_wo_prefix;      // missing rule!
@@ -47,15 +47,15 @@ phonenumber::phonenumber(QString number, QString location, QString mnc) {
         qDebug() << "this is local number.";
         this->number_local = number;
 
-        if(!r) {
+        if(rule_found == rule::rules.end()) {
             qDebug() << "no rule found";
             return ;
         }
 
-        QString number_wo_trunk = number.replace( QRegularExpression("^" + r->trunk_code), "" );
+        QString number_wo_trunk = number.replace( QRegularExpression("^" + rule_found->trunk_code), "" );
         this->number_international = "+" + location_prefix + number_wo_trunk;
-        this->country_prefix = location_prefix;
         this->country_iso = location;
+        this->country_prefix = location_prefix;
     }
 }
 
@@ -70,539 +70,521 @@ phonenumber::operator QMap<QString, QString>() const {
 
 }
 
-phonenumber::phonenumber(const phonenumber& other) {
-    this->number_local = other.number_local;
-    this->number_international = other.number_international;
-    this->country_iso = other.country_iso;
-    this->country_prefix = other.country_prefix;
+phonenumber::phonenumber(const phonenumber& other):number_local{other.number_local},number_international{other.number_international},country_iso{other.country_iso},country_prefix{other.country_prefix} {
 }
 
+const QList<rule> rule::rules = {
+    rule(QStringLiteral("Afghanistan"),QStringLiteral("93"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Albania"),QStringLiteral("355"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Algeria"),QStringLiteral("213"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("American Samoa"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Andorra"),QStringLiteral("376"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Angola"),QStringLiteral("244"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Anguilla"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Antigua and Barbuda"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Argentina"),QStringLiteral("54"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Armenia"),QStringLiteral("374"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Aruba"),QStringLiteral("297"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Ascension"),QStringLiteral("247"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Australia"),QStringLiteral("61"),QStringLiteral("0011"),QStringLiteral("0")),
+    rule(QStringLiteral("Austria"),QStringLiteral("43"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Azerbaijan"),QStringLiteral("994"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Bahamas"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Bahrain"),QStringLiteral("973"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Bangladesh"),QStringLiteral("880"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Barbados"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Belarus"),QStringLiteral("375"),QStringLiteral("810"),QStringLiteral("80")),
+    rule(QStringLiteral("Belgium"),QStringLiteral("32"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Belize"),QStringLiteral("501"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Benin"),QStringLiteral("229"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Bermuda"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Bhutan"),QStringLiteral("975"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Bolivia"),QStringLiteral("591"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Bosnia and Herzegovina"),QStringLiteral("387"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Botswana"),QStringLiteral("267"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Brazil"),QStringLiteral("55"),QStringLiteral("0014"),QStringLiteral("0"),QStringLiteral("16")), //  - Brasil Telecom
+    rule(QStringLiteral("Brazil"),QStringLiteral("55"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("British Virgin Islands"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Brunei"),QStringLiteral("673"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Bulgaria"),QStringLiteral("359"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Burkina Faso"),QStringLiteral("226"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Burundi"),QStringLiteral("257"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Cambodia"),QStringLiteral("855"),QStringLiteral("001, 007, 008"),QStringLiteral("0")),
+    rule(QStringLiteral("Cameroon"),QStringLiteral("237"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Canada"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Cape Verde"),QStringLiteral("238"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Cayman Islands"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Central African Republic"),QStringLiteral("236"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Chad"),QStringLiteral("235"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Chile"),QStringLiteral("56"),QStringLiteral("1230"), QStringLiteral("0"), QStringLiteral("01")),// - Entel
+    rule(QStringLiteral("Chile"),QStringLiteral("56"),QStringLiteral("1230"), QStringLiteral("0"), QStringLiteral("10")),// - Entel
+    rule(QStringLiteral("Chile"),QStringLiteral("56"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("China"),QStringLiteral("86"),QStringLiteral("00"),QStringLiteral("0")),
 
-void rule::initialize() {
-    foreach(rule *r, rules) delete r;
-    rules.clear();
+    rule(QStringLiteral("Colombia"),QStringLiteral("57"),QStringLiteral("009"),QStringLiteral("0"), QStringLiteral("123")), //  - Movistar
+    rule(QStringLiteral("Colombia"),QStringLiteral("57"),QStringLiteral("00414"),QStringLiteral("0"), QStringLiteral("103")), //  - Tigo
+    rule(QStringLiteral("Colombia"),QStringLiteral("57"),QStringLiteral("00414"),QStringLiteral("0"), QStringLiteral("111")), //  - Tigo
+    rule(QStringLiteral("Colombia"),QStringLiteral("57"),QStringLiteral("00468"),QStringLiteral("0"), QStringLiteral("130")), //  - Avantel
+    //rule(QStringLiteral("Colombia"),QStringLiteral("57"),QStringLiteral("00456"),QStringLiteral("0")), //  - Claro Fixed
+    rule(QStringLiteral("Colombia"),QStringLiteral("57"),QStringLiteral("00444"),QStringLiteral("0"),QStringLiteral("101")), //  - Claro Mobile
+    rule(QStringLiteral("Colombia"),QStringLiteral("57"),QStringLiteral("00"),QStringLiteral("0")),
 
-    new rule("Afghanistan","93","00","0");
-    new rule("Albania","355","00","0");
-    new rule("Algeria","213","00","0");
-    new rule("American Samoa","1","011","1");
-    new rule("Andorra","376","00","");
-    new rule("Angola","244","00","");
-    new rule("Anguilla","1","011","1");
-    new rule("Antigua and Barbuda","1","011","1");
-    new rule("Argentina","54","00","0");
-    new rule("Armenia","374","00","0");
-    new rule("Aruba","297","00","");
-    new rule("Ascension","247","00","");
-    new rule("Australia","61","0011","0");
-    new rule("Austria","43","00","0");
-    new rule("Azerbaijan","994","00","0");
-    new rule("Bahamas","1","011","1");
-    new rule("Bahrain","973","00","");
-    new rule("Bangladesh","880","00","0");
-    new rule("Barbados","1","011","1");
-    new rule("Belarus","375","810","80");
-    new rule("Belgium","32","00","0");
-    new rule("Belize","501","00","");
-    new rule("Benin","229","00","");
-    new rule("Bermuda","1","011","1");
-    new rule("Bhutan","975","00","");
-    new rule("Bolivia","591","00","0");
-    new rule("Bosnia and Herzegovina","387","00","0");
-    new rule("Botswana","267","00","");
-    new rule("Brazil","55","0014","0","16"); //  - Brasil Telecom
-    new rule("Brazil","55","00","0");
-    new rule("British Virgin Islands","1","011","1");
-    new rule("Brunei","673","00","");
-    new rule("Bulgaria","359","00","0");
-    new rule("Burkina Faso","226","00","");
-    new rule("Burundi","257","00","");
-    new rule("Cambodia","855","001, 007, 008","0");
-    new rule("Cameroon","237","00","");
-    new rule("Canada","1","011","1");
-    new rule("Cape Verde","238","00","");
-    new rule("Cayman Islands","1","011","1");
-    new rule("Central African Republic","236","00","");
-    new rule("Chad","235","00","");
-    new rule("Chile","56","1230", "0", "01");// - Entel
-    new rule("Chile","56","1230", "0", "10");// - Entel
-    new rule("Chile","56","00","0");
-    new rule("China","86","00","0");
+    rule(QStringLiteral("Comoros"),QStringLiteral("269"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Congo"),QStringLiteral("242"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Cook Islands"),QStringLiteral("682"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Costa Rica"),QStringLiteral("506"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Croatia"),QStringLiteral("385"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Cuba"),QStringLiteral("53"),QStringLiteral("119"),QStringLiteral("0")),
+    rule(QStringLiteral("Curacao"),QStringLiteral("599"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Cyprus"),QStringLiteral("357"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Czech Republic"),QStringLiteral("420"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Democratic Republic of Congo"),QStringLiteral("243"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Denmark"),QStringLiteral("45"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Diego Garcia"),QStringLiteral("246"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Djibouti"),QStringLiteral("253"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Dominica"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Dominican Republic"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("East Timor"),QStringLiteral("670"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Ecuador"),QStringLiteral("593"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Egypt"),QStringLiteral("20"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("El Salvador"),QStringLiteral("503"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Equatorial Guinea"),QStringLiteral("240"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Eritrea"),QStringLiteral("291"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Estonia"),QStringLiteral("372"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Ethiopia"),QStringLiteral("251"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Falkland (Malvinas) Islands"),QStringLiteral("500"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Faroe Islands"),QStringLiteral("298"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Fiji"),QStringLiteral("679"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Finland"),QStringLiteral("358"),QStringLiteral("00, 990, 994, 999"),QStringLiteral("0")),
+    rule(QStringLiteral("France"),QStringLiteral("33"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("French Guiana"),QStringLiteral("594"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("French Polynesia"),QStringLiteral("689"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Gabon"),QStringLiteral("241"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Gambia"),QStringLiteral("220"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Georgia"),QStringLiteral("995"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Germany"),QStringLiteral("49"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Ghana"),QStringLiteral("233"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Gibraltar"),QStringLiteral("350"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Greece"),QStringLiteral("30"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Greenland"),QStringLiteral("299"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Grenada"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Guadeloupe"),QStringLiteral("590"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Guam"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Guatemala"),QStringLiteral("502"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Guinea"),QStringLiteral("224"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Guinea-Bissau"),QStringLiteral("245"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Guyana"),QStringLiteral("592"),QStringLiteral("001"),QStringLiteral("")),
+    rule(QStringLiteral("Haiti"),QStringLiteral("509"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Honduras"),QStringLiteral("504"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Hong Kong"),QStringLiteral("852"),QStringLiteral("001"),QStringLiteral("")),
+    rule(QStringLiteral("Hungary"),QStringLiteral("36"),QStringLiteral("00"),QStringLiteral("06")),
+    rule(QStringLiteral("Iceland"),QStringLiteral("354"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("India"),QStringLiteral("91"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Indonesia"),QStringLiteral("62"),QStringLiteral("001"),QStringLiteral("0"),QStringLiteral("01")), // , 008 - Indosat
+    rule(QStringLiteral("Indonesia"),QStringLiteral("62"),QStringLiteral("007"),QStringLiteral("0"),QStringLiteral("07")), //  - Telkom
+    rule(QStringLiteral("Indonesia"),QStringLiteral("62"),QStringLiteral("007"),QStringLiteral("0"),QStringLiteral("20")), //  - Telkom
+    rule(QStringLiteral("Indonesia"),QStringLiteral("62"),QStringLiteral("009"),QStringLiteral("0"),QStringLiteral("99")), //  - Bakrie Telecom
+    rule(QStringLiteral("Indonesia"),QStringLiteral("62"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Inmarsat Satellite"),QStringLiteral("870"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Iran"),QStringLiteral("98"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Iraq"),QStringLiteral("964"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Ireland"),QStringLiteral("353"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Iridium Satellite"),QStringLiteral("8816/8817"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Israel"),QStringLiteral("972"),QStringLiteral("00, 012, 013, 014, 018"),QStringLiteral("0")),
+    rule(QStringLiteral("Italy"),QStringLiteral("39"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Ivory Coast"),QStringLiteral("225"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Jamaica"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Japan"),QStringLiteral("81"),QStringLiteral("010"),QStringLiteral("0")),
+    rule(QStringLiteral("Jordan"),QStringLiteral("962"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Kazakhstan"),QStringLiteral("7"),QStringLiteral("810"),QStringLiteral("8")),
+    rule(QStringLiteral("Kenya"),QStringLiteral("254"),QStringLiteral("000 (006 and 007 to Uganda and Tanzania)"),QStringLiteral("0")),
+    rule(QStringLiteral("Kiribati"),QStringLiteral("686"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Kuwait"),QStringLiteral("965"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Kyrgyzstan"),QStringLiteral("996"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Laos"),QStringLiteral("856"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Latvia"),QStringLiteral("371"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Lebanon"),QStringLiteral("961"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Lesotho"),QStringLiteral("266"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Liberia"),QStringLiteral("231"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Libya"),QStringLiteral("218"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Liechtenstein"),QStringLiteral("423"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Lithuania"),QStringLiteral("370"),QStringLiteral("00"),QStringLiteral("8")),
+    rule(QStringLiteral("Luxembourg"),QStringLiteral("352"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Macau"),QStringLiteral("853"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Macedonia"),QStringLiteral("389"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Madagascar"),QStringLiteral("261"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Malawi"),QStringLiteral("265"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Malaysia"),QStringLiteral("60"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Maldives"),QStringLiteral("960"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Mali"),QStringLiteral("223"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Malta"),QStringLiteral("356"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Marshall Islands"),QStringLiteral("692"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Martinique"),QStringLiteral("596"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Mauritania"),QStringLiteral("222"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Mauritius"),QStringLiteral("230"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Mayotte"),QStringLiteral("262"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Mexico"),QStringLiteral("52"),QStringLiteral("00"),QStringLiteral("01")),
+    rule(QStringLiteral("Micronesia"),QStringLiteral("691"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Moldova"),QStringLiteral("373"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Monaco"),QStringLiteral("377"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Mongolia"),QStringLiteral("976"),QStringLiteral("001"),QStringLiteral("0")),
+    rule(QStringLiteral("Montenegro"),QStringLiteral("382"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Montserrat"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Morocco"),QStringLiteral("212"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Mozambique"),QStringLiteral("258"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Myanmar"),QStringLiteral("95"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Namibia"),QStringLiteral("264"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Nauru"),QStringLiteral("674"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Nepal"),QStringLiteral("977"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Netherlands"),QStringLiteral("31"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Netherlands Antilles"),QStringLiteral("599"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("New Caledonia"),QStringLiteral("687"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("New Zealand"),QStringLiteral("64"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Nicaragua"),QStringLiteral("505"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Niger"),QStringLiteral("227"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Nigeria"),QStringLiteral("234"),QStringLiteral("009"),QStringLiteral("0")),
+    rule(QStringLiteral("Niue"),QStringLiteral("683"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Norfolk Island"),QStringLiteral("6723"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("North Korea"),QStringLiteral("850"),QStringLiteral("99"),QStringLiteral("")),
+    rule(QStringLiteral("Northern Marianas"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Norway"),QStringLiteral("47"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Oman"),QStringLiteral("968"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Pakistan"),QStringLiteral("92"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Palau"),QStringLiteral("680"),QStringLiteral("011"),QStringLiteral("")),
+    rule(QStringLiteral("Palestine"),QStringLiteral("970"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Panama"),QStringLiteral("507"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Papua New Guinea"),QStringLiteral("675"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Paraguay"),QStringLiteral("595"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Peru"),QStringLiteral("51"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Philippines"),QStringLiteral("63"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Poland"),QStringLiteral("48"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Portugal"),QStringLiteral("351"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Puerto Rico"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Qatar"),QStringLiteral("974"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Reunion"),QStringLiteral("262"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Romania"),QStringLiteral("40"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Russian Federation"),QStringLiteral("7"),QStringLiteral("810"),QStringLiteral("8")),
+    rule(QStringLiteral("Rwanda"),QStringLiteral("250"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Saint Helena"),QStringLiteral("290"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Saint Kitts and Nevis"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Saint Lucia"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Saint Barthelemy"),QStringLiteral("590"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Saint Martin (French part)"),QStringLiteral("590"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Saint Pierre and Miquelon"),QStringLiteral("508"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Saint Vincent and the Grenadines"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Samoa"),QStringLiteral("685"),QStringLiteral("0"),QStringLiteral("")),
+    rule(QStringLiteral("San Marino"),QStringLiteral("378"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Sao Tome and Principe"),QStringLiteral("239"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Saudi Arabia"),QStringLiteral("966"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Senegal"),QStringLiteral("221"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Serbia"),QStringLiteral("381"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Seychelles"),QStringLiteral("248"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Sierra Leone"),QStringLiteral("232"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Singapore"),QStringLiteral("65"),QStringLiteral("001, 008"),QStringLiteral("")),
+    rule(QStringLiteral("Sint Maarten"),QStringLiteral("1"),QStringLiteral("00"),QStringLiteral("1")),
+    rule(QStringLiteral("Slovakia"),QStringLiteral("421"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Slovenia"),QStringLiteral("386"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Solomon Islands"),QStringLiteral("677"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Somalia"),QStringLiteral("252"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("South Africa"),QStringLiteral("27"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("South Korea"),QStringLiteral("82"),QStringLiteral("001, 002"),QStringLiteral("0")),
+    rule(QStringLiteral("South Sudan"),QStringLiteral("211"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Spain"),QStringLiteral("34"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Sri Lanka"),QStringLiteral("94"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Sudan"),QStringLiteral("249"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Suriname"),QStringLiteral("597"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Swaziland"),QStringLiteral("268"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Sweden"),QStringLiteral("46"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Switzerland"),QStringLiteral("41"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Syria"),QStringLiteral("963"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Taiwan"),QStringLiteral("886"),QStringLiteral("002"),QStringLiteral("0")),
+    rule(QStringLiteral("Tajikistan"),QStringLiteral("992"),QStringLiteral("810"),QStringLiteral("8")),
+    rule(QStringLiteral("Tanzania"),QStringLiteral("255"),QStringLiteral("000"),QStringLiteral("0")),
+    rule(QStringLiteral("Thailand"),QStringLiteral("66"),QStringLiteral("001"),QStringLiteral("0")),
+    rule(QStringLiteral("Thuraya Satellite"),QStringLiteral("882 16"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Togo"),QStringLiteral("228"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Tokelau"),QStringLiteral("690"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Tonga"),QStringLiteral("676"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Trinidad and Tobago"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Tunisia"),QStringLiteral("216"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Turkey"),QStringLiteral("90"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Turkmenistan"),QStringLiteral("993"),QStringLiteral("810"),QStringLiteral("8")),
+    rule(QStringLiteral("Turks and Caicos Islands"),QStringLiteral("1"),QStringLiteral("0"),QStringLiteral("1")),
+    rule(QStringLiteral("Tuvalu"),QStringLiteral("688"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Uganda"),QStringLiteral("256"),QStringLiteral("000"),QStringLiteral("0")),
+    rule(QStringLiteral("Ukraine"),QStringLiteral("380"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("United Arab Emirates"),QStringLiteral("971"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("United Kingdom"),QStringLiteral("44"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("United States of America"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("U.S. Virgin Islands"),QStringLiteral("1"),QStringLiteral("011"),QStringLiteral("1")),
+    rule(QStringLiteral("Uruguay"),QStringLiteral("598"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Uzbekistan"),QStringLiteral("998"),QStringLiteral("810"),QStringLiteral("8")),
+    rule(QStringLiteral("Vanuatu"),QStringLiteral("678"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Vatican City"),QStringLiteral("379, 39"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Venezuela"),QStringLiteral("58"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Vietnam"),QStringLiteral("84"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Wallis and Futuna"),QStringLiteral("681"),QStringLiteral("00"),QStringLiteral("")),
+    rule(QStringLiteral("Yemen"),QStringLiteral("967"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Zambia"),QStringLiteral("260"),QStringLiteral("00"),QStringLiteral("0")),
+    rule(QStringLiteral("Zimbabwe"),QStringLiteral("263"),QStringLiteral("00"),QStringLiteral("0"))
+};
 
-    new rule("Colombia","57","009","0", "123"); //  - Movistar
-    new rule("Colombia","57","00414","0", "103"); //  - Tigo
-    new rule("Colombia","57","00414","0", "111"); //  - Tigo
-    new rule("Colombia","57","00468","0", "130"); //  - Avantel
-    //new rule("Colombia","57","00456","0"); //  - Claro Fixed
-    new rule("Colombia","57","00444","0","101"); //  - Claro Mobile
-    new rule("Colombia","57","00","0");
-
-    new rule("Comoros","269","00","");
-    new rule("Congo","242","00","");
-    new rule("Cook Islands","682","00","");
-    new rule("Costa Rica","506","00","");
-    new rule("Croatia","385","00","0");
-    new rule("Cuba","53","119","0");
-    new rule("Curacao","599","00","0");
-    new rule("Cyprus","357","00","");
-    new rule("Czech Republic","420","00","");
-    new rule("Democratic Republic of Congo","243","00","0");
-    new rule("Denmark","45","00","");
-    new rule("Diego Garcia","246","00","");
-    new rule("Djibouti","253","00","");
-    new rule("Dominica","1","011","1");
-    new rule("Dominican Republic","1","011","1");
-    new rule("East Timor","670","00","");
-    new rule("Ecuador","593","00","0");
-    new rule("Egypt","20","00","0");
-    new rule("El Salvador","503","00","");
-    new rule("Equatorial Guinea","240","00","");
-    new rule("Eritrea","291","00","0");
-    new rule("Estonia","372","00","");
-    new rule("Ethiopia","251","00","0");
-    new rule("Falkland (Malvinas) Islands","500","00","");
-    new rule("Faroe Islands","298","00","");
-    new rule("Fiji","679","00","");
-    new rule("Finland","358","00, 990, 994, 999","0");
-    new rule("France","33","00","0");
-    new rule("French Guiana","594","00","0");
-    new rule("French Polynesia","689","00","");
-    new rule("Gabon","241","00","");
-    new rule("Gambia","220","00","");
-    new rule("Georgia","995","00","0");
-    new rule("Germany","49","00","0");
-    new rule("Ghana","233","00","0");
-    new rule("Gibraltar","350","00","");
-    new rule("Greece","30","00","");
-    new rule("Greenland","299","00","");
-    new rule("Grenada","1","011","1");
-    new rule("Guadeloupe","590","00","0");
-    new rule("Guam","1","011","1");
-    new rule("Guatemala","502","00","");
-    new rule("Guinea","224","00","");
-    new rule("Guinea-Bissau","245","00","");
-    new rule("Guyana","592","001","");
-    new rule("Haiti","509","00","");
-    new rule("Honduras","504","00","");
-    new rule("Hong Kong","852","001","");
-    new rule("Hungary","36","00","06");
-    new rule("Iceland","354","00","");
-    new rule("India","91","00","0");
-    new rule("Indonesia","62","001","0","01"); // , 008 - Indosat
-    new rule("Indonesia","62","007","0","07"); //  - Telkom
-    new rule("Indonesia","62","007","0","20"); //  - Telkom
-    new rule("Indonesia","62","009","0","99"); //  - Bakrie Telecom
-    new rule("Indonesia","62","00","0");
-    new rule("Inmarsat Satellite","870","00","");
-    new rule("Iran","98","00","0");
-    new rule("Iraq","964","00","");
-    new rule("Ireland","353","00","0");
-    new rule("Iridium Satellite","8816/8817","00","");
-    new rule("Israel","972","00, 012, 013, 014, 018","0");
-    new rule("Italy","39","00","");
-    new rule("Ivory Coast","225","00","");
-    new rule("Jamaica","1","011","1");
-    new rule("Japan","81","010","0");
-    new rule("Jordan","962","00","0");
-    new rule("Kazakhstan","7","810","8");
-    new rule("Kenya","254","000 (006 and 007 to Uganda and Tanzania)","0");
-    new rule("Kiribati","686","00","");
-    new rule("Kuwait","965","00","");
-    new rule("Kyrgyzstan","996","00","0");
-    new rule("Laos","856","00","0");
-    new rule("Latvia","371","00","");
-    new rule("Lebanon","961","00","0");
-    new rule("Lesotho","266","00","");
-    new rule("Liberia","231","00","");
-    new rule("Libya","218","00","0");
-    new rule("Liechtenstein","423","00","");
-    new rule("Lithuania","370","00","8");
-    new rule("Luxembourg","352","00","");
-    new rule("Macau","853","00","");
-    new rule("Macedonia","389","00","0");
-    new rule("Madagascar","261","00","0");
-    new rule("Malawi","265","00","");
-    new rule("Malaysia","60","00","0");
-    new rule("Maldives","960","00","");
-    new rule("Mali","223","00","");
-    new rule("Malta","356","00","");
-    new rule("Marshall Islands","692","011","1");
-    new rule("Martinique","596","00","0");
-    new rule("Mauritania","222","00","");
-    new rule("Mauritius","230","00","");
-    new rule("Mayotte","262","00","");
-    new rule("Mexico","52","00","01");
-    new rule("Micronesia","691","011","1");
-    new rule("Moldova","373","00","0");
-    new rule("Monaco","377","00","");
-    new rule("Mongolia","976","001","0");
-    new rule("Montenegro","382","00","0");
-    new rule("Montserrat","1","011","1");
-    new rule("Morocco","212","00","0");
-    new rule("Mozambique","258","00","");
-    new rule("Myanmar","95","00","0");
-    new rule("Namibia","264","00","0");
-    new rule("Nauru","674","00","");
-    new rule("Nepal","977","00","0");
-    new rule("Netherlands","31","00","0");
-    new rule("Netherlands Antilles","599","00","0");
-    new rule("New Caledonia","687","00","");
-    new rule("New Zealand","64","00","0");
-    new rule("Nicaragua","505","00","");
-    new rule("Niger","227","00","");
-    new rule("Nigeria","234","009","0");
-    new rule("Niue","683","00","");
-    new rule("Norfolk Island","6723","00","");
-    new rule("North Korea","850","99","");
-    new rule("Northern Marianas","1","011","1");
-    new rule("Norway","47","00","");
-    new rule("Oman","968","00","");
-    new rule("Pakistan","92","00","0");
-    new rule("Palau","680","011","");
-    new rule("Palestine","970","00","0");
-    new rule("Panama","507","00","");
-    new rule("Papua New Guinea","675","00","");
-    new rule("Paraguay","595","00","0");
-    new rule("Peru","51","00","0");
-    new rule("Philippines","63","00","0");
-    new rule("Poland","48","00","");
-    new rule("Portugal","351","00","");
-    new rule("Puerto Rico","1","011","1");
-    new rule("Qatar","974","00","");
-    new rule("Reunion","262","00","");
-    new rule("Romania","40","00","0");
-    new rule("Russian Federation","7","810","8");
-    new rule("Rwanda","250","00","");
-    new rule("Saint Helena","290","00","");
-    new rule("Saint Kitts and Nevis","1","011","1");
-    new rule("Saint Lucia","1","011","1");
-    new rule("Saint Barthelemy","590","00","0");
-    new rule("Saint Martin (French part)","590","00","0");
-    new rule("Saint Pierre and Miquelon","508","00","");
-    new rule("Saint Vincent and the Grenadines","1","011","1");
-    new rule("Samoa","685","0","");
-    new rule("San Marino","378","00","");
-    new rule("Sao Tome and Principe","239","00","");
-    new rule("Saudi Arabia","966","00","0");
-    new rule("Senegal","221","00","");
-    new rule("Serbia","381","00","0");
-    new rule("Seychelles","248","00","");
-    new rule("Sierra Leone","232","00","0");
-    new rule("Singapore","65","001, 008","");
-    new rule("Sint Maarten","1","00","1");
-    new rule("Slovakia","421","00","0");
-    new rule("Slovenia","386","00","0");
-    new rule("Solomon Islands","677","00","");
-    new rule("Somalia","252","00","");
-    new rule("South Africa","27","00","0");
-    new rule("South Korea","82","001, 002","0");
-    new rule("South Sudan","211","00","");
-    new rule("Spain","34","00","");
-    new rule("Sri Lanka","94","00","0");
-    new rule("Sudan","249","00","0");
-    new rule("Suriname","597","00","0");
-    new rule("Swaziland","268","00","");
-    new rule("Sweden","46","00","0");
-    new rule("Switzerland","41","00","0");
-    new rule("Syria","963","00","0");
-    new rule("Taiwan","886","002","0");
-    new rule("Tajikistan","992","810","8");
-    new rule("Tanzania","255","000","0");
-    new rule("Thailand","66","001","0");
-    new rule("Thuraya Satellite","882 16","00","");
-    new rule("Togo","228","00","");
-    new rule("Tokelau","690","00","");
-    new rule("Tonga","676","00","");
-    new rule("Trinidad and Tobago","1","011","1");
-    new rule("Tunisia","216","00","");
-    new rule("Turkey","90","00","0");
-    new rule("Turkmenistan","993","810","8");
-    new rule("Turks and Caicos Islands","1","0","1");
-    new rule("Tuvalu","688","00","");
-    new rule("Uganda","256","000","0");
-    new rule("Ukraine","380","00","0");
-    new rule("United Arab Emirates","971","00","0");
-    new rule("United Kingdom","44","00","0");
-    new rule("United States of America","1","011","1");
-    new rule("U.S. Virgin Islands","1","011","1");
-    new rule("Uruguay","598","00","0");
-    new rule("Uzbekistan","998","810","8");
-    new rule("Vanuatu","678","00","");
-    new rule("Vatican City","379, 39","00","");
-    new rule("Venezuela","58","00","0");
-    new rule("Vietnam","84","00","0");
-    new rule("Wallis and Futuna","681","00","");
-    new rule("Yemen","967","00","0");
-    new rule("Zambia","260","00","0");
-    new rule("Zimbabwe","263","00","0");
-}
-
-
-QList<rule*> rule::rules;
-
-rule::rule(QString country_name, QString country_prefix, QString exit_code, QString trunk_code, QString network_code, QObject *parent)
-    :QObject(parent)
+rule::rule(const QString &country_name, const QString &country_prefix, const QString &exit_code, const QString &trunk_code, const QString &network_code)
+    :country_name{country_name},country_prefix{country_prefix},exit_code{exit_code},trunk_code{trunk_code},network_code{network_code}
 {
-
-    this->country_name = country_name;
-    this->country_prefix = country_prefix;
-    this->exit_code = exit_code;
-    this->trunk_code = trunk_code;
-    this->network_code = network_code;
-
-    rules.append(this);
 }
 
 
-rule* rule::find(QString country_prefix, QString mnc) {
-    foreach(rule *r, rules) {
-        if(r->country_prefix == country_prefix &&
-          (r->network_code == mnc || r->network_code == "")) {
-            qDebug() << "match!" << r->country_name;
-            return r;
-        }
-    }
+QList<rule>::const_iterator rule::find(const QString &country_prefix, const QString &mnc) {
 
-    return NULL;
+    auto iter = std::find_if(rules.begin(),rules.end(),[&](const rule &r){
+        return (r.country_prefix == country_prefix &&
+                (r.network_code == mnc || r.network_code == ""));
+    });
+
+    if(iter != rules.end()){
+        qDebug() << "match!" << iter->country_name;
+    }
+    return iter;
 }
 
 
 
 QString phonenumber::mobilecc_to_iso32662(int code) {
 
-    QMap<int, QString> mccList;
-
-    mccList.insert(202, "GR");
-    mccList.insert(204, "NL");
-    mccList.insert(206, "BE");
-    mccList.insert(208, "FR");
-    mccList.insert(212, "MC");
-    mccList.insert(213, "AD");
-    mccList.insert(214, "ES");
-    mccList.insert(216, "HU");
-    mccList.insert(218, "BA");
-    mccList.insert(219, "HR");
-    mccList.insert(220, "RS");
-    mccList.insert(222, "IT");
-    mccList.insert(226, "RO");
-    mccList.insert(228, "CH");
-    mccList.insert(230, "CZ");
-    mccList.insert(231, "SK");
-    mccList.insert(232, "AT");
-    mccList.insert(234, "GB");
-    mccList.insert(235, "GB");
-    mccList.insert(238, "DK");
-    mccList.insert(240, "SE");
-    mccList.insert(242, "NO");
-    mccList.insert(244, "FI");
-    mccList.insert(246, "LT");
-    mccList.insert(247, "LV");
-    mccList.insert(248, "EE");
-    mccList.insert(250, "RU");
-    mccList.insert(255, "UA");
-    mccList.insert(257, "BY");
-    mccList.insert(259, "MD");
-    mccList.insert(260, "PL");
-    mccList.insert(262, "DE");
-    mccList.insert(266, "GI");
-    mccList.insert(268, "PT");
-    mccList.insert(270, "LU");
-    mccList.insert(272, "IE");
-    mccList.insert(274, "IS");
-    mccList.insert(276, "AL");
-    mccList.insert(278, "MT");
-    mccList.insert(280, "CY");
-    mccList.insert(282, "GE");
-    mccList.insert(283, "AM");
-    mccList.insert(284, "BG");
-    mccList.insert(286, "TR");
-    mccList.insert(288, "FO");
-    mccList.insert(289, "GE");
-    mccList.insert(290, "GL");
-    mccList.insert(292, "SM");
-    mccList.insert(293, "SI");
-    mccList.insert(294, "MK");
-    mccList.insert(295, "LI");
-    mccList.insert(297, "ME");
-    mccList.insert(302, "CA");
-    mccList.insert(308, "PM");
-    mccList.insert(310, "GU");
-    mccList.insert(310, "US");
-    mccList.insert(311, "GU");
-    mccList.insert(311, "US");
-    mccList.insert(312, "US");
-    mccList.insert(316, "US");
-    mccList.insert(330, "PR");
-    mccList.insert(334, "MX");
-    mccList.insert(338, "JM");
-    mccList.insert(340, "FG");
-    mccList.insert(340, "GP");
-    mccList.insert(340, "MQ");
-    mccList.insert(342, "BB");
-    mccList.insert(344, "AG");
-    mccList.insert(346, "KY");
-    mccList.insert(348, "VG");
-    mccList.insert(350, "BM");
-    mccList.insert(352, "GD");
-    mccList.insert(354, "MS");
-    mccList.insert(356, "KN");
-    mccList.insert(358, "LC");
-    mccList.insert(360, "VC");
-    mccList.insert(362, "AN");
-    mccList.insert(362, "CW");
-    mccList.insert(363, "AW");
-    mccList.insert(364, "BS");
-    mccList.insert(365, "AI");
-    mccList.insert(366, "DM");
-    mccList.insert(368, "CU");
-    mccList.insert(370, "DO");
-    mccList.insert(372, "HT");
-    mccList.insert(374, "TT");
-    mccList.insert(376, "TC");
-    mccList.insert(376, "VI");
-    mccList.insert(400, "AZ");
-    mccList.insert(401, "KZ");
-    mccList.insert(402, "BT");
-    mccList.insert(404, "IN");
-    mccList.insert(405, "IN");
-    mccList.insert(410, "PK");
-    mccList.insert(412, "AF");
-    mccList.insert(413, "LK");
-    mccList.insert(414, "MM");
-    mccList.insert(415, "LB");
-    mccList.insert(416, "JO");
-    mccList.insert(417, "SY");
-    mccList.insert(418, "IQ");
-    mccList.insert(419, "KW");
-    mccList.insert(420, "SA");
-    mccList.insert(421, "YE");
-    mccList.insert(422, "OM");
-    mccList.insert(424, "AE");
-    mccList.insert(425, "IL");
-    mccList.insert(425, "PS");
-    mccList.insert(426, "BH");
-    mccList.insert(427, "QA");
-    mccList.insert(428, "MN");
-    mccList.insert(429, "NP");
-    mccList.insert(430, "AE");
-    mccList.insert(431, "AE");
-    mccList.insert(432, "IR");
-    mccList.insert(434, "UZ");
-    mccList.insert(436, "TK");
-    mccList.insert(437, "KG");
-    mccList.insert(438, "TM");
-    mccList.insert(440, "JP");
-    mccList.insert(441, "JP");
-    mccList.insert(450, "KR");
-    mccList.insert(452, "VN");
-    mccList.insert(454, "HK");
-    mccList.insert(455, "MO");
-    mccList.insert(456, "KH");
-    mccList.insert(457, "LA");
-    mccList.insert(460, "CN");
-    mccList.insert(466, "TW");
-    mccList.insert(467, "KP");
-    mccList.insert(470, "BD");
-    mccList.insert(472, "MV");
-    mccList.insert(502, "MY");
-    mccList.insert(505, "AU");
-    mccList.insert(510, "ID");
-    mccList.insert(514, "TP");
-    mccList.insert(515, "PH");
-    mccList.insert(520, "TH");
-    mccList.insert(525, "SG");
-    mccList.insert(528, "BN");
-    mccList.insert(530, "NZ");
-    mccList.insert(537, "PG");
-    mccList.insert(539, "TO");
-    mccList.insert(540, "SB");
-    mccList.insert(541, "VU");
-    mccList.insert(542, "FJ");
-    mccList.insert(544, "AS");
-    mccList.insert(545, "KI");
-    mccList.insert(546, "NC");
-    mccList.insert(547, "PF");
-    mccList.insert(548, "CK");
-    mccList.insert(549, "WS");
-    mccList.insert(550, "FM");
-    mccList.insert(552, "PW");
-    mccList.insert(553, "TV");
-    mccList.insert(555, "NU");
-    mccList.insert(602, "EG");
-    mccList.insert(603, "DZ");
-    mccList.insert(604, "MA");
-    mccList.insert(605, "TN");
-    mccList.insert(606, "LY");
-    mccList.insert(607, "GM");
-    mccList.insert(608, "SN");
-    mccList.insert(609, "MR");
-    mccList.insert(610, "ML");
-    mccList.insert(611, "GN");
-    mccList.insert(612, "CI");
-    mccList.insert(613, "BF");
-    mccList.insert(614, "NE");
-    mccList.insert(615, "TG");
-    mccList.insert(616, "BJ");
-    mccList.insert(617, "MU");
-    mccList.insert(618, "LR");
-    mccList.insert(619, "SL");
-    mccList.insert(620, "GH");
-    mccList.insert(621, "NG");
-    mccList.insert(622, "TD");
-    mccList.insert(623, "CF");
-    mccList.insert(624, "CM");
-    mccList.insert(625, "CV");
-    mccList.insert(626, "ST");
-    mccList.insert(627, "GQ");
-    mccList.insert(628, "GA");
-    mccList.insert(629, "CG");
-    mccList.insert(630, "CD");
-    mccList.insert(631, "AO");
-    mccList.insert(632, "GW");
-    mccList.insert(633, "SC");
-    mccList.insert(634, "SD");
-    mccList.insert(635, "RW");
-    mccList.insert(636, "ET");
-    mccList.insert(637, "SO");
-    mccList.insert(638, "DJ");
-    mccList.insert(639, "KE");
-    mccList.insert(640, "TZ");
-    mccList.insert(641, "UG");
-    mccList.insert(642, "BI");
-    mccList.insert(643, "MZ");
-    mccList.insert(645, "ZM");
-    mccList.insert(646, "MG");
-    mccList.insert(647, "RE");
-    mccList.insert(648, "ZW");
-    mccList.insert(649, "NA");
-    mccList.insert(650, "MW");
-    mccList.insert(651, "LS");
-    mccList.insert(652, "BW");
-    mccList.insert(653, "SZ");
-    mccList.insert(654, "KM");
-    mccList.insert(655, "ZA");
-    mccList.insert(657, "ER");
-    mccList.insert(659, "SS");
-    mccList.insert(702, "BZ");
-    mccList.insert(704, "GT");
-    mccList.insert(706, "SV");
-    mccList.insert(708, "HN");
-    mccList.insert(710, "NI");
-    mccList.insert(712, "CR");
-    mccList.insert(714, "PA");
-    mccList.insert(716, "PE");
-    mccList.insert(722, "AR");
-    mccList.insert(724, "BR");
-    mccList.insert(730, "CL");
-    mccList.insert(732, "CO");
-    mccList.insert(734, "VE");
-    mccList.insert(736, "BO");
-    mccList.insert(738, "GY");
-    mccList.insert(740, "EC");
-    mccList.insert(744, "PY");
-    mccList.insert(746, "SR");
-    mccList.insert(748, "UY");
-    mccList.insert(750, "FK");
+    static const QHash<int, QString> mccList{
+        {202,QStringLiteral("GR")},
+        {204,QStringLiteral("NL")},
+        {206,QStringLiteral("BE")},
+        {208,QStringLiteral("FR")},
+        {212,QStringLiteral("MC")},
+        {213,QStringLiteral("AD")},
+        {214,QStringLiteral("ES")},
+        {216,QStringLiteral("HU")},
+        {218,QStringLiteral("BA")},
+        {219,QStringLiteral("HR")},
+        {220,QStringLiteral("RS")},
+        {222,QStringLiteral("IT")},
+        {226,QStringLiteral("RO")},
+        {228,QStringLiteral("CH")},
+        {230,QStringLiteral("CZ")},
+        {231,QStringLiteral("SK")},
+        {232,QStringLiteral("AT")},
+        {234,QStringLiteral("GB")},
+        {235,QStringLiteral("GB")},
+        {238,QStringLiteral("DK")},
+        {240,QStringLiteral("SE")},
+        {242,QStringLiteral("NO")},
+        {244,QStringLiteral("FI")},
+        {246,QStringLiteral("LT")},
+        {247,QStringLiteral("LV")},
+        {248,QStringLiteral("EE")},
+        {250,QStringLiteral("RU")},
+        {255,QStringLiteral("UA")},
+        {257,QStringLiteral("BY")},
+        {259,QStringLiteral("MD")},
+        {260,QStringLiteral("PL")},
+        {262,QStringLiteral("DE")},
+        {266,QStringLiteral("GI")},
+        {268,QStringLiteral("PT")},
+        {270,QStringLiteral("LU")},
+        {272,QStringLiteral("IE")},
+        {274,QStringLiteral("IS")},
+        {276,QStringLiteral("AL")},
+        {278,QStringLiteral("MT")},
+        {280,QStringLiteral("CY")},
+        {282,QStringLiteral("GE")},
+        {283,QStringLiteral("AM")},
+        {284,QStringLiteral("BG")},
+        {286,QStringLiteral("TR")},
+        {288,QStringLiteral("FO")},
+        {289,QStringLiteral("GE")},
+        {290,QStringLiteral("GL")},
+        {292,QStringLiteral("SM")},
+        {293,QStringLiteral("SI")},
+        {294,QStringLiteral("MK")},
+        {295,QStringLiteral("LI")},
+        {297,QStringLiteral("ME")},
+        {302,QStringLiteral("CA")},
+        {308,QStringLiteral("PM")},
+        {310,QStringLiteral("GU")},
+        {310,QStringLiteral("US")},
+        {311,QStringLiteral("GU")},
+        {311,QStringLiteral("US")},
+        {312,QStringLiteral("US")},
+        {316,QStringLiteral("US")},
+        {330,QStringLiteral("PR")},
+        {334,QStringLiteral("MX")},
+        {338,QStringLiteral("JM")},
+        {340,QStringLiteral("FG")},
+        {340,QStringLiteral("GP")},
+        {340,QStringLiteral("MQ")},
+        {342,QStringLiteral("BB")},
+        {344,QStringLiteral("AG")},
+        {346,QStringLiteral("KY")},
+        {348,QStringLiteral("VG")},
+        {350,QStringLiteral("BM")},
+        {352,QStringLiteral("GD")},
+        {354,QStringLiteral("MS")},
+        {356,QStringLiteral("KN")},
+        {358,QStringLiteral("LC")},
+        {360,QStringLiteral("VC")},
+        {362,QStringLiteral("AN")},
+        {362,QStringLiteral("CW")},
+        {363,QStringLiteral("AW")},
+        {364,QStringLiteral("BS")},
+        {365,QStringLiteral("AI")},
+        {366,QStringLiteral("DM")},
+        {368,QStringLiteral("CU")},
+        {370,QStringLiteral("DO")},
+        {372,QStringLiteral("HT")},
+        {374,QStringLiteral("TT")},
+        {376,QStringLiteral("TC")},
+        {376,QStringLiteral("VI")},
+        {400,QStringLiteral("AZ")},
+        {401,QStringLiteral("KZ")},
+        {402,QStringLiteral("BT")},
+        {404,QStringLiteral("IN")},
+        {405,QStringLiteral("IN")},
+        {410,QStringLiteral("PK")},
+        {412,QStringLiteral("AF")},
+        {413,QStringLiteral("LK")},
+        {414,QStringLiteral("MM")},
+        {415,QStringLiteral("LB")},
+        {416,QStringLiteral("JO")},
+        {417,QStringLiteral("SY")},
+        {418,QStringLiteral("IQ")},
+        {419,QStringLiteral("KW")},
+        {420,QStringLiteral("SA")},
+        {421,QStringLiteral("YE")},
+        {422,QStringLiteral("OM")},
+        {424,QStringLiteral("AE")},
+        {425,QStringLiteral("IL")},
+        {425,QStringLiteral("PS")},
+        {426,QStringLiteral("BH")},
+        {427,QStringLiteral("QA")},
+        {428,QStringLiteral("MN")},
+        {429,QStringLiteral("NP")},
+        {430,QStringLiteral("AE")},
+        {431,QStringLiteral("AE")},
+        {432,QStringLiteral("IR")},
+        {434,QStringLiteral("UZ")},
+        {436,QStringLiteral("TK")},
+        {437,QStringLiteral("KG")},
+        {438,QStringLiteral("TM")},
+        {440,QStringLiteral("JP")},
+        {441,QStringLiteral("JP")},
+        {450,QStringLiteral("KR")},
+        {452,QStringLiteral("VN")},
+        {454,QStringLiteral("HK")},
+        {455,QStringLiteral("MO")},
+        {456,QStringLiteral("KH")},
+        {457,QStringLiteral("LA")},
+        {460,QStringLiteral("CN")},
+        {466,QStringLiteral("TW")},
+        {467,QStringLiteral("KP")},
+        {470,QStringLiteral("BD")},
+        {472,QStringLiteral("MV")},
+        {502,QStringLiteral("MY")},
+        {505,QStringLiteral("AU")},
+        {510,QStringLiteral("ID")},
+        {514,QStringLiteral("TP")},
+        {515,QStringLiteral("PH")},
+        {520,QStringLiteral("TH")},
+        {525,QStringLiteral("SG")},
+        {528,QStringLiteral("BN")},
+        {530,QStringLiteral("NZ")},
+        {537,QStringLiteral("PG")},
+        {539,QStringLiteral("TO")},
+        {540,QStringLiteral("SB")},
+        {541,QStringLiteral("VU")},
+        {542,QStringLiteral("FJ")},
+        {544,QStringLiteral("AS")},
+        {545,QStringLiteral("KI")},
+        {546,QStringLiteral("NC")},
+        {547,QStringLiteral("PF")},
+        {548,QStringLiteral("CK")},
+        {549,QStringLiteral("WS")},
+        {550,QStringLiteral("FM")},
+        {552,QStringLiteral("PW")},
+        {553,QStringLiteral("TV")},
+        {555,QStringLiteral("NU")},
+        {602,QStringLiteral("EG")},
+        {603,QStringLiteral("DZ")},
+        {604,QStringLiteral("MA")},
+        {605,QStringLiteral("TN")},
+        {606,QStringLiteral("LY")},
+        {607,QStringLiteral("GM")},
+        {608,QStringLiteral("SN")},
+        {609,QStringLiteral("MR")},
+        {610,QStringLiteral("ML")},
+        {611,QStringLiteral("GN")},
+        {612,QStringLiteral("CI")},
+        {613,QStringLiteral("BF")},
+        {614,QStringLiteral("NE")},
+        {615,QStringLiteral("TG")},
+        {616,QStringLiteral("BJ")},
+        {617,QStringLiteral("MU")},
+        {618,QStringLiteral("LR")},
+        {619,QStringLiteral("SL")},
+        {620,QStringLiteral("GH")},
+        {621,QStringLiteral("NG")},
+        {622,QStringLiteral("TD")},
+        {623,QStringLiteral("CF")},
+        {624,QStringLiteral("CM")},
+        {625,QStringLiteral("CV")},
+        {626,QStringLiteral("ST")},
+        {627,QStringLiteral("GQ")},
+        {628,QStringLiteral("GA")},
+        {629,QStringLiteral("CG")},
+        {630,QStringLiteral("CD")},
+        {631,QStringLiteral("AO")},
+        {632,QStringLiteral("GW")},
+        {633,QStringLiteral("SC")},
+        {634,QStringLiteral("SD")},
+        {635,QStringLiteral("RW")},
+        {636,QStringLiteral("ET")},
+        {637,QStringLiteral("SO")},
+        {638,QStringLiteral("DJ")},
+        {639,QStringLiteral("KE")},
+        {640,QStringLiteral("TZ")},
+        {641,QStringLiteral("UG")},
+        {642,QStringLiteral("BI")},
+        {643,QStringLiteral("MZ")},
+        {645,QStringLiteral("ZM")},
+        {646,QStringLiteral("MG")},
+        {647,QStringLiteral("RE")},
+        {648,QStringLiteral("ZW")},
+        {649,QStringLiteral("NA")},
+        {650,QStringLiteral("MW")},
+        {651,QStringLiteral("LS")},
+        {652,QStringLiteral("BW")},
+        {653,QStringLiteral("SZ")},
+        {654,QStringLiteral("KM")},
+        {655,QStringLiteral("ZA")},
+        {657,QStringLiteral("ER")},
+        {659,QStringLiteral("SS")},
+        {702,QStringLiteral("BZ")},
+        {704,QStringLiteral("GT")},
+        {706,QStringLiteral("SV")},
+        {708,QStringLiteral("HN")},
+        {710,QStringLiteral("NI")},
+        {712,QStringLiteral("CR")},
+        {714,QStringLiteral("PA")},
+        {716,QStringLiteral("PE")},
+        {722,QStringLiteral("AR")},
+        {724,QStringLiteral("BR")},
+        {730,QStringLiteral("CL")},
+        {732,QStringLiteral("CO")},
+        {734,QStringLiteral("VE")},
+        {736,QStringLiteral("BO")},
+        {738,QStringLiteral("GY")},
+        {740,QStringLiteral("EC")},
+        {744,QStringLiteral("PY")},
+        {746,QStringLiteral("SR")},
+        {748,QStringLiteral("UY")},
+        {750,QStringLiteral("FK")}
+    };
 
 
     if(mccList.contains(code))
@@ -614,320 +596,328 @@ QString phonenumber::mobilecc_to_iso32662(int code) {
 
 QString phonenumber::countryPrefix(QString country, QString prefix, QString number) {
     typedef QPair<QString,QString> pz;
-    QList<pz> c;
+    static const QList<pz> c{
+        pz("AF", "93"),pz(QStringLiteral("AF"), QStringLiteral("93")),
+                pz(QStringLiteral("AL"), QStringLiteral("355")),
+                pz(QStringLiteral("DZ"), QStringLiteral("213")),
+                pz(QStringLiteral("AS"), QStringLiteral("1684")),
+                pz(QStringLiteral("AD"), QStringLiteral("376")),
+                pz(QStringLiteral("AO"), QStringLiteral("244")),
+                pz(QStringLiteral("AI"), QStringLiteral("1264")),
 
-    c.append(pz("AF", "93"));
-    c.append(pz("AL", "355"));
-    c.append(pz("DZ", "213"));
-    c.append(pz("AS", "1684"));
-    c.append(pz("AD", "376"));
-    c.append(pz("AO", "244"));
-    c.append(pz("AI", "1264"));
+                pz(QStringLiteral("AG"), QStringLiteral("1268")),
+                pz(QStringLiteral("AR"), QStringLiteral("54")),
+                pz(QStringLiteral("AM"), QStringLiteral("374")),
+                pz(QStringLiteral("AW"), QStringLiteral("297")),
 
-    c.append(pz("AG", "1268"));
-    c.append(pz("AR", "54"));
-    c.append(pz("AM", "374"));
-    c.append(pz("AW", "297"));
+                pz(QStringLiteral("AU"), QStringLiteral("61")),
+                pz(QStringLiteral("CX"), QStringLiteral("61")),
+                pz(QStringLiteral("CC"), QStringLiteral("61")),
 
-    c.append(pz("AU", "61"));
-    c.append(pz("CX", "61"));
-    c.append(pz("CC", "61"));
+                pz(QStringLiteral("AT"), QStringLiteral("43")),
+                pz(QStringLiteral("AZ"), QStringLiteral("994")),
+                pz(QStringLiteral("BS"), QStringLiteral("1242")),
+                pz(QStringLiteral("BH"), QStringLiteral("973")),
+                pz(QStringLiteral("BD"), QStringLiteral("880")),
+                pz(QStringLiteral("BB"), QStringLiteral("1246")),
+                pz(QStringLiteral("BY"), QStringLiteral("375")),
+                pz(QStringLiteral("BE"), QStringLiteral("32")),
+                pz(QStringLiteral("BZ"), QStringLiteral("501")),
+                pz(QStringLiteral("BJ"), QStringLiteral("229")),
+                pz(QStringLiteral("BM"), QStringLiteral("1441")),
+                pz(QStringLiteral("BT"), QStringLiteral("975")),
+                pz(QStringLiteral("BO"), QStringLiteral("591")),
+                pz(QStringLiteral("BA"), QStringLiteral("387")),
+                pz(QStringLiteral("BW"), QStringLiteral("267")),
+                pz(QStringLiteral("BR"), QStringLiteral("55")),
+                pz(QStringLiteral("IO"), QStringLiteral("246")),
+                pz(QStringLiteral("BN"), QStringLiteral("673")),
+                pz(QStringLiteral("BG"), QStringLiteral("359")),
+                pz(QStringLiteral("BF"), QStringLiteral("226")),
+                pz(QStringLiteral("BI"), QStringLiteral("257")),
+                pz(QStringLiteral("KH"), QStringLiteral("855")),
+                pz(QStringLiteral("CM"), QStringLiteral("237")),
+                pz(QStringLiteral("CV"), QStringLiteral("238")),
+                pz(QStringLiteral("KY"), QStringLiteral("1345")),
+                pz(QStringLiteral("CF"), QStringLiteral("236")),
+                pz(QStringLiteral("TD"), QStringLiteral("235")),
+                pz(QStringLiteral("CL"), QStringLiteral("56")),
+                pz(QStringLiteral("CN"), QStringLiteral("86")),
+                pz(QStringLiteral("CO"), QStringLiteral("57")),
+                pz(QStringLiteral("KM"), QStringLiteral("269")),
+                pz(QStringLiteral("CG"), QStringLiteral("242")),
+                pz(QStringLiteral("CD"), QStringLiteral("243")),
+                pz(QStringLiteral("CK"), QStringLiteral("682")),
+                pz(QStringLiteral("CR"), QStringLiteral("506")),
+                pz(QStringLiteral("HR"), QStringLiteral("385")),
+                pz(QStringLiteral("CU"), QStringLiteral("53")),
 
-    c.append(pz("AT", "43"));
-    c.append(pz("AZ", "994"));
-    c.append(pz("BS", "1242"));
-    c.append(pz("BH", "973"));
-    c.append(pz("BD", "880"));
-    c.append(pz("BB", "1246"));
-    c.append(pz("BY", "375"));
-    c.append(pz("BE", "32"));
-    c.append(pz("BZ", "501"));
-    c.append(pz("BJ", "229"));
-    c.append(pz("BM", "1441"));
-    c.append(pz("BT", "975"));
-    c.append(pz("BO", "591"));
-    c.append(pz("BA", "387"));
-    c.append(pz("BW", "267"));
-    c.append(pz("BR", "55"));
-    c.append(pz("IO", "246"));
-    c.append(pz("BN", "673"));
-    c.append(pz("BG", "359"));
-    c.append(pz("BF", "226"));
-    c.append(pz("BI", "257"));
-    c.append(pz("KH", "855"));
-    c.append(pz("CM", "237"));
-    c.append(pz("CV", "238"));
-    c.append(pz("KY", "1345"));
-    c.append(pz("CF", "236"));
-    c.append(pz("TD", "235"));
-    c.append(pz("CL", "56"));
-    c.append(pz("CN", "86"));
-    c.append(pz("CO", "57"));
-    c.append(pz("KM", "269"));
-    c.append(pz("CG", "242"));
-    c.append(pz("CD", "243"));
-    c.append(pz("CK", "682"));
-    c.append(pz("CR", "506"));
-    c.append(pz("HR", "385"));
-    c.append(pz("CU", "53"));
+                pz(QStringLiteral("CW"), QStringLiteral("599")),
+                pz(QStringLiteral("BQ"), QStringLiteral("599")),
 
-    c.append(pz("CW", "599"));
-    c.append(pz("BQ", "599"));
+                pz(QStringLiteral("CY"), QStringLiteral("357")),
+                pz(QStringLiteral("CZ"), QStringLiteral("420")),
+                pz(QStringLiteral("CI"), QStringLiteral("225")),
+                pz(QStringLiteral("DK"), QStringLiteral("45")),
+                pz(QStringLiteral("DJ"), QStringLiteral("253")),
+                pz(QStringLiteral("DM"), QStringLiteral("1767")),
+                pz(QStringLiteral("DO"), QStringLiteral("1809")),
+                pz(QStringLiteral("DO"), QStringLiteral("1829")),
+                pz(QStringLiteral("DO"), QStringLiteral("1849")),
+                pz(QStringLiteral("EC"), QStringLiteral("593")),
+                pz(QStringLiteral("EG"), QStringLiteral("20")),
+                pz(QStringLiteral("SV"), QStringLiteral("503")),
+                pz(QStringLiteral("GQ"), QStringLiteral("240")),
+                pz(QStringLiteral("ER"), QStringLiteral("291")),
+                pz(QStringLiteral("EE"), QStringLiteral("372")),
+                pz(QStringLiteral("ET"), QStringLiteral("251")),
 
-    c.append(pz("CY", "357"));
-    c.append(pz("CZ", "420"));
-    c.append(pz("CI", "225"));
-    c.append(pz("DK", "45"));
-    c.append(pz("DJ", "253"));
-    c.append(pz("DM", "1767"));
-    c.append(pz("DO", "1809"));
-    c.append(pz("DO", "1829"));
-    c.append(pz("DO", "1849"));
-    c.append(pz("EC", "593"));
-    c.append(pz("EG", "20"));
-    c.append(pz("SV", "503"));
-    c.append(pz("GQ", "240"));
-    c.append(pz("ER", "291"));
-    c.append(pz("EE", "372"));
-    c.append(pz("ET", "251"));
+                pz(QStringLiteral("FK"), QStringLiteral("500")),
+                pz(QStringLiteral("GS"), QStringLiteral("500")),
 
-    c.append(pz("FK", "500"));
-    c.append(pz("GS", "500"));
+                pz(QStringLiteral("FO"), QStringLiteral("298")),
+                pz(QStringLiteral("FJ"), QStringLiteral("679")),
 
-    c.append(pz("FO", "298"));
-    c.append(pz("FJ", "679"));
+                pz(QStringLiteral("FI"), QStringLiteral("358")),
+                pz(QStringLiteral("AX"), QStringLiteral("358")),
 
-    c.append(pz("FI", "358"));
-    c.append(pz("AX", "358"));
+                pz(QStringLiteral("FR"), QStringLiteral("33")),
+                pz(QStringLiteral("GF"), QStringLiteral("594")),
+                pz(QStringLiteral("PF"), QStringLiteral("689")),
 
-    c.append(pz("FR", "33"));
-    c.append(pz("GF", "594"));
-    c.append(pz("PF", "689"));
+                pz(QStringLiteral("GA"), QStringLiteral("241")),
+                pz(QStringLiteral("GM"), QStringLiteral("220")),
+                pz(QStringLiteral("GE"), QStringLiteral("995")),
+                pz(QStringLiteral("DE"), QStringLiteral("49")),
+                pz(QStringLiteral("GH"), QStringLiteral("233")),
+                pz(QStringLiteral("GI"), QStringLiteral("350")),
+                pz(QStringLiteral("GR"), QStringLiteral("30")),
+                pz(QStringLiteral("GL"), QStringLiteral("299")),
+                pz(QStringLiteral("GD"), QStringLiteral("1473")),
 
-    c.append(pz("GA", "241"));
-    c.append(pz("GM", "220"));
-    c.append(pz("GE", "995"));
-    c.append(pz("DE", "49"));
-    c.append(pz("GH", "233"));
-    c.append(pz("GI", "350"));
-    c.append(pz("GR", "30"));
-    c.append(pz("GL", "299"));
-    c.append(pz("GD", "1473"));
+                pz(QStringLiteral("GP"), QStringLiteral("590")),
+                pz(QStringLiteral("BL"), QStringLiteral("590")),
+                pz(QStringLiteral("MF"), QStringLiteral("590")),
 
-    c.append(pz("GP", "590"));
-    c.append(pz("BL", "590"));
-    c.append(pz("MF", "590"));
+                pz(QStringLiteral("GU"), QStringLiteral("1671")),
+                pz(QStringLiteral("GT"), QStringLiteral("502")),
+                pz(QStringLiteral("GN"), QStringLiteral("224")),
+                pz(QStringLiteral("GW"), QStringLiteral("245")),
+                pz(QStringLiteral("GY"), QStringLiteral("592")),
+                pz(QStringLiteral("HT"), QStringLiteral("509")),
+                pz(QStringLiteral("VA"), QStringLiteral("3906")),
+                pz(QStringLiteral("HN"), QStringLiteral("504")),
+                pz(QStringLiteral("HK"), QStringLiteral("852")),
+                pz(QStringLiteral("HU"), QStringLiteral("36")),
+                pz(QStringLiteral("IS"), QStringLiteral("354")),
+                pz(QStringLiteral("IN"), QStringLiteral("91")),
+                pz(QStringLiteral("ID"), QStringLiteral("62")),
+                pz(QStringLiteral("IR"), QStringLiteral("98")),
+                pz(QStringLiteral("IQ"), QStringLiteral("964")),
+                pz(QStringLiteral("IE"), QStringLiteral("353")),
+                pz(QStringLiteral("IL"), QStringLiteral("972")),
+                pz(QStringLiteral("IT"), QStringLiteral("39")),
+                pz(QStringLiteral("JM"), QStringLiteral("1876")),
+                pz(QStringLiteral("JP"), QStringLiteral("81")),
+                pz(QStringLiteral("JO"), QStringLiteral("962")),
+                pz(QStringLiteral("KE"), QStringLiteral("254")),
+                pz(QStringLiteral("KI"), QStringLiteral("686")),
+                pz(QStringLiteral("KP"), QStringLiteral("850")),
+                pz(QStringLiteral("KR"), QStringLiteral("82")),
+                pz(QStringLiteral("KW"), QStringLiteral("965")),
+                pz(QStringLiteral("KG"), QStringLiteral("996")),
+                pz(QStringLiteral("LA"), QStringLiteral("856")),
+                pz(QStringLiteral("LV"), QStringLiteral("371")),
+                pz(QStringLiteral("LB"), QStringLiteral("961")),
+                pz(QStringLiteral("LS"), QStringLiteral("266")),
+                pz(QStringLiteral("LR"), QStringLiteral("231")),
+                pz(QStringLiteral("LY"), QStringLiteral("218")),
+                pz(QStringLiteral("LI"), QStringLiteral("423")),
+                pz(QStringLiteral("LT"), QStringLiteral("370")),
+                pz(QStringLiteral("LU"), QStringLiteral("352")),
+                pz(QStringLiteral("MO"), QStringLiteral("853")),
+                pz(QStringLiteral("MK"), QStringLiteral("389")),
+                pz(QStringLiteral("MG"), QStringLiteral("261")),
+                pz(QStringLiteral("MW"), QStringLiteral("265")),
+                pz(QStringLiteral("MY"), QStringLiteral("60")),
+                pz(QStringLiteral("MV"), QStringLiteral("960")),
+                pz(QStringLiteral("ML"), QStringLiteral("223")),
+                pz(QStringLiteral("MT"), QStringLiteral("356")),
+                pz(QStringLiteral("MH"), QStringLiteral("692")),
+                pz(QStringLiteral("MQ"), QStringLiteral("596")),
+                pz(QStringLiteral("MR"), QStringLiteral("222")),
+                pz(QStringLiteral("MU"), QStringLiteral("230")),
 
-    c.append(pz("GU", "1671"));
-    c.append(pz("GT", "502"));
-    c.append(pz("GN", "224"));
-    c.append(pz("GW", "245"));
-    c.append(pz("GY", "592"));
-    c.append(pz("HT", "509"));
-    c.append(pz("VA", "3906"));
-    c.append(pz("HN", "504"));
-    c.append(pz("HK", "852"));
-    c.append(pz("HU", "36"));
-    c.append(pz("IS", "354"));
-    c.append(pz("IN", "91"));
-    c.append(pz("ID", "62"));
-    c.append(pz("IR", "98"));
-    c.append(pz("IQ", "964"));
-    c.append(pz("IE", "353"));
-    c.append(pz("IL", "972"));
-    c.append(pz("IT", "39"));
-    c.append(pz("JM", "1876"));
-    c.append(pz("JP", "81"));
-    c.append(pz("JO", "962"));
-    c.append(pz("KE", "254"));
-    c.append(pz("KI", "686"));
-    c.append(pz("KP", "850"));
-    c.append(pz("KR", "82"));
-    c.append(pz("KW", "965"));
-    c.append(pz("KG", "996"));
-    c.append(pz("LA", "856"));
-    c.append(pz("LV", "371"));
-    c.append(pz("LB", "961"));
-    c.append(pz("LS", "266"));
-    c.append(pz("LR", "231"));
-    c.append(pz("LY", "218"));
-    c.append(pz("LI", "423"));
-    c.append(pz("LT", "370"));
-    c.append(pz("LU", "352"));
-    c.append(pz("MO", "853"));
-    c.append(pz("MK", "389"));
-    c.append(pz("MG", "261"));
-    c.append(pz("MW", "265"));
-    c.append(pz("MY", "60"));
-    c.append(pz("MV", "960"));
-    c.append(pz("ML", "223"));
-    c.append(pz("MT", "356"));
-    c.append(pz("MH", "692"));
-    c.append(pz("MQ", "596"));
-    c.append(pz("MR", "222"));
-    c.append(pz("MU", "230"));
+                pz(QStringLiteral("YT"), QStringLiteral("262")),
+                pz(QStringLiteral("TF"), QStringLiteral("262")),
+                pz(QStringLiteral("RE"), QStringLiteral("262")),
 
-    c.append(pz("YT", "262"));
-    c.append(pz("TF", "262"));
-    c.append(pz("RE", "262"));
+                pz(QStringLiteral("MX"), QStringLiteral("52")),
+                pz(QStringLiteral("FM"), QStringLiteral("691")),
+                pz(QStringLiteral("MD"), QStringLiteral("373")),
+                pz(QStringLiteral("MC"), QStringLiteral("377")),
+                pz(QStringLiteral("MN"), QStringLiteral("976")),
+                pz(QStringLiteral("ME"), QStringLiteral("382")),
+                pz(QStringLiteral("MS"), QStringLiteral("1664")),
 
-    c.append(pz("MX", "52"));
-    c.append(pz("FM", "691"));
-    c.append(pz("MD", "373"));
-    c.append(pz("MC", "377"));
-    c.append(pz("MN", "976"));
-    c.append(pz("ME", "382"));
-    c.append(pz("MS", "1664"));
+                pz(QStringLiteral("MA"), QStringLiteral("212")),
+                pz(QStringLiteral("EH"), QStringLiteral("212")),
 
-    c.append(pz("MA", "212"));
-    c.append(pz("EH", "212"));
+                pz(QStringLiteral("MZ"), QStringLiteral("258")),
+                pz(QStringLiteral("MM"), QStringLiteral("95")),
+                pz(QStringLiteral("NA"), QStringLiteral("264")),
+                pz(QStringLiteral("NR"), QStringLiteral("674")),
+                pz(QStringLiteral("NP"), QStringLiteral("977")),
+                pz(QStringLiteral("NL"), QStringLiteral("31")),
+                pz(QStringLiteral("NC"), QStringLiteral("687")),
+                pz(QStringLiteral("NZ"), QStringLiteral("64")),
+                pz(QStringLiteral("NI"), QStringLiteral("505")),
+                pz(QStringLiteral("NE"), QStringLiteral("227")),
+                pz(QStringLiteral("NG"), QStringLiteral("234")),
+                pz(QStringLiteral("NU"), QStringLiteral("683")),
 
-    c.append(pz("MZ", "258"));
-    c.append(pz("MM", "95"));
-    c.append(pz("NA", "264"));
-    c.append(pz("NR", "674"));
-    c.append(pz("NP", "977"));
-    c.append(pz("NL", "31"));
-    c.append(pz("NC", "687"));
-    c.append(pz("NZ", "64"));
-    c.append(pz("NI", "505"));
-    c.append(pz("NE", "227"));
-    c.append(pz("NG", "234"));
-    c.append(pz("NU", "683"));
+                pz(QStringLiteral("NF"), QStringLiteral("672")),
+                pz(QStringLiteral("AQ"), QStringLiteral("672")),
+                pz(QStringLiteral("HM"), QStringLiteral("672")),
 
-    c.append(pz("NF", "672"));
-    c.append(pz("AQ", "672"));
-    c.append(pz("HM", "672"));
+                pz(QStringLiteral("MP"), QStringLiteral("1670")),
 
-    c.append(pz("MP", "1670"));
+                pz(QStringLiteral("NO"), QStringLiteral("47")),
+                pz(QStringLiteral("SJ"), QStringLiteral("47")),
+                pz(QStringLiteral("BV"), QStringLiteral("47")),
 
-    c.append(pz("NO", "47"));
-    c.append(pz("SJ", "47"));
-    c.append(pz("BV", "47"));
-
-    c.append(pz("OM", "968"));
-    c.append(pz("PK", "92"));
-    c.append(pz("PW", "680"));
-    c.append(pz("PS", "970"));
-    c.append(pz("PA", "507"));
-    c.append(pz("PG", "675"));
-    c.append(pz("PY", "595"));
-    c.append(pz("PE", "51"));
-    c.append(pz("PH", "63"));
-    c.append(pz("PN", "870"));
-    c.append(pz("PL", "48"));
-    c.append(pz("PT", "351"));
-
-
-    c.append(pz("QA", "974"));
-    c.append(pz("RO", "40"));
-
-    c.append(pz("RU", "7"));
-    c.append(pz("KZ", "7"));
-    c.append(pz("RW", "250"));
+                pz(QStringLiteral("OM"), QStringLiteral("968")),
+                pz(QStringLiteral("PK"), QStringLiteral("92")),
+                pz(QStringLiteral("PW"), QStringLiteral("680")),
+                pz(QStringLiteral("PS"), QStringLiteral("970")),
+                pz(QStringLiteral("PA"), QStringLiteral("507")),
+                pz(QStringLiteral("PG"), QStringLiteral("675")),
+                pz(QStringLiteral("PY"), QStringLiteral("595")),
+                pz(QStringLiteral("PE"), QStringLiteral("51")),
+                pz(QStringLiteral("PH"), QStringLiteral("63")),
+                pz(QStringLiteral("PN"), QStringLiteral("870")),
+                pz(QStringLiteral("PL"), QStringLiteral("48")),
+                pz(QStringLiteral("PT"), QStringLiteral("351")),
 
 
-    c.append(pz("SH", "290"));
-    c.append(pz("KN", "1869"));
-    c.append(pz("LC", "1758"));
+                pz(QStringLiteral("QA"), QStringLiteral("974")),
+                pz(QStringLiteral("RO"), QStringLiteral("40")),
 
-    c.append(pz("PM", "508"));
-    c.append(pz("VC", "1784"));
-    c.append(pz("WS", "685"));
-    c.append(pz("SM", "378"));
-    c.append(pz("ST", "239"));
-    c.append(pz("SA", "966"));
-    c.append(pz("SN", "221"));
-    c.append(pz("RS", "381"));
-    c.append(pz("SC", "248"));
-    c.append(pz("SL", "232"));
-    c.append(pz("SG", "65"));
-    c.append(pz("SX", "1721"));
-    c.append(pz("SK", "421"));
-    c.append(pz("SI", "386"));
-    c.append(pz("SB", "677"));
-    c.append(pz("SO", "252"));
-    c.append(pz("ZA", "27"));
-
-    c.append(pz("SS", "211"));
-    c.append(pz("ES", "34"));
-    c.append(pz("LK", "94"));
-    c.append(pz("SD", "249"));
-    c.append(pz("SR", "597"));
-
-    c.append(pz("SZ", "268"));
-    c.append(pz("SE", "46"));
-    c.append(pz("CH", "41"));
-    c.append(pz("SY", "963"));
-    c.append(pz("TW", "886"));
-    c.append(pz("TJ", "992"));
-    c.append(pz("TZ", "255"));
-    c.append(pz("TH", "66"));
-    c.append(pz("TL", "670"));
-    c.append(pz("TG", "228"));
-    c.append(pz("TK", "690"));
-    c.append(pz("TO", "676"));
-    c.append(pz("TT", "1868"));
-    c.append(pz("TN", "216"));
-    c.append(pz("TR", "90"));
-    c.append(pz("TM", "993"));
-    c.append(pz("TC", "1649"));
-    c.append(pz("TV", "688"));
-    c.append(pz("UG", "256"));
-    c.append(pz("UA", "380"));
-    c.append(pz("AE", "971"));
-
-    c.append(pz("GB", "44"));
-    c.append(pz("GG", "44"));
-    c.append(pz("IM", "44"));
-    c.append(pz("JE", "44"));
-
-    c.append(pz("US", "1"));
-    c.append(pz("CA", "1"));
-    c.append(pz("PR", "1"));
-
-    c.append(pz("UM", "2"));
-    c.append(pz("UY", "598"));
-    c.append(pz("UZ", "998"));
-    c.append(pz("VU", "678"));
-    c.append(pz("VE", "58"));
-    c.append(pz("VN", "84"));
-    c.append(pz("VG", "1284"));
-    c.append(pz("VI", "1340"));
-    c.append(pz("WF", "681"));
-    c.append(pz("YE", "967"));
-    c.append(pz("ZM", "260"));
-    c.append(pz("ZW", "263"));
+                pz(QStringLiteral("RU"), QStringLiteral("7")),
+                pz(QStringLiteral("KZ"), QStringLiteral("7")),
+                pz(QStringLiteral("RW"), QStringLiteral("250")),
 
 
+                pz(QStringLiteral("SH"), QStringLiteral("290")),
+                pz(QStringLiteral("KN"), QStringLiteral("1869")),
+                pz(QStringLiteral("LC"), QStringLiteral("1758")),
 
+                pz(QStringLiteral("PM"), QStringLiteral("508")),
+                pz(QStringLiteral("VC"), QStringLiteral("1784")),
+                pz(QStringLiteral("WS"), QStringLiteral("685")),
+                pz(QStringLiteral("SM"), QStringLiteral("378")),
+                pz(QStringLiteral("ST"), QStringLiteral("239")),
+                pz(QStringLiteral("SA"), QStringLiteral("966")),
+                pz(QStringLiteral("SN"), QStringLiteral("221")),
+                pz(QStringLiteral("RS"), QStringLiteral("381")),
+                pz(QStringLiteral("SC"), QStringLiteral("248")),
+                pz(QStringLiteral("SL"), QStringLiteral("232")),
+                pz(QStringLiteral("SG"), QStringLiteral("65")),
+                pz(QStringLiteral("SX"), QStringLiteral("1721")),
+                pz(QStringLiteral("SK"), QStringLiteral("421")),
+                pz(QStringLiteral("SI"), QStringLiteral("386")),
+                pz(QStringLiteral("SB"), QStringLiteral("677")),
+                pz(QStringLiteral("SO"), QStringLiteral("252")),
+                pz(QStringLiteral("ZA"), QStringLiteral("27")),
 
-    if(country != "") {
-        for(auto _it = c.begin(); _it != c.end(); ++_it) {
-            if((*_it).first == country)
-                return (*_it).second;
+                pz(QStringLiteral("SS"), QStringLiteral("211")),
+                pz(QStringLiteral("ES"), QStringLiteral("34")),
+                pz(QStringLiteral("LK"), QStringLiteral("94")),
+                pz(QStringLiteral("SD"), QStringLiteral("249")),
+                pz(QStringLiteral("SR"), QStringLiteral("597")),
+
+                pz(QStringLiteral("SZ"), QStringLiteral("268")),
+                pz(QStringLiteral("SE"), QStringLiteral("46")),
+                pz(QStringLiteral("CH"), QStringLiteral("41")),
+                pz(QStringLiteral("SY"), QStringLiteral("963")),
+                pz(QStringLiteral("TW"), QStringLiteral("886")),
+                pz(QStringLiteral("TJ"), QStringLiteral("992")),
+                pz(QStringLiteral("TZ"), QStringLiteral("255")),
+                pz(QStringLiteral("TH"), QStringLiteral("66")),
+                pz(QStringLiteral("TL"), QStringLiteral("670")),
+                pz(QStringLiteral("TG"), QStringLiteral("228")),
+                pz(QStringLiteral("TK"), QStringLiteral("690")),
+                pz(QStringLiteral("TO"), QStringLiteral("676")),
+                pz(QStringLiteral("TT"), QStringLiteral("1868")),
+                pz(QStringLiteral("TN"), QStringLiteral("216")),
+                pz(QStringLiteral("TR"), QStringLiteral("90")),
+                pz(QStringLiteral("TM"), QStringLiteral("993")),
+                pz(QStringLiteral("TC"), QStringLiteral("1649")),
+                pz(QStringLiteral("TV"), QStringLiteral("688")),
+                pz(QStringLiteral("UG"), QStringLiteral("256")),
+                pz(QStringLiteral("UA"), QStringLiteral("380")),
+                pz(QStringLiteral("AE"), QStringLiteral("971")),
+
+                pz(QStringLiteral("GB"), QStringLiteral("44")),
+                pz(QStringLiteral("GG"), QStringLiteral("44")),
+                pz(QStringLiteral("IM"), QStringLiteral("44")),
+                pz(QStringLiteral("JE"), QStringLiteral("44")),
+
+                pz(QStringLiteral("US"), QStringLiteral("1")),
+                pz(QStringLiteral("CA"), QStringLiteral("1")),
+                pz(QStringLiteral("PR"), QStringLiteral("1")),
+
+                pz(QStringLiteral("UM"), QStringLiteral("2")),
+                pz(QStringLiteral("UY"), QStringLiteral("598")),
+                pz(QStringLiteral("UZ"), QStringLiteral("998")),
+                pz(QStringLiteral("VU"), QStringLiteral("678")),
+                pz(QStringLiteral("VE"), QStringLiteral("58")),
+                pz(QStringLiteral("VN"), QStringLiteral("84")),
+                pz(QStringLiteral("VG"), QStringLiteral("1284")),
+                pz(QStringLiteral("VI"), QStringLiteral("1340")),
+                pz(QStringLiteral("WF"), QStringLiteral("681")),
+                pz(QStringLiteral("YE"), QStringLiteral("967")),
+                pz(QStringLiteral("ZM"), QStringLiteral("260")),
+                pz(QStringLiteral("ZW"), QStringLiteral("263")),
+    };
+
+    if(!country.isEmpty()) {
+
+        auto iter = std::find_if(c.begin(),c.end(),[&](const pz &elem){
+            return elem.first == country;
+        });
+
+        if(iter != c.end()){
+            return iter->second;
         }
+
         return "";
     }
 
-    if(prefix != "") {
-        for(auto _it = c.begin(); _it != c.end(); ++_it) {
-            if((*_it).second == prefix) {
-                return (*_it).first;
-            }
+    if(!prefix.isEmpty()) {
+
+        auto iter = std::find_if(c.begin(),c.end(),[&](const pz &elem){
+            return elem.second == prefix;
+        });
+
+        if(iter != c.end()){
+            return iter->first;
         }
+
         return "";
     }
 
-    if(number != "") {
+    if(!number.isEmpty()) {
         pz bestCandidate;
 
-        for(auto _it = c.begin(); _it != c.end(); ++_it) {
+        for(const auto &it : c) {
 
-            if(number.startsWith( (*_it).second ) && (*_it).second.length() > bestCandidate.second.length() ) {
-                bestCandidate = *_it;
+            if(number.startsWith( it.second ) && it.second.length() > bestCandidate.second.length() ) {
+                bestCandidate = it;
             }
         }
+
+
         return bestCandidate.first;
     }
 

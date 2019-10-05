@@ -181,7 +181,7 @@ QString handler_format::percentUrl(QString url, QString encoding, PercentAction 
 
         if(action == PercentEncode) {
             QByteArray bytes = enc->fromUnicode( m.captured(0));
-            foreach(uchar c, bytes) {
+            for(uchar c: bytes) {
                 resultStr += "%" + QString::number(c ,16);
             }
         }
@@ -241,7 +241,7 @@ void handler_format::format(QString method, QString params, process_data *p) {
     } else if(method.toLower() == "relativeurl") {
 
         process_data *up = p;
-        while(up->url.isEmpty() && up->parent() != NULL) {
+        while(up->url.isEmpty() && up->parent() != nullptr) {
             up = (process_data*)up->parent();
         }
 

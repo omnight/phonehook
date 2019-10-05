@@ -61,7 +61,7 @@ private:
     QString lookupState;
 
 public:
-    static dbus_adapter *Instance(QObject *parent = NULL);
+    static dbus_adapter *Instance(QObject *parent = nullptr);
 
     void set_lookupState(QString state);
     void sendQml(QString qml);

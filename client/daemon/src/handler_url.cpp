@@ -60,7 +60,7 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
     // find earlier URL to use as relative URL
     QUrl urlBase;
     process_data *pp = inputData;
-    while(pp != NULL && pp->url.isEmpty())
+    while(pp != nullptr && pp->url.isEmpty())
         pp = (process_data*)pp->parent();
 
     if(pp) urlBase = pp->url;
@@ -152,7 +152,7 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
                 QString header = robotXml.attribute("requestvalue");
                 owner->expand(header);
 
-                foreach(QString line, header.split("\n", QString::SkipEmptyParts)) {
+                for(const auto &line: header.split("\n", QString::SkipEmptyParts)) {
                     qDebug() << "HEADER" << line;
                     QStringList keyValue = line.split(":");
                     if(keyValue.length() >= 2) {
@@ -164,7 +164,7 @@ void handler_url::loadUrl(const QDomElement &robotXml, process_data *inputData, 
                 }
             }
 
-            foreach(QNetworkCookie c, cookieStore.cookiesForUrl(urlBase)) {
+            for(const auto &c: cookieStore.cookiesForUrl(urlBase)) {
                 qDebug() << "COOKIE" << c.name() << ":" << c.value();
             }
 
@@ -271,7 +271,7 @@ void handler_url_thread::network_response(QNetworkReply *reply) {
 
     qDebug() << "got network response!";
     netman.cookieJar()->setParent(0);
-    reply->setParent(NULL);
+    reply->setParent(nullptr);
     reply->moveToThread(QCoreApplication::instance()->thread());
     parent->reply = reply;
     parent->waitForReply.wakeOne();
@@ -344,7 +344,7 @@ CookieMonster::~CookieMonster() {
 
     qDebug() << "removed" << clearQuery.numRowsAffected() << "old cookies";
 
-    foreach(QNetworkCookie cookie, allCookies()) {
+    for(const auto &cookie: allCookies()) {
         QSqlQuery insertQuery("INSERT INTO BOT_COOKIE_CACHE(bot_id, key, domain, path, expire, value) VALUES(?, ?, ?, ?, ?, ?);");
 
         insertQuery.addBindValue(botId);
@@ -366,7 +366,7 @@ QList<QNetworkCookie> CookieMonster::cookiesForUrl(const QUrl &url) const {
 
     QList<QNetworkCookie> result;
 
-    foreach(QNetworkCookie c, QNetworkCookieJar::allCookies()) {
+    for(const auto &c: QNetworkCookieJar::allCookies()) {
 
 //        qDebug() << url.host().endsWith(c.domain()) <<
 //                    url.path().startsWith( c.path() ) <<
@@ -397,7 +397,7 @@ QList<QNetworkCookie> CookieMonster::cookiesForUrl(const QUrl &url) const {
 
 QString handler_url::getCookie(QString key) {
 
-    foreach (QNetworkCookie c,  cookieStore.allCookies()) {
+    for (const auto &c:  cookieStore.allCookies()) {
         if(c.name() == key) return c.value();
     }
 

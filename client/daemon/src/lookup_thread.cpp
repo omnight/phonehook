@@ -55,7 +55,7 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
     // test run? (you can test run disabled bots too...)
     if(botIds.length() > 0) {
         botQuery += " AND bot.id IN (";
-        foreach(int id, botIds) {
+        for(int id: botIds) {
             botQuery += QString::number(id) + ",";
         }
 

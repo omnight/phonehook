@@ -280,7 +280,7 @@ static const char *get_named_entity(const char *name)
 		NAMED_ENTITIES, sizeof NAMED_ENTITIES / sizeof *NAMED_ENTITIES,
 		sizeof *NAMED_ENTITIES, cmp);
 
-	return entity ? entity[1] : NULL;
+    return entity ? entity[1] : nullptr;
 }
 
 static size_t putc_utf8(unsigned long cp, char *buffer)
@@ -328,7 +328,7 @@ static bool parse_entity(
 
 	if(current[1] == '#')
 	{
-		char *tail = NULL;
+        char *tail = nullptr;
 		int errno_save = errno;
 		bool hex = current[2] == 'x' || current[2] == 'X';
 

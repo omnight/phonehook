@@ -50,8 +50,7 @@ void db::initDbTables() {
     }
 
 
-
-    foreach(QString u, scriptList) {
+    for(const auto &u:scriptList){
 
         int v = QString(u).replace(".sql", "").toInt();
 

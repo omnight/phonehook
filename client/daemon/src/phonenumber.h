@@ -7,13 +7,13 @@ class phonenumber {
 
 public:
     phonenumber() {}
-    phonenumber(QString number, QString location, QString mnc);
+    phonenumber(QString number, const QString &location, const QString &mnc);
     phonenumber(const phonenumber& other);
 
     QString number_local;
-    QString country_prefix;
     QString number_international;
     QString country_iso;
+    QString country_prefix;
 
 
     static QString mobilecc_to_iso32662(int code);
@@ -27,24 +27,25 @@ public:
 
 Q_DECLARE_METATYPE(phonenumber)
 
-class rule: public QObject {
-    Q_OBJECT
+class rule {
 
 public:
 
-    explicit rule(QString country_name, QString country_prefix, QString exit_code, QString trunk_code, QString network_code = "", QObject *parent = 0);
+    explicit rule(const QString &country_name, const QString &country_prefix, const QString &exit_code, const QString &trunk_code, const QString &network_code = "");
 
-    static QList<rule*> rules;
+    static const QList<rule> rules;
     static void initialize();
 
+    static QList<rule>::const_iterator find(const QString &country_prefix, const QString &mnc);
 
-    static rule* find(QString country_prefix, QString mnc);
-
-    QString country_prefix;
     QString country_name;
-    QString network_code;
+    QString country_prefix;
     QString exit_code;
     QString trunk_code;
+    QString network_code;
+
 };
+
+
 
 #endif // PHONENUMBER_H

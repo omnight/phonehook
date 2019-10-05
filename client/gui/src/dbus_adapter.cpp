@@ -31,7 +31,7 @@ void dbus_adapter::ready() {
     qDebug() << "READY!!";
     m_bIsReady = true;
 
-    foreach(QString q,qmlItems) {
+    for(const QString &q:qmlItems) {
         sendQml(q);
     }
 

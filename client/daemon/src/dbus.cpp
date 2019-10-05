@@ -272,7 +272,7 @@ void dbus::lookupResult(lookup_thread *sender) {
 
 void dbus::blockLastCall(QString alias) {
 
-    if(lastNumber.number_international == NULL || lastNumber.number_international == "") return ;
+    if(lastNumber.number_international == nullptr || lastNumber.number_international == "") return ;
     if(alias == "") alias = lastNumber.number_international;
 
     // crop text if too long

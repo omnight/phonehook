@@ -108,7 +108,7 @@ QVariantMap bots::getBotDetails(int botId) {
     if(sq.next()) {
         return recordToVariantMap(sq.record());
     }
-
+    return QVariantMap();
 }
 
 void bots::setBotSearchListTag(const QString &tag) {
@@ -411,7 +411,7 @@ void bots::vCardWrite(const QString &name, const QStringList &numbers,  QString 
         if(!name.isEmpty()) stream << "FN:" << name << endl;
         if(!address.isEmpty()) stream << "ADR:" << address.replace("\r\n", " ").replace("\n", " ").replace("\r", " ") << endl;
 
-        foreach(auto nr, numbers) {
+        for(const auto &nr: numbers) {
             stream << "TEL:" << nr << endl;
         }
 
