@@ -8,6 +8,12 @@ Item {
     scale: 0.5
     property real max_opacity: 1
     property bool isExclam: false
+    property bool isLightTheme: {
+        if (Theme.colorScheme === Theme.LightOnDark)
+            return false
+        else
+            return true
+    }
 
     function fadeOut() {
         creatorAnimation.stop()
@@ -82,8 +88,8 @@ Item {
             PropertyAnimation {
                 target: shader
                 property: "innerColor"
-                from: "#000"
-                to: Qt.darker(Theme.highlightColor,2)
+                from: isLightTheme ? "#fff" : "#000"
+                to: isLightTheme ? Qt.lighter(Theme.highlightColor, 2) : Qt.darker(Theme.highlightColor, 2)
                 duration: 300
             }
         }
@@ -91,8 +97,17 @@ Item {
         PropertyAnimation {
             target: shader
             property: "innerColor"
-            from:Qt.darker(Theme.highlightColor,2)
-            to: isExclam ? Qt.darker(Theme.highlightColor,2) : Qt.darker(Theme.highlightColor,4)
+            from: isLightTheme ? Qt.lighter(Theme.highlightColor,
+                                            2) : Qt.darker(
+                                     Theme.highlightColor, 2)
+            to: isExclam ? (isLightTheme ? Qt.lighter(Theme.highlightColor,
+                                                      2) : Qt.darker(
+                                               Theme.highlightColor,
+                                               2)) : (isLightTheme ? Qt.lighter(
+                                                                         Theme.highlightColor,
+                                                                         4) : Qt.darker(
+                                                                         Theme.highlightColor,
+                                                                         4))
             duration: 500
         }
 
@@ -112,8 +127,12 @@ Item {
         id: shader
 
         opacity: 0
-        property color innerColor: "#000" // isExclam ? Qt.darker(Theme.highlightColor,2) : Qt.darker(Theme.highlightColor,4)
-        property color borderColor:isExclam ? Qt.darker(Theme.highlightColor, 1.5) : Qt.darker(Theme.highlightColor, 2.5)
+        property color innerColor: isLightTheme ? "#fff" : "#000"
+        property color borderColor: isExclam ? (isLightTheme ? Qt.lighter(
+                                                                   Theme.highlightColor,
+                                                                   1.5) : Qt.darker(
+                                                                   Theme.highlightColor,
+                                                                   1.5)) : (isLightTheme ? Qt.lighter(Theme.highlightColor, 2.5) : Qt.darker(Theme.highlightColor, 2.5))
         property variant source: isExclam ? exclam : null
 
         property bool showExclam: isExclam

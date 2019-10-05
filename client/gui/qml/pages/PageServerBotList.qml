@@ -152,7 +152,7 @@ Page {
                 anchors.margins: Theme.paddingLarge
                 anchors.left: parent.left
                 anchors.right: parent.right
-                font.pixelSize: Theme.fontSizeExtraSmall
+                font.pixelSize: smallestScreen ? Theme.fontSizeExtraSmall : Theme.fontSizeSmall
                 color: Theme.secondaryColor
                 wrapMode: Text.Wrap
                 text: qsTr("All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services. ")
@@ -165,7 +165,7 @@ Page {
             property bool expanded
 
             width: parent.width
-            height: 70
+            height: 70 * sizeRatio
 
             Row {
                 id: countryNameLine
@@ -177,6 +177,8 @@ Page {
                     id: flag
                     anchors.verticalCenter: parent.verticalCenter
                     source: "https://omnight.github.io/phonehook-sources/flags/" + sectionCountry.toLowerCase() + ".png"
+                    height: 32 * sizeRatio
+                    width: height
 
                     Rectangle {
                         anchors.left: parent.right
@@ -184,15 +186,15 @@ Page {
                         anchors.leftMargin: -10
                         anchors.topMargin: -20
                         radius: 5
-                        color: "#222255"
+                        color: isLightTheme ? "#3374FF" : "#222255"
                         height: cLabel.height
-                        width: cLabel.width+10
+                        width: cLabel.width + 10 * sizeRatio
                         opacity: .8
 
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             id: cLabel
-                            font.pixelSize: Theme.fontSizeExtraSmall
+                            font.pixelSize: smallestScreen ? Theme.fontSizeExtraSmall : Theme.fontSizeSmall
                             font.weight: Font.Bold
                             text: sectionCount[section]
                             color: Theme.primaryColor
@@ -203,7 +205,7 @@ Page {
 
                 Item {
                     height: parent.height
-                    width: 20
+                    width: 20 * sizeRatio
                 }
 
                 Text {
@@ -217,8 +219,8 @@ Page {
 
             Image {
                 source: "../images/expand.svg"
-                height: 31
-                width: 30
+                height: 31 * sizeRatio
+                width: 30 * sizeRatio
                 sourceSize.height: height
                 sourceSize.width: width
                 anchors.verticalCenter: parent.verticalCenter
@@ -226,13 +228,29 @@ Page {
                 anchors.rightMargin: Theme.paddingLarge
                 rotation: isExpanded(section) ? 180 : 0
                 Behavior on rotation { NumberAnimation { duration: 200 } }
+                layer.effect: ShaderEffect {
+                    property color color: Theme.primaryColor
+
+                    fragmentShader: "
+                    varying mediump vec2 qt_TexCoord0;
+                    uniform highp float qt_Opacity;
+                    uniform lowp sampler2D source;
+                    uniform highp vec4 color;
+                    void main() {
+                        highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                        gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                    }
+                    "
+                }
+                layer.enabled: true
+                layer.samplerName: "source"
             }
 
             Rectangle {
                 anchors.top: countryNameLine.bottom
                 anchors.left: parent.left
                 anchors.topMargin: -5
-                height: 5
+                height: 5 * sizeRatio
                 color: "#44FFFFFF"
                 width: parent.width
             }
@@ -249,15 +267,14 @@ Page {
         delegate:
             BackgroundItem {
                 id: delegate
-                //height: 80
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                height: isExpanded(sort_key) ? 80 : 0
+                height: isExpanded(sort_key) ? 80 * sizeRatio : 0
                 visible: isExpanded(sort_key) ? true : false
 
                 Item {
-                    height: 70
+                    height: 70 * sizeRatio
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.rightMargin: Theme.paddingLarge
@@ -266,8 +283,8 @@ Page {
 
                     Image {
                         id: icon
-                        height: 60
-                        width: 60
+                        height: 60 * sizeRatio
+                        width: height
                         fillMode: Image.PreserveAspectFit
 
                         anchors.verticalCenter: parent.verticalCenter

@@ -3,7 +3,12 @@ import QtQuick 2.5
 Item {
     property Component hex_comp:  null
     property variant gridpcs: ({})
-    property int hexW: 50
+    property bool largeScreen: Screen.width > 1080
+    property bool mediumScreen: (Screen.width > 720 && Screen.width <= 1080)
+    property bool smallScreen: (Screen.width >= 720 && Screen.width < 1080)
+    property bool smallestScreen: Screen.width < 720
+    property int sizeRatio: smallestScreen ? 1 : smallScreen ? 1.5 : 2
+    property int hexW: 50 * sizeRatio
     property bool showWarning: false
 
     id: mw

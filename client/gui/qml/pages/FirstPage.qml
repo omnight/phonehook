@@ -137,12 +137,12 @@ Page {
 
 
 
-            Text {
+            Label {
                 id: hi
-                color: "#FFFFFF"
                 wrapMode: Text.Wrap
                 textFormat: Text.RichText
                 text: qsTr("Daemon") + ": <b>" + (_bots.daemonActive ? qsTr("Running") : qsTr("Not Running")) + "</b>"
+                font.pixelSize: smallestScreen ? Theme.fontSizeSmall : Theme.fontSizeMedium
             }
 
             Button {
@@ -261,5 +261,3 @@ Page {
         }
     }
 }
-
-
