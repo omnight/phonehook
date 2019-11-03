@@ -116,7 +116,7 @@
     </message>
     <message>
         <source> s</source>
-        <translation>s</translation>
+        <translation> 秒</translation>
     </message>
 </context>
 <context>
