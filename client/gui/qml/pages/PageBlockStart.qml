@@ -94,8 +94,8 @@ Page {
                         anchors.left: parent.left
                         anchors.leftMargin: Theme.paddingLarge
                         anchors.verticalCenter: parent.verticalCenter
-                        height: 48
-                        width: 48
+                        height: 48 * sizeRatio
+                        width: height
                         sourceSize.height: height
                         sourceSize.width: width
                         fillMode: Image.PreserveAspectCrop
