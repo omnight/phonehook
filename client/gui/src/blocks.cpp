@@ -130,6 +130,17 @@ void blocks::deleteBlock(int blockId) {
     initBlocks();
 }
 
+void blocks::updateBlock(int blockId, const QString &name, const QString &number) {
+    QSqlQuery sq;
+    sq.prepare("UPDATE block set name=?, number=? WHERE id=?");
+    sq.addBindValue(name);
+    sq.addBindValue(number);
+    sq.addBindValue(blockId);
+    qDebug() << "update block! " << sq.exec();
+
+    initBlocks();
+}
+
 
 void blocks::initHistory(int blockId) {
     m_history.setQuery("SELECT date,number FROM block_history WHERE block_id=" + QString::number(blockId)

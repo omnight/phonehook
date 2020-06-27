@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE void addManualBlock(const QString &name, const QString &number, bool isHidden);
 
     Q_INVOKABLE void deleteBlock(int blockId);
+    Q_INVOKABLE void updateBlock(int blockId, const QString &name, const QString &number);
 
     Q_INVOKABLE QString contactName(int contactId);
     Q_INVOKABLE QString contactNameFromNumber(const QString &number);
