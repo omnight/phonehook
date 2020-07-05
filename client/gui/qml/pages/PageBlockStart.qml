@@ -9,10 +9,10 @@ Page {
     property variant remorseItem
     function remorseDelete() {
         remorseDeleteBlock.execute(remorseItem,
-                                 qsTr("Deleting %1").arg(remorseItem.name),
-                                 function() {
-                                     _blocks.deleteBlock(remorseItem.id);
-                                 }, 5000);
+                                   qsTr("Deleting %1").arg(remorseItem.name),
+                                   function () {
+                                       _blocks.deleteBlock(remorseItem.id)
+                                   }, 5000)
     }
 
     Label {
@@ -34,19 +34,21 @@ Page {
             MenuItem {
                 text: qsTr("Add Block Source")
                 onClicked: {
-                    _blocks.initSources();
+                    _blocks.initSources()
                     pageStack.push(Qt.resolvedUrl("PageBlockAddSource.qml"))
                 }
             }
 
             MenuItem {
                 text: qsTr("Block Contact")
-                onClicked: pageStack.push(Qt.resolvedUrl("PageBlockContact.qml"))
+                onClicked: pageStack.push(Qt.resolvedUrl(
+                                              "PageBlockContact.qml"))
             }
 
             MenuItem {
                 text: qsTr("Block Number")
-                onClicked: pageStack.push(Qt.resolvedUrl("PageBlockAddManual.qml"))
+                onClicked: pageStack.push(Qt.resolvedUrl(
+                                              "PageBlockAddManual.qml"))
             }
 
             MenuItem {
@@ -76,18 +78,22 @@ Page {
 
             delegate: Item {
                 id: myListItem
-                property bool menuOpen: blockView.contextMenu != null && blockView.contextMenu.parent === myListItem
+                property bool menuOpen: blockView.contextMenu != null
+                                        && blockView.contextMenu.parent === myListItem
+                property int type: model.type
+                property string number: model.number
                 property int id: model.id
 
-                property string name: model.name || model.bot_name ||
-                                      (model.contact_id ? _blocks.contactName(model.contact_id) : ' ??' )
+                property string name: model.name || model.bot_name
+                                      || (model.contact_id ? _blocks.contactName(
+                                                                 model.contact_id) : ' ??')
 
                 width: ListView.view.width
-                height: menuOpen ? blockView.contextMenu.height + contentItem.height : contentItem.height
+                height: menuOpen ? blockView.contextMenu.height
+                                   + contentItem.height : contentItem.height
 
                 BackgroundItem {
                     id: contentItem
-
 
                     Image {
                         id: blockTypeImage
@@ -99,9 +105,9 @@ Page {
                         sourceSize.height: height
                         sourceSize.width: width
                         fillMode: Image.PreserveAspectCrop
-                        source: model.type === 0 ? '../images/edit-6.svg' :
-                                model.type === 1 ? '../images/contacts.svg' :
-                                model.type === 2 ? '../images/online.svg': ''
+                        source: model.type === 0 ? '../images/edit-6.svg' : model.type
+                                                   === 1 ? '../images/contacts.svg' : model.type
+                                                           === 2 ? '../images/online.svg' : ''
                         layer.effect: ShaderEffect {
                             property color color: Theme.primaryColor
 
@@ -111,13 +117,11 @@ Page {
                             uniform lowp sampler2D source;
                             uniform highp vec4 color;
                             void main() {
-                                highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
-                                gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
+                            highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+                            gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
                             }
                             "
                         }
-                        layer.enabled: true
-                        layer.samplerName: "source"
                     }
 
                     Column {
@@ -147,33 +151,43 @@ Page {
                     }
 
                     onPressAndHold: {
-                        remorseItem = myListItem;
+                        remorseItem = myListItem
                         if (!blockView.contextMenu)
-                            blockView.contextMenu = contextMenuComponent.createObject(blockView)
-                        blockView.contextMenu.show(myListItem)
+                            blockView.contextMenu = contextMenuComponent.createObject(
+                                        blockView)
+                        blockView.contextMenu.open(myListItem)
                     }
 
                     onClicked: {
-                        _blocks.initHistory(model.id);
-                        pageStack.push(Qt.resolvedUrl("PageBlockHistory.qml"));
+                        _blocks.initHistory(model.id)
+                        pageStack.push(Qt.resolvedUrl("PageBlockHistory.qml"))
                     }
-                }
-            }
-
-            Component {
-                id: contextMenuComponent
-                ContextMenu {
-                       MenuItem {
-                        text: qsTr("Delete");
-                        onClicked: {
-                            remorseDelete();
+                    Component {
+                        id: contextMenuComponent
+                        ContextMenu {
+                            MenuItem {
+                                text: qsTr("Edit")
+                                enabled: remorseItem.type === 0
+                                onClicked: {
+                                    blockView.contextMenu.destroy()
+                                    pageStack.push(Qt.resolvedUrl(
+                                                       "PageBlockEdit.qml"), {
+                                                       "contact_id": remorseItem.id,
+                                                       "contact_name": remorseItem.name,
+                                                       "contact_nbr": remorseItem.number
+                                                   })
+                                }
+                            }
+                            MenuItem {
+                                text: qsTr("Delete")
+                                onClicked: {
+                                    remorseDelete()
+                                }
+                            }
                         }
                     }
                 }
             }
-
         }
-
     }
-
 }
