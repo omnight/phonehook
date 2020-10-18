@@ -49,9 +49,9 @@ int main(int argc, char *argv[])
     // enable for file logging
     //qInstallMessageHandler(myMessageHandler);
 
-    setuid(0);
+   // setuid(0);
     qDebug() << "daemon starting?";
-    //QGuiApplication app(argc, argv);
+
     QGuiApplication* app = SailfishApp::application(argc, argv);
 
 

@@ -164,6 +164,29 @@
     </message>
 </context>
 <context>
+    <name>PageBlockEdit</name>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blocked number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new number</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PageBlockHistory</name>
     <message>
         <source>History</source>
@@ -211,6 +234,10 @@
     <message>
         <source>Deleting %1</source>
         <translation>Lösche %1</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

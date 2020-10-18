@@ -5,7 +5,7 @@ import Nemo.DBus 2.0
 // debug
 //import "screen.js" as Screen
 
-Item {
+ApplicationWindow {
     width: Screen.width
     height: Screen.height
     id: win
