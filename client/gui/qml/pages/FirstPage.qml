@@ -236,7 +236,7 @@ Page {
                             remorseItem = myListItem;
                             if (!botView.contextMenu)
                                 botView.contextMenu = contextMenuComponent.createObject(botView)
-                            botView.contextMenu.show(myListItem)
+                            botView.contextMenu.open(myListItem)
                         }
 
                         onClicked: {
